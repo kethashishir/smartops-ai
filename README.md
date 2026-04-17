@@ -23,27 +23,22 @@ Example AI questions:
 - Why is Product A more risky than Product B?
 - Which products have the highest forecasted demand?
 
+
+
 ## 🏗 Project Structure
 
+```text
 smartops-ai/
-|
-|-- backend/
-|   |-- app/
-|
-|-- frontend/
-|   |-- src/
-|
-|-- ml/
-|
-|-- ai/
-|
-|-- simulator/
-|
-|-- docs/
-|   |-- design.md
-|
-|-- .github/
-|   |-- workflows/
-|
-|-- README.md
-|-- .env.example
+├── backend/            # FastAPI server & API logic
+│   └── app/
+├── frontend/           # React/Next.js user interface
+│   └── src/
+├── ml/                 # Machine learning models & training scripts
+├── ai/                 # AI agents & prompt engineering
+├── simulator/          # Environment simulation logic
+├── docs/               # System architecture & design docs
+│   └── design.md
+├── .github/            # CI/CD workflows & GitHub actions
+│   └── workflows/
+├── .env.example        # Template for environment variables
+└── README.md           # Project documentation
