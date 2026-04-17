@@ -1,0 +1,28 @@
+# OS specific files
+.DS_Store
+
+# IDE settings
+.vscode/
+
+# Python / FastAPI / Virtual Env
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+*.log
+
+# Node / Frontend / Build
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+*.secret
+*.pem
+*.key
