@@ -1,11 +1,5 @@
-# inventory
-# - id
-# - product_id
-# - current_stock
-# - updated_at
-
 from app.database import Base
-from sqlalchemy import Column, DateTime, Integer, ForeignKey, func, onup
+from sqlalchemy import Column, DateTime, Integer, ForeignKey, func
 
 class Inventory(Base):
     __tablename__ = "inventory"
