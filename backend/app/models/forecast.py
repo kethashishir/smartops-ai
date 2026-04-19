@@ -1,10 +1,3 @@
-forecasts
-- id
-- product_id
-- forecast_date
-- predicted_demand
-- model_version
-
 from app.database import Base
 from sqlalchemy import Column, Date, Integer, ForeignKey, String, Numeric
 

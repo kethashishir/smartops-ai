@@ -23,8 +23,6 @@ Example AI questions:
 - Why is Product A more risky than Product B?
 - Which products have the highest forecasted demand?
 
-
-
 ## 🏗 Project Structure
 
 ```text
