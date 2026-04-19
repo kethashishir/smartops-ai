@@ -7,6 +7,4 @@ class ForecastResponse(BaseModel):
     forecast_date: date
     predicted_demand: float
     model_version: str
-
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}

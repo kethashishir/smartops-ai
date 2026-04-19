@@ -7,7 +7,5 @@ class RecommendationResponse(BaseModel):
     recommended_quantity: float
     reason: str
     created_at: datetime
-
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 

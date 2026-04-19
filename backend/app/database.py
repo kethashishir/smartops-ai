@@ -30,11 +30,18 @@ def test_connection():
         # Use scalar() to get the first result of the first row directly
         version = session.scalar(text("SELECT version();"))
         
-        if not version:
+        if not version:     
             print("Connection failed: No version returned.")
             return
 
         print(f"Connection successful! {version}")
+
+def get_db():
+    db = SessionFactory()
+    try:
+        yield db
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     test_connection()
