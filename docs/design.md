@@ -1,7 +1,7 @@
 
 Project Purpose:
 
-SMARTOPS is a full stack software engineering project to manage and simulate a retail/workshop alLowing users to access:
+SMARTOPS is a full stack software engineering project to manage and simulate a retail/warehouse alLowing users to access:
 - manage inventory
 - dashboard for operations
 - demand forecasting 
@@ -23,7 +23,7 @@ No proper suggestions based on live data
 
 Version 1:
 
-THe version1 focus is to build self sufficient Warehouse Management System(WMS) for Retail/Workshop without intelligence
+THe version1 focus is to build self sufficient Warehouse Management System(WMS) for Retail/Warehouse without intelligence
 
 Dashboard
 Authentication
