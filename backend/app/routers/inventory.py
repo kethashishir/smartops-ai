@@ -8,6 +8,7 @@ router = APIRouter(prefix="/inventory", tags=["inventory"])
 
 @router.get("/{product_id}", response_model=InventoryResponse)
 def get_inventory(product_id: int, db: Session = Depends(get_db)):
+    
     inventory = db.query(Inventory).filter(Inventory.product_id == product_id).first()
     if not inventory:
         raise HTTPException(status_code=404, detail="Inventory not found")
