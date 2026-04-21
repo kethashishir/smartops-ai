@@ -26,3 +26,5 @@ dist-ssr/
 *.secret
 *.pem
 *.key
+
+logo.png
