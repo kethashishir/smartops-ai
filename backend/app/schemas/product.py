@@ -17,3 +17,9 @@ class ProductResponse(BaseModel):
     unit_price: float
     created_at: datetime
     model_config = {"from_attributes": True}
+
+class ProductUpdate(BaseModel):
+    name: str | None = None
+    category: str | None = None
+    reorder_threshold: int | None = None
+    unit_price: float | None = None

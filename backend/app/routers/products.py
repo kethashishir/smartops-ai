@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.product import Product
 from app.models.inventories import Inventory
-from app.schemas.product import ProductCreate, ProductResponse
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -39,16 +39,19 @@ def get_products(db: Session = Depends(get_db)):
     return products
 
 @router.patch("/{product_id}", response_model=ProductResponse)
-def update_product(product_id: int, product: ProductCreate, db: Session = Depends(get_db)):
+def update_product(product_id: int, product: ProductUpdate, db: Session = Depends(get_db)):
     db_product = db.query(Product).filter(Product.id == product_id).first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    db_product.sku = product.sku
-    db_product.name = product.name
-    db_product.category = product.category
-    db_product.reorder_threshold = product.reorder_threshold
-    db_product.unit_price = product.unit_price
+    if product.name is not None:
+        db_product.name = product.name
+    if product.category is not None:
+        db_product.category = product.category
+    if product.reorder_threshold is not None:
+        db_product.reorder_threshold = product.reorder_threshold
+    if product.unit_price is not None:
+        db_product.unit_price = product.unit_price
     
     db.commit()
     db.refresh(db_product)
