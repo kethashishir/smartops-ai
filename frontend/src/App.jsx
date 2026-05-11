@@ -8,17 +8,17 @@ function App() {
   const products = [
     {
       id: 1,
-      name: 'Laptop'
+      name: 'Laptop',
       description: 'A high-performance laptop for all your computing needs.'
     },
     {
       id: 2,
-      name: 'Mouse'
+      name: 'Mouse',
       description: 'A wireless mouse with ergonomic design and long battery life.'
     },
     {
       id: 3,
-      name: 'Keyboard'
+      name: 'Keyboard',
       description: 'A mechanical keyboard with customizable RGB lighting and tactile feedback.'
     }
   ];
