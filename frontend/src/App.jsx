@@ -28,21 +28,21 @@ function App() {
     fetchProducts();
   }, []);
 
-  // async function fetchRecommendations() {
-  //   try {
-  //     console.log("Fetching recommendations...");
-  //     const response = await fetch("http://127.0.0.1:8000/recommendations/");
-  //     console.log("Response status:", response.status);
-  //     if (!response.ok) {
-  //       throw new Error(`Network response was not ok: ${response.status}`);
-  //     }
-  //     const data = await response.json();
-  //     console.log("Recommendations fetched:", data);
-  //     setRecommendations(data);
-  //   } catch (error) {
-  //     console.error("Error fetching recommendations:", error.message);
-  //   }
-  // }
+  async function fetchRecommendations() {
+    try {
+      console.log("Fetching recommendations...");
+      const response = await fetch("http://127.0.0.1:8000/recommendations/");
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Recommendations fetched:", data);
+      setRecommendations(data);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error.message);
+    }
+  }
 
   async function generateRecommendations() {
     try {
@@ -57,8 +57,9 @@ function App() {
         throw new Error(`Network response was not ok: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Recommendations generated:", data);
-      setRecommendations(data);
+      console.log("New recommendations generated:", data);
+
+      await fetchRecommendations();
     } catch (error) {
       console.error("Error generating recommendations:", error.message);
     }
