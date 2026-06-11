@@ -75,6 +75,11 @@ function App() {
       return acc;
     }, {})
   );
+  
+  function getProductName(productId) {
+    const product = products.find((product) => product.id === productId);
+    return product ? product.name : `Product ${productId}`;
+  }
 
 
   return (
@@ -105,7 +110,7 @@ function App() {
           {latestRecommendations.map((recommendation) => (
             <li key={recommendation.id}>
               <div>
-              <h2>Product: {recommendation.product_id}</h2>
+              <h2>Product: {getProductName(recommendation.product_id)}</h2>
               <p>Recommended Quantity: {recommendation.recommended_quantity}</p>
               <p>Reason: {recommendation.reason}</p>
               </div>
