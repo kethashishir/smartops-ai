@@ -69,6 +69,13 @@ function App() {
     }
   }
 
+  const latestRecommendations = Object.values(
+    recommendations.reduce((acc, recommendation) => {
+      acc[recommendation.product_id] = recommendation;
+      return acc;
+    }, {})
+  );
+
 
   return (
     <div>
@@ -95,7 +102,7 @@ function App() {
       )}
       {recommendations.length > 0 && (
         <ul>
-          {recommendations.map((recommendation) => (
+          {latestRecommendations.map((recommendation) => (
             <li key={recommendation.id}>
               <div>
               <h2>Product: {recommendation.product_id}</h2>
