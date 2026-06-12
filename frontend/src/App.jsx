@@ -81,7 +81,6 @@ function App() {
     return product ? product.name : `Product ${productId}`;
   }
 
-
   return (
     <div>
       <h1>SmartOps Frontend</h1>
