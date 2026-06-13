@@ -82,13 +82,14 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="page">
       <h1>SmartOps Frontend</h1>
+      <section className="section" >
       <h2>Products Page</h2>
       <ul>
         {products.map((product) => (
           <li key={product.id}>
-            <div>
+            <div className="card">
             <h2>{product.name}</h2>
             <p>SKU: {product.sku}</p>
             <p>Category: {product.category}</p>
@@ -97,6 +98,8 @@ function App() {
           </li>
         ))}
       </ul>
+      </section>
+      <section className="section" >
       <h2>Recommendations Page</h2>
       <button onClick={generateRecommendations} disabled={loadingRecommendations}>
         {loadingRecommendations ? "Generating..." : "Generate Recommendations"}
@@ -108,7 +111,7 @@ function App() {
         <ul>
           {latestRecommendations.map((recommendation) => (
             <li key={recommendation.id}>
-              <div>
+              <div className="card">
               <h2>Product: {getProductName(recommendation.product_id)}</h2>
               <p>Recommended Quantity: {recommendation.recommended_quantity}</p>
               <p>Reason: {recommendation.reason}</p>
@@ -117,6 +120,7 @@ function App() {
           ))}
         </ul>
       )}
+      </section>
     </div>
   );
 }
