@@ -84,7 +84,7 @@ function App() {
   return (
     <div className="page">
       <h1>SmartOps Frontend</h1>
-      <section className="section" >
+      <section className="section">
       <h2>Products Page</h2>
       <ul>
         {products.map((product) => (
@@ -99,7 +99,7 @@ function App() {
         ))}
       </ul>
       </section>
-      <section className="section" >
+      <section className="section">
       <h2>Recommendations Page</h2>
       <button onClick={generateRecommendations} disabled={loadingRecommendations}>
         {loadingRecommendations ? "Generating..." : "Generate Recommendations"}
