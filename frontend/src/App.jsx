@@ -7,9 +7,12 @@ function App() {
   const [recommendations, setRecommendations] = useState([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
+  const [productsError, setProductsError] = useState("");
+  const [recommendationsError, setRecommendationsError] = useState("");
 
   async function fetchProducts() {
     try {
+      setProductsError("");
       console.log("Fetching products...");
       const response = await fetch("http://127.0.0.1:8000/products/");
       console.log("Response status:", response.status);
@@ -21,6 +24,7 @@ function App() {
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error.message);
+      setProductsError("Could not load products. Please make sure the backend is running.");
     }
   }
 
@@ -30,6 +34,7 @@ function App() {
 
   async function fetchRecommendations() {
     try {
+      setRecommendationsError("");
       console.log("Fetching recommendations...");
       const response = await fetch("http://127.0.0.1:8000/recommendations/");
       console.log("Response status:", response.status);
@@ -41,11 +46,13 @@ function App() {
       setRecommendations(data);
     } catch (error) {
       console.error("Error fetching recommendations:", error.message);
+      setRecommendationsError("Could not load recommendations. Please check the backend.");
     }
   }
 
   async function generateRecommendations() {
     try {
+      setRecommendationsError("");
       setLoadingRecommendations(true);
       console.log("Generating recommendations...");
 
@@ -62,6 +69,7 @@ function App() {
       await fetchRecommendations();
     } catch (error) {
       console.error("Error generating recommendations:", error.message);
+      setRecommendationsError("Could not generate recommendations. Please check the backend.");
     }
     finally {      
       setLoadingRecommendations(false);
@@ -86,6 +94,7 @@ function App() {
       <h1>SmartOps Frontend</h1>
       <section className="section">
       <h2>Products Page</h2>
+      {productsError && <p className="error">{productsError}</p>}
       <ul>
         {products.map((product) => (
           <li key={product.id}>
@@ -101,11 +110,19 @@ function App() {
       </section>
       <section className="section">
       <h2>Recommendations Page</h2>
+
       <button onClick={generateRecommendations} disabled={loadingRecommendations}>
         {loadingRecommendations ? "Generating..." : "Generate Recommendations"}
       </button>
-      {hasGeneratedRecommendations && recommendations.length === 0 && !loadingRecommendations && (
-        <p style={{ color: "#666", fontStyle: "italic" }}>No recommendations generated yet.</p>
+      {recommendationsError && <p className="error">{recommendationsError}</p>}
+      {hasGeneratedRecommendations &&
+        recommendations.length === 0 &&
+        !loadingRecommendations &&
+        !recommendationsError &&
+        !productsError && (
+        <p style={{ color: "#666", fontStyle: "italic" }}>
+           No recommendations generated yet.
+         </p>
       )}
       {recommendations.length > 0 && (
         <ul>

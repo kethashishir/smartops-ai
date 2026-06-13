@@ -38,3 +38,13 @@ button {
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
+
+.error {
+  color: #b00020;
+  background: #ffe8ec;
+  border: 1px solid #f5b5c0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  max-width: 650px;
+  margin: 1rem auto;
+}
