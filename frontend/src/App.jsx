@@ -96,6 +96,17 @@ function App() {
   return (
     <div className="page">
       <h1>SmartOps Frontend</h1>
+      <section className="summary">
+         <div className="summary-card">
+          <h3>Total Products</h3>
+          <p>{products.length}</p>
+        </div>
+
+         <div className="summary-card">
+          <h3>Active Recommendations</h3>
+          <p>{latestRecommendations.length}</p>
+        </div>
+      </section>
       <section className="section">
       <h2>Products Page</h2>
       {productsError && <p className="error">{productsError}</p>}
