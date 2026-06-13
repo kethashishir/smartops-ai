@@ -29,7 +29,7 @@ Example AI questions:
 smartops-ai/
 ├── backend/            # FastAPI server & API logic
 │   └── app/
-├── frontend/           # React/Next.js user interface
+├── frontend/           # React + Vite user interface
 │   └── src/
 ├── ml/                 # Machine learning models & training scripts
 ├── ai/                 # AI agents & prompt engineering
@@ -47,10 +47,11 @@ smartops-ai/
 ## 🚀 Tech Stack
 
 - Backend: FastAPI  
+- Frontend: React + Vite
 - Database: PostgreSQL  
 - ORM: SQLAlchemy  
 - Validation: Pydantic  
-- Language: Python  
+- Language: Python / JavaScript
 
 ---
 
@@ -148,17 +149,41 @@ Recommended Quantity = 100
 
 ## ⚙️ How to Run Locally
 
+### 1. Clone the repository
+
 ```bash
 git clone https://github.com/kethashishir/smartops-ai
-cd smartops-ai/backend
+cd smartops-ai
+```
 
+### 2. Run the backend
+
+```bash
+cd backend
 python -m venv .venv
 source .venv/bin/activate
-
 pip install -r requirements.txt
-
 uvicorn app.main:app --reload
-
 ```
-Open in browser:
+
+Open backend API docs:
+
+```text
 http://127.0.0.1:8000/docs
+```
+
+### 3. Run the frontend
+
+Open a second terminal:
+
+```bash
+cd smartops-ai/frontend
+npm install
+npm run dev
+```
+
+Open frontend app:
+
+```text
+http://localhost:5173
+```
