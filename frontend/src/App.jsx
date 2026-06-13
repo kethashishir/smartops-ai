@@ -96,6 +96,9 @@ function App() {
   return (
     <div className="page">
       <h1>SmartOps Frontend</h1>
+      <p className="subtitle">
+        Backend-connected dashboard for product inventory and reorder recommendations.
+      </p>
       <section className="summary">
          <div className="summary-card">
           <h3>Total Products</h3>
