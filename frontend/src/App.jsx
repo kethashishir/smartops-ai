@@ -9,9 +9,11 @@ function App() {
   const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
   const [productsError, setProductsError] = useState("");
   const [recommendationsError, setRecommendationsError] = useState("");
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   async function fetchProducts() {
     try {
+      setLoadingProducts(true);
       setProductsError("");
       console.log("Fetching products...");
       const response = await fetch("http://127.0.0.1:8000/products/");
@@ -25,6 +27,8 @@ function App() {
     } catch (error) {
       console.error("Error fetching products:", error.message);
       setProductsError("Could not load products. Please make sure the backend is running.");
+    } finally {
+      setLoadingProducts(false);
     }
   }
 
@@ -95,6 +99,8 @@ function App() {
       <section className="section">
       <h2>Products Page</h2>
       {productsError && <p className="error">{productsError}</p>}
+      {loadingProducts && <p>Loading products...</p>}
+      {!loadingProducts && !productsError && (
       <ul>
         {products.map((product) => (
           <li key={product.id}>
@@ -107,6 +113,7 @@ function App() {
           </li>
         ))}
       </ul>
+      )}
       </section>
       <section className="section">
       <h2>Recommendations Page</h2>
