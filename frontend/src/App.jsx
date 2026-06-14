@@ -10,6 +10,61 @@ function App() {
   const [productsError, setProductsError] = useState("");
   const [recommendationsError, setRecommendationsError] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+  name: "",
+  sku: "",
+  category: "",
+  unit_price: "",
+  reorder_threshold: "",
+  }); 
+
+  function handleProductInputChange(event) {
+  const { name, value } = event.target;
+
+  setNewProduct({
+    ...newProduct,
+    [name]: value,
+    });
+  }
+
+  async function createProduct(event) {
+  event.preventDefault();
+
+  try {
+    setProductsError("");
+
+    const response = await fetch("http://127.0.0.1:8000/products/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: newProduct.name,
+        sku: newProduct.sku,
+        category: newProduct.category,
+        unit_price: Number(newProduct.unit_price),
+        reorder_threshold: Number(newProduct.reorder_threshold),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status}`);
+    }
+
+    setNewProduct({
+      name: "",
+      sku: "",
+      category: "",
+      unit_price: "",
+      reorder_threshold: "",
+    });
+
+    await fetchProducts();
+  } catch (error) {
+    console.error("Error creating product:", error.message);
+    setProductsError("Could not create product. Please check the form and backend.");
+   }
+  }
 
   async function fetchProducts() {
     try {
@@ -114,6 +169,53 @@ function App() {
       <h2>Products Page</h2>
       {productsError && <p className="error">{productsError}</p>}
       {loadingProducts && <p>Loading products...</p>}
+      <form className="product-form" onSubmit={createProduct}>
+        <input
+        type="text"
+        name="name"
+        placeholder="Product name"
+        value={newProduct.name}
+        onChange={handleProductInputChange}
+        required
+        />
+
+        <input
+        type="text"
+        name="sku"
+        placeholder="SKU"
+        value={newProduct.sku}
+        onChange={handleProductInputChange}
+        required
+        />
+
+        <input
+        type="text"
+        name="category"
+        placeholder="Category"
+        value={newProduct.category}
+        onChange={handleProductInputChange}
+        required
+        />
+
+        <input
+        type="number"
+        name="unit_price"
+        placeholder="Unit price"
+        value={newProduct.unit_price}
+        onChange={handleProductInputChange}
+        required
+        />
+
+        <input
+        type="number"
+        name="reorder_threshold"
+        placeholder="Reorder threshold"
+        value={newProduct.reorder_threshold}
+        onChange={handleProductInputChange}
+        required
+        />
+      <button type="submit">Create Product</button>
+      </form>
       {!loadingProducts && !productsError && (
       <ul>
         {products.map((product) => (
