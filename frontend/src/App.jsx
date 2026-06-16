@@ -166,9 +166,10 @@ function App() {
         </div>
       </section>
       <section className="section">
-      <h2>Products Page</h2>
+
       {productsError && <p className="error">{productsError}</p>}
       {loadingProducts && <p>Loading products...</p>}
+      <h3>Create New Product</h3>
       <form className="product-form" onSubmit={createProduct}>
         <input
         type="text"
@@ -203,6 +204,8 @@ function App() {
         placeholder="Unit price"
         value={newProduct.unit_price}
         onChange={handleProductInputChange}
+        step="0.01"
+        min="0"
         required
         />
 
@@ -212,10 +215,12 @@ function App() {
         placeholder="Reorder threshold"
         value={newProduct.reorder_threshold}
         onChange={handleProductInputChange}
+        min="0"
         required
         />
       <button type="submit">Create Product</button>
       </form>
+      <h2>Products</h2>
       {!loadingProducts && !productsError && (
       <ul>
         {products.map((product) => (
@@ -232,7 +237,7 @@ function App() {
       )}
       </section>
       <section className="section">
-      <h2>Recommendations Page</h2>
+      <h2>Recommendations</h2>
 
       <button onClick={generateRecommendations} disabled={loadingRecommendations}>
         {loadingRecommendations ? "Generating..." : "Generate Recommendations"}
