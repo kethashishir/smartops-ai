@@ -61,33 +61,56 @@ def generate_recommendation(product_id: int, db: Session = Depends(get_db)):
 def generate_recommendations_for_all_products(db: Session = Depends(get_db)):
     products = db.query(Product).all()
     recommendations = []
-    
+
     for product in products:
-        existing_recommendations = db.query(Recommendation).filter(Recommendation.product_id==product.id).first()
-        if existing_recommendations:
-            continue# Skip if recommendation already exists for the product
-        forecast = db.query(Forecast).filter(Forecast.product_id == product.id).order_by(Forecast.forecast_date.desc()).first()
+        forecast = (
+            db.query(Forecast)
+            .filter(Forecast.product_id == product.id)
+            .order_by(Forecast.forecast_date.desc())
+            .first()
+        )
+
         inventory = db.query(Inventory).filter(Inventory.product_id == product.id).first()
-        
+
         if not forecast or not inventory:
             continue
-        
-        if inventory.current_stock <= product.reorder_threshold:
-            recommended_quantity = max(int(forecast.predicted_demand) - inventory.current_stock,0)
-        else:
-            continue  # Skip if inventory is above threshold, no recommendation needed
 
-        reason = f"Current inventory is {inventory.current_stock}, forecasted demand is {forecast.predicted_demand}. Recommended quantity is {recommended_quantity}."    
-        db_recommendation = Recommendation(
-            product_id=product.id,
-            recommended_quantity=recommended_quantity,
-            reason=reason,
+        if inventory.current_stock > product.reorder_threshold:
+            continue
+
+        recommended_quantity = max(
+            int(forecast.predicted_demand) - inventory.current_stock,
+            0,
         )
-        db.add(db_recommendation)
-        recommendations.append(db_recommendation)
-    
+
+        reason = (
+            f"Current inventory is {inventory.current_stock}, "
+            f"forecasted demand is {forecast.predicted_demand}. "
+            f"Recommended quantity is {recommended_quantity}."
+        )
+
+        existing_recommendation = (
+            db.query(Recommendation)
+            .filter(Recommendation.product_id == product.id)
+            .first()
+        )
+
+        if existing_recommendation:
+            existing_recommendation.recommended_quantity = recommended_quantity
+            existing_recommendation.reason = reason
+            recommendations.append(existing_recommendation)
+        else:
+            db_recommendation = Recommendation(
+                product_id=product.id,
+                recommended_quantity=recommended_quantity,
+                reason=reason,
+            )
+            db.add(db_recommendation)
+            recommendations.append(db_recommendation)
+
     db.commit()
-    for r in recommendations:
-        db.refresh(r)
-    
+
+    for recommendation in recommendations:
+        db.refresh(recommendation)
+
     return recommendations
