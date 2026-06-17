@@ -182,6 +182,16 @@ function App() {
     return product ? product.name : `Product ${productId}`;
   }
 
+  const lowStockProductsCount = products.filter((product) => {
+  const currentStock = inventoryByProductId[product.id];
+
+  if (currentStock === undefined || currentStock === "N/A") {
+    return false;
+  }
+
+  return currentStock <= product.reorder_threshold;
+  }).length;
+
   return (
     <div className="page">
       <h1>SmartOps Frontend</h1>
@@ -197,6 +207,10 @@ function App() {
          <div className="summary-card">
           <h3>Active Recommendations</h3>
           <p>{latestRecommendations.length}</p>
+        </div>
+        <div className="summary-card">
+        <h3>Low Stock Products</h3>
+        <p>{lowStockProductsCount}</p>
         </div>
       </section>
       <section className="section">
