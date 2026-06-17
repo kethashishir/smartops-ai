@@ -21,6 +21,7 @@ function App() {
   const [creatingProduct, setCreatingProduct] = useState(false);
   const [inventoryByProductId, setInventoryByProductId] = useState({});
   const [productFilter, setProductFilter] = useState("all");
+  const [sortOption, setSortOption] = useState("default");
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -227,6 +228,25 @@ function App() {
     return true;
   });
 
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortOption === "price-low") {
+      return a.unit_price - b.unit_price;
+    }
+
+    if (sortOption === "price-high") {
+      return b.unit_price - a.unit_price;
+    }
+
+    if (sortOption === "stock-low") {
+      const stockA = inventoryByProductId[a.id] ?? Number.MAX_VALUE;
+      const stockB = inventoryByProductId[b.id] ?? Number.MAX_VALUE;
+
+      return stockA - stockB;
+    }
+
+    return 0;
+  });
+
   return (
     <div className="page">
       <h1>SmartOps Frontend</h1>
@@ -335,6 +355,20 @@ function App() {
         <p className="filter-count">
           Showing {filteredProducts.length} of {products.length} products
         </p>
+        <div className="sort-control">
+          <label htmlFor="sort-products">Sort Products: </label>
+
+          <select
+            id="sort-products"
+            value={sortOption}
+            onChange={(event) => setSortOption(event.target.value)}
+          >
+            <option value="default">Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="stock-low">Stock: Low to High</option>
+          </select>
+        </div>
         {filteredProducts.length === 0 &&
           !loadingProducts &&
           !productsError && (
@@ -344,7 +378,7 @@ function App() {
           )}
         {!loadingProducts && !productsError && filteredProducts.length > 0 && (
           <ul>
-            {filteredProducts.map((product) => (
+            {sortedProducts.map((product) => (
               <li key={product.id}>
                 <div
                   className={`card ${isLowStock(product) ? "low-stock-card" : ""}`}
