@@ -318,7 +318,12 @@ function App() {
     Healthy
   </button>
 </div>
-      {!loadingProducts && !productsError && (
+      {filteredProducts.length === 0 && !loadingProducts && !productsError && (
+      <p style={{ color: "#666", fontStyle: "italic" }}>
+        No products match this filter.
+      </p>
+      )}
+      {!loadingProducts && !productsError && filteredProducts.length > 0 && (
       <ul>
         {filteredProducts.map((product) => (
           <li key={product.id}>
