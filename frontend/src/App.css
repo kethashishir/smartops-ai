@@ -166,3 +166,13 @@ button {
   margin: 1rem auto;
   display: block;
 }
+
+.recommendation-label {
+  display: inline-block;
+  color: #4b2e83;
+  background: #eee7ff;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+}

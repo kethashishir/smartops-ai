@@ -458,6 +458,7 @@ function App() {
               <li key={recommendation.id}>
                 <div className="card">
                   <h2>Product: {getProductName(recommendation.product_id)}</h2>
+                  <p className="recommendation-label">Restock Recommended</p>
                   <p>
                     Recommended Quantity: {recommendation.recommended_quantity}
                   </p>
