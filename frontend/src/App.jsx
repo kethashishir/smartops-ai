@@ -244,6 +244,7 @@ function App() {
             <p>SKU: {product.sku}</p>
             <p>Category: {product.category}</p>
             <p>Price: ${product.unit_price.toFixed(2)}</p>
+            <p>Reorder Threshold: {product.reorder_threshold}</p>
             </div>
           </li>
         ))}
