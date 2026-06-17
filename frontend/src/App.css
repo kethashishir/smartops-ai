@@ -94,3 +94,13 @@ button {
   border: 1px solid #ddd;
   border-radius: 8px;
 }
+
+.success {
+  color: #0f6b2f;
+  background: #e8f7ee;
+  border: 1px solid #a9dfbf;
+  border-radius: 8px;
+  padding: 0.75rem;
+  max-width: 650px;
+  margin: 1rem auto;
+}

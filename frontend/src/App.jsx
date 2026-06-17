@@ -17,8 +17,10 @@ function App() {
   unit_price: "",
   reorder_threshold: "",
   }); 
+  const [productSuccess, setProductSuccess] = useState("");
 
   function handleProductInputChange(event) {
+  setProductSuccess("");
   const { name, value } = event.target;
 
   setNewProduct({
@@ -60,6 +62,7 @@ function App() {
     });
 
     await fetchProducts();
+    setProductSuccess("Product created successfully.");
   } catch (error) {
     console.error("Error creating product:", error.message);
     setProductsError("Could not create product. Please check the form and backend.");
@@ -166,7 +169,7 @@ function App() {
         </div>
       </section>
       <section className="section">
-
+      {productSuccess && <p className="success">{productSuccess}</p>}
       {productsError && <p className="error">{productsError}</p>}
       {loadingProducts && <p>Loading products...</p>}
       <h3>Create New Product</h3>
