@@ -290,7 +290,11 @@ function App() {
           <li key={product.id}>
             <div className={`card ${isLowStock(product) ? "low-stock-card" : ""}`}>
               <h2>{product.name}</h2>
-              {isLowStock(product) && <p className="low-stock-label">Low Stock</p>}
+              {isLowStock(product) ? (
+               <p className="low-stock-label">Low Stock</p>
+              ) : (
+                <p className="healthy-stock-label">Healthy Stock</p>
+               )}
               <p>SKU: {product.sku}</p>
               <p>Category: {product.category}</p>
               <p>Price: ${product.unit_price.toFixed(2)}</p>
