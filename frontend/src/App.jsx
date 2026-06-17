@@ -296,19 +296,28 @@ function App() {
         {loadingProducts ? "Refreshing..." : "Refresh Products"}
       </button>
       <h2>Products</h2>
-      <div className="filter-buttons">
-        <button onClick={() => setProductFilter("all")}>
-          All
-        </button>
+<div className="filter-buttons">
+  <button
+    className={productFilter === "all" ? "active-filter" : ""}
+    onClick={() => setProductFilter("all")}
+  >
+    All
+  </button>
 
-        <button onClick={() => setProductFilter("low")}>
-          Low Stock
-        </button>
+  <button
+    className={productFilter === "low" ? "active-filter" : ""}
+    onClick={() => setProductFilter("low")}
+  >
+    Low Stock
+  </button>
 
-        <button onClick={() => setProductFilter("healthy")}>
-          Healthy
-        </button>
-      </div>
+  <button
+    className={productFilter === "healthy" ? "active-filter" : ""}
+    onClick={() => setProductFilter("healthy")}
+  >
+    Healthy
+  </button>
+</div>
       {!loadingProducts && !productsError && (
       <ul>
         {filteredProducts.map((product) => (
