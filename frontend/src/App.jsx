@@ -332,6 +332,9 @@ function App() {
             Healthy
           </button>
         </div>
+        <p className="filter-count">
+          Showing {filteredProducts.length} of {products.length} products
+        </p>
         {filteredProducts.length === 0 &&
           !loadingProducts &&
           !productsError && (

@@ -140,3 +140,9 @@ button {
   font-weight: bold;
   border: 2px solid #333;
 }
+
+.filter-count {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: -0.25rem;
+}
