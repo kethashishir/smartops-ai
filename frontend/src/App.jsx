@@ -192,6 +192,16 @@ function App() {
   return currentStock <= product.reorder_threshold;
   }).length;
 
+  function isLowStock(product) {
+  const currentStock = inventoryByProductId[product.id];
+
+  if (currentStock === undefined || currentStock === "N/A") {
+    return false;
+  }
+
+  return currentStock <= product.reorder_threshold;
+  }
+
   return (
     <div className="page">
       <h1>SmartOps Frontend</h1>
@@ -278,13 +288,14 @@ function App() {
       <ul>
         {products.map((product) => (
           <li key={product.id}>
-            <div className="card">
-            <h2>{product.name}</h2>
-            <p>SKU: {product.sku}</p>
-            <p>Category: {product.category}</p>
-            <p>Price: ${product.unit_price.toFixed(2)}</p>
-            <p>Reorder Threshold: {product.reorder_threshold}</p>
-            <p>Current Stock: {inventoryByProductId[product.id] ?? "Loading..."}</p>
+            <div className={`card ${isLowStock(product) ? "low-stock-card" : ""}`}>
+              <h2>{product.name}</h2>
+              {isLowStock(product) && <p className="low-stock-label">Low Stock</p>}
+              <p>SKU: {product.sku}</p>
+              <p>Category: {product.category}</p>
+              <p>Price: ${product.unit_price.toFixed(2)}</p>
+              <p>Reorder Threshold: {product.reorder_threshold}</p>
+              <p>Current Stock: {inventoryByProductId[product.id] ?? "Loading..."}</p>
             </div>
           </li>
         ))}
