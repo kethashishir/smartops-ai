@@ -8,6 +8,7 @@ operations assistant built with LangChain and a Hugging Face model.
 ## 🎯 Objective
 
 Build a realistic operations platform where a user can:
+
 - log in
 - manage products
 - track inventory
@@ -18,6 +19,7 @@ Build a realistic operations platform where a user can:
 - ask an AI assistant operational questions in natural language
 
 Example AI questions:
+
 - Which items are most likely to go out of stock this week?
 - What should I reorder right now?
 - Why is Product A more risky than Product B?
@@ -46,22 +48,26 @@ smartops-ai/
 
 ## 🚀 Tech Stack
 
-- Backend: FastAPI  
+- Backend: FastAPI
 - Frontend: React + Vite
-- Database: PostgreSQL  
-- ORM: SQLAlchemy  
-- Validation: Pydantic  
+- Database: PostgreSQL
+- ORM: SQLAlchemy
+- Validation: Pydantic
 - Language: Python / JavaScript
 
 ---
 
 ## 🏗️ Core Features
 
-- Product management with reorder thresholds  
-- Inventory tracking per product  
-- Order processing with stock validation  
-- Demand forecasting storage  
-- Automated recommendation engine for restocking  
+- Product management with reorder thresholds
+- Inventory tracking per product
+- Order processing with stock validation
+- Demand forecasting storage
+- Automated recommendation engine for restocking
+- Frontend dashboard with product search, filtering, and sorting
+- Low-stock and healthy-stock visual labels
+- Product creation from the React interface
+- Recommendation generation and display from the frontend
 
 ---
 
@@ -74,19 +80,24 @@ Products → Inventory → Orders → Forecast → Recommendations
 ## 📘 Flow Explanation
 
 ### 1. Products
+
 - Each product has a reorder threshold
 
 ### 2. Inventory
+
 - Tracks current stock per product
 
 ### 3. Orders
+
 - Reduce inventory when purchases occur
 - Prevent orders if stock is insufficient
 
 ### 4. Forecast
+
 - Stores predicted future demand for each product
 
 ### 5. Recommendations
+
 - Suggests reorder quantity based on:
   - current inventory
   - reorder threshold
@@ -111,10 +122,10 @@ Each recommendation includes an explanation for transparency.
 ## 📌 Example
 
 | Metric            | Value |
-|------------------|------|
-| Current Stock     | 20   |
-| Reorder Threshold | 30   |
-| Forecast Demand   | 120  |
+| ----------------- | ----- |
+| Current Stock     | 20    |
+| Reorder Threshold | 30    |
+| Forecast Demand   | 120   |
 
 Recommended Quantity = 100
 
@@ -123,23 +134,28 @@ Recommended Quantity = 100
 ## 📡 API Endpoints
 
 ### Products
+
 - POST /products/
 - GET /products/
 - PATCH /products/{product_id}
 
 ### Inventory
+
 - GET /inventory/{product_id}
 - PATCH /inventory/{product_id}
 
 ### Orders
+
 - POST /orders/
 - GET /orders/
 
 ### Forecast
+
 - POST /forecast/
 - GET /forecast/
 
 ### Recommendations
+
 - POST /recommendations/
 - GET /recommendations/
 - POST /recommendations/generate/{product_id}
