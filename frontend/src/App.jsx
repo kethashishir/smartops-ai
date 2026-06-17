@@ -20,6 +20,7 @@ function App() {
   const [productSuccess, setProductSuccess] = useState("");
   const [creatingProduct, setCreatingProduct] = useState(false);
   const [inventoryByProductId, setInventoryByProductId] = useState({});
+  const [productFilter, setProductFilter] = useState("all");
 
   function handleProductInputChange(event) {
   setProductSuccess("");
@@ -201,6 +202,17 @@ function App() {
 
   return currentStock <= product.reorder_threshold;
   }
+  const filteredProducts = products.filter((product) => {
+  if (productFilter === "low") {
+    return isLowStock(product);
+  }
+
+  if (productFilter === "healthy") {
+    return !isLowStock(product);
+  }
+
+  return true;
+  });
 
   return (
     <div className="page">
@@ -284,9 +296,22 @@ function App() {
         {loadingProducts ? "Refreshing..." : "Refresh Products"}
       </button>
       <h2>Products</h2>
+      <div className="filter-buttons">
+        <button onClick={() => setProductFilter("all")}>
+          All
+        </button>
+
+        <button onClick={() => setProductFilter("low")}>
+          Low Stock
+        </button>
+
+        <button onClick={() => setProductFilter("healthy")}>
+          Healthy
+        </button>
+      </div>
       {!loadingProducts && !productsError && (
       <ul>
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <li key={product.id}>
             <div className={`card ${isLowStock(product) ? "low-stock-card" : ""}`}>
               <h2>{product.name}</h2>
