@@ -256,6 +256,9 @@ function App() {
       <button onClick={generateRecommendations} disabled={loadingRecommendations}>
         {loadingRecommendations ? "Generating..." : "Generate Recommendations"}
       </button>
+      <button onClick={fetchRecommendations} disabled={loadingRecommendations}>
+          Refresh Recommendations
+      </button>
       {recommendationsError && <p className="error">{recommendationsError}</p>}
       {hasGeneratedRecommendations &&
         recommendations.length === 0 &&
