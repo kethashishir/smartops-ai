@@ -18,6 +18,7 @@ function App() {
   reorder_threshold: "",
   }); 
   const [productSuccess, setProductSuccess] = useState("");
+  const [creatingProduct, setCreatingProduct] = useState(false);
 
   function handleProductInputChange(event) {
   setProductSuccess("");
@@ -33,6 +34,7 @@ function App() {
   event.preventDefault();
 
   try {
+    setCreatingProduct(true);
     setProductsError("");
 
     const response = await fetch("http://127.0.0.1:8000/products/", {
@@ -63,10 +65,14 @@ function App() {
 
     await fetchProducts();
     setProductSuccess("Product created successfully.");
-  } catch (error) {
-    console.error("Error creating product:", error.message);
-    setProductsError("Could not create product. Please check the form and backend.");
-   }
+    } 
+    catch (error) {
+      console.error("Error creating product:", error.message);
+      setProductsError("Could not create product. Please check the form and backend.");
+    }
+    finally {
+    setCreatingProduct(false);
+    }
   }
 
   async function fetchProducts() {
@@ -221,7 +227,9 @@ function App() {
         min="0"
         required
         />
-      <button type="submit">Create Product</button>
+        <button type="submit" disabled={creatingProduct}>
+        {creatingProduct ? "Creating..." : "Create Product"}
+        </button>      
       </form>
       <h2>Products</h2>
       {!loadingProducts && !productsError && (
