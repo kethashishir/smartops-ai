@@ -156,3 +156,13 @@ button {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+
+.search-input {
+  width: 100%;
+  max-width: 650px;
+  padding: 0.65rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 1rem auto;
+  display: block;
+}

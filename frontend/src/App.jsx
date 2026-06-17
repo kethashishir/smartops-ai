@@ -22,6 +22,7 @@ function App() {
   const [inventoryByProductId, setInventoryByProductId] = useState({});
   const [productFilter, setProductFilter] = useState("all");
   const [sortOption, setSortOption] = useState("default");
+  const [productSearch, setProductSearch] = useState("");
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -216,7 +217,18 @@ function App() {
 
     return currentStock <= product.reorder_threshold;
   }
-  const filteredProducts = products.filter((product) => {
+
+  const searchedProducts = products.filter((product) => {
+    const searchText = productSearch.toLowerCase();
+
+    return (
+      product.name.toLowerCase().includes(searchText) ||
+      product.sku.toLowerCase().includes(searchText) ||
+      product.category.toLowerCase().includes(searchText)
+    );
+  });
+
+  const filteredProducts = searchedProducts.filter((product) => {
     if (productFilter === "low") {
       return isLowStock(product);
     }
@@ -330,6 +342,13 @@ function App() {
           {loadingProducts ? "Refreshing..." : "Refresh Products"}
         </button>
         <h2>Products</h2>
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search products by name, SKU, or category..."
+          value={productSearch}
+          onChange={(event) => setProductSearch(event.target.value)}
+        />
         <div className="filter-buttons">
           <button
             className={productFilter === "all" ? "active-filter" : ""}
