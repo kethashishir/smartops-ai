@@ -34,24 +34,38 @@ def generate_recommendation(product_id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     forecast = db.query(Forecast).filter(Forecast.product_id == product_id).order_by(Forecast.forecast_date.desc()).first()
     inventory = db.query(Inventory).filter(Inventory.product_id == product_id).first()
-    
+
     if not forecast or not inventory:
         raise HTTPException(status_code=404, detail="Forecast or Inventory data not found for the product")
-    
+
     if inventory.current_stock <= product.reorder_threshold:
         recommended_quantity = max(int(forecast.predicted_demand - inventory.current_stock), 0)
     else:
         recommended_quantity = 0
 
-    reason = f"Current inventory is {inventory.current_stock}, forecasted demand is {forecast.predicted_demand}. Recommended quantity is {recommended_quantity}."    
+    reason = f"Current inventory is {inventory.current_stock}, forecasted demand is {forecast.predicted_demand}. Recommended quantity is {recommended_quantity}."
+    existing_recommendation = (
+        db.query(Recommendation)
+        .filter(Recommendation.product_id == product_id)
+        .first()
+    )
+
+    if existing_recommendation:
+        existing_recommendation.recommended_quantity = recommended_quantity
+        existing_recommendation.reason = reason
+        db.commit()
+        db.refresh(existing_recommendation)
+        return existing_recommendation
+
     db_recommendation = Recommendation(
         product_id=product_id,
         recommended_quantity=recommended_quantity,
         reason=reason,
     )
+
     db.add(db_recommendation)
     db.commit()
     db.refresh(db_recommendation)
