@@ -231,6 +231,9 @@ function App() {
         {creatingProduct ? "Creating..." : "Create Product"}
         </button>      
       </form>
+      <button onClick={fetchProducts} disabled={loadingProducts}>
+        {loadingProducts ? "Refreshing..." : "Refresh Products"}
+      </button>
       <h2>Products</h2>
       {!loadingProducts && !productsError && (
       <ul>
