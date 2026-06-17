@@ -5,6 +5,21 @@ retail or warehouse operations platform. The system manages products, inventory,
 and orders, predicts future demand using machine learning, and includes an AI
 operations assistant built with LangChain and a Hugging Face model.
 
+## Current Status
+
+SmartOps AI currently includes a working FastAPI backend, PostgreSQL database integration, and a React + Vite frontend dashboard.
+
+Implemented features include:
+
+- Product creation and listing
+- Inventory display per product
+- Low-stock and healthy-stock status labels
+- Product search, filtering, and sorting
+- Recommendation generation and display
+- Frontend loading, error, and success states
+
+Machine learning forecasting and AI assistant features are planned but still in development.
+
 ## 🎯 Objective
 
 Build a realistic operations platform where a user can:
