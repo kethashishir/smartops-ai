@@ -19,6 +19,7 @@ function App() {
   }); 
   const [productSuccess, setProductSuccess] = useState("");
   const [creatingProduct, setCreatingProduct] = useState(false);
+  const [inventoryByProductId, setInventoryByProductId] = useState({});
 
   function handleProductInputChange(event) {
   setProductSuccess("");
@@ -88,6 +89,7 @@ function App() {
       const data = await response.json();
       console.log("Products fetched:", data);
       setProducts(data);
+      await fetchInventoryForProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error.message);
       setProductsError("Could not load products. Please make sure the backend is running.");
@@ -95,6 +97,29 @@ function App() {
       setLoadingProducts(false);
     }
   }
+
+  async function fetchInventoryForProducts(productsList) {
+  const inventoryMap = {};
+
+  for (const product of productsList) {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/inventory/${product.id}`);
+
+      if (!response.ok) {
+        inventoryMap[product.id] = "N/A";
+        continue;
+      }
+
+      const inventory = await response.json();
+      inventoryMap[product.id] = inventory.current_stock;
+    } catch (error) {
+      console.error(`Error fetching inventory for product ${product.id}:`, error.message);
+      inventoryMap[product.id] = "N/A";
+    }
+  }
+
+  setInventoryByProductId(inventoryMap);
+}
 
   useEffect(() => {
     fetchProducts();
@@ -245,6 +270,7 @@ function App() {
             <p>Category: {product.category}</p>
             <p>Price: ${product.unit_price.toFixed(2)}</p>
             <p>Reorder Threshold: {product.reorder_threshold}</p>
+            <p>Current Stock: {inventoryByProductId[product.id] ?? "Loading..."}</p>
             </div>
           </li>
         ))}
