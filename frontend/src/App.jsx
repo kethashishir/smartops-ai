@@ -443,6 +443,11 @@ function App() {
         {recommendationsError && (
           <p className="error">{recommendationsError}</p>
         )}
+        {recommendations.length > 0 && (
+          <p className="filter-count">
+            Showing {latestRecommendations.length} recommendations
+          </p>
+        )}
         {hasGeneratedRecommendations &&
           recommendations.length === 0 &&
           !loadingRecommendations &&
