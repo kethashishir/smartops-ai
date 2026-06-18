@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
+const API_BASE_URL = "http://127.0.0.1:8000";
+
 function App() {
   const [products, setProducts] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
@@ -43,7 +45,7 @@ function App() {
       setCreatingProduct(true);
       setProductsError("");
 
-      const response = await fetch("http://127.0.0.1:8000/products/", {
+      const response = await fetch(`${API_BASE_URL}/products/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +88,7 @@ function App() {
       setLoadingProducts(true);
       setProductsError("");
       console.log("Fetching products...");
-      const response = await fetch("http://127.0.0.1:8000/products/");
+      const response = await fetch(`${API_BASE_URL}/products/`);
       console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.status}`);
@@ -110,9 +112,7 @@ function App() {
 
     for (const product of productsList) {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/inventory/${product.id}`,
-        );
+        const response = await fetch(`${API_BASE_URL}/inventory/${product.id}`);
 
         if (!response.ok) {
           inventoryMap[product.id] = "N/A";
@@ -142,7 +142,7 @@ function App() {
     try {
       setRecommendationsError("");
       console.log("Fetching recommendations...");
-      const response = await fetch("http://127.0.0.1:8000/recommendations/");
+      const response = await fetch(`${API_BASE_URL}/recommendations/`);
       console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.status}`);
@@ -166,7 +166,7 @@ function App() {
       console.log("Generating recommendations...");
 
       const response = await fetch(
-        "http://127.0.0.1:8000/recommendations/generate_all",
+        `${API_BASE_URL}/recommendations/generate_all`,
         {
           method: "POST",
         },
@@ -198,7 +198,7 @@ function App() {
       setLoadingRecommendations(true);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/recommendations/generate/${productId}`,
+        `${API_BASE_URL}/recommendations/generate/${productId}`,
         {
           method: "POST",
         },
