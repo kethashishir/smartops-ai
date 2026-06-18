@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import SummaryCards from "./components/SummaryCards";
-import ProductStatusLabel from "./components/ProductStatusLabel";
 import ProductCard from "./components/ProductCard";
+import ProductControls from "./components/ProductControls";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -375,52 +375,16 @@ function App() {
           {loadingProducts ? "Refreshing..." : "Refresh Products"}
         </button>
         <h2>Products</h2>
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search products by name, SKU, or category..."
-          value={productSearch}
-          onChange={(event) => setProductSearch(event.target.value)}
+        <ProductControls
+          productSearch={productSearch}
+          setProductSearch={setProductSearch}
+          productFilter={productFilter}
+          setProductFilter={setProductFilter}
+          filteredProductsCount={filteredProducts.length}
+          productsCount={products.length}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
         />
-        <div className="filter-buttons">
-          <button
-            className={productFilter === "all" ? "active-filter" : ""}
-            onClick={() => setProductFilter("all")}
-          >
-            All
-          </button>
-
-          <button
-            className={productFilter === "low" ? "active-filter" : ""}
-            onClick={() => setProductFilter("low")}
-          >
-            Low Stock
-          </button>
-
-          <button
-            className={productFilter === "healthy" ? "active-filter" : ""}
-            onClick={() => setProductFilter("healthy")}
-          >
-            Healthy
-          </button>
-        </div>
-        <p className="filter-count">
-          Showing {filteredProducts.length} of {products.length} products
-        </p>
-        <div className="sort-control">
-          <label htmlFor="sort-products">Sort Products: </label>
-
-          <select
-            id="sort-products"
-            value={sortOption}
-            onChange={(event) => setSortOption(event.target.value)}
-          >
-            <option value="default">Default</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="stock-low">Stock: Low to High</option>
-          </select>
-        </div>
         {filteredProducts.length === 0 &&
           !loadingProducts &&
           !productsError && (
