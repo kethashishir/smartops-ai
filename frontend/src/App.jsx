@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import SummaryCards from "./components/SummaryCards";
 import ProductStatusLabel from "./components/ProductStatusLabel";
+import ProductCard from "./components/ProductCard";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -431,28 +432,13 @@ function App() {
           <ul>
             {sortedProducts.map((product) => (
               <li key={product.id}>
-                <div
-                  className={`card ${isLowStock(product) ? "low-stock-card" : ""}`}
-                >
-                  <h2>{product.name}</h2>
-                  <ProductStatusLabel isLowStock={isLowStock(product)} />
-                  <p>SKU: {product.sku}</p>
-                  <p>Category: {product.category}</p>
-                  <p>Price: ${product.unit_price.toFixed(2)}</p>
-                  <p>Reorder Threshold: {product.reorder_threshold}</p>
-                  <p>
-                    Current Stock:{" "}
-                    {inventoryByProductId[product.id] ?? "Loading..."}
-                  </p>
-                  <button
-                    onClick={() => generateRecommendationForProduct(product.id)}
-                    disabled={generatingProductId === product.id}
-                  >
-                    {generatingProductId === product.id
-                      ? "Generating..."
-                      : "Generate Recommendation"}
-                  </button>
-                </div>
+                <ProductCard
+                  product={product}
+                  currentStock={inventoryByProductId[product.id]}
+                  isLowStock={isLowStock(product)}
+                  generatingProductId={generatingProductId}
+                  onGenerateRecommendation={generateRecommendationForProduct}
+                />
               </li>
             ))}
           </ul>
