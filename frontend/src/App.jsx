@@ -3,6 +3,10 @@ import "./App.css";
 import SummaryCards from "./components/SummaryCards.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
+import {
+  getProducts,
+  createProduct as createProductApi,
+} from "./api/productsApi.js";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -49,23 +53,13 @@ function App() {
       setCreatingProduct(true);
       setProductsError("");
 
-      const response = await fetch(`${API_BASE_URL}/products/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: newProduct.name,
-          sku: newProduct.sku,
-          category: newProduct.category,
-          unit_price: Number(newProduct.unit_price),
-          reorder_threshold: Number(newProduct.reorder_threshold),
-        }),
+      await createProductApi({
+        name: newProduct.name,
+        sku: newProduct.sku,
+        category: newProduct.category,
+        unit_price: Number(newProduct.unit_price),
+        reorder_threshold: Number(newProduct.reorder_threshold),
       });
-
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.status}`);
-      }
 
       setNewProduct({
         name: "",
@@ -92,12 +86,7 @@ function App() {
       setLoadingProducts(true);
       setProductsError("");
       console.log("Fetching products...");
-      const response = await fetch(`${API_BASE_URL}/products/`);
-      console.log("Response status:", response.status);
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await getProducts();
       console.log("Products fetched:", data);
       setProducts(data);
       await fetchInventoryForProducts(data);
