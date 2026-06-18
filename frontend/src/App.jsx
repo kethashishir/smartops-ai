@@ -186,6 +186,37 @@ function App() {
     }
   }
 
+  async function generateRecommendationForProduct(productId) {
+    try {
+      setRecommendationsError("");
+      setLoadingRecommendations(true);
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/recommendations/generate/${productId}`,
+        {
+          method: "POST",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.status}`);
+      }
+
+      await fetchRecommendations();
+    } catch (error) {
+      console.error(
+        "Error generating recommendation for product:",
+        error.message,
+      );
+      setRecommendationsError(
+        "Could not generate recommendation for this product. Please check the backend.",
+      );
+    } finally {
+      setLoadingRecommendations(false);
+      setHasGeneratedRecommendations(true);
+    }
+  }
+
   const latestRecommendations = Object.values(
     recommendations.reduce((acc, recommendation) => {
       acc[recommendation.product_id] = recommendation;
@@ -416,6 +447,11 @@ function App() {
                     Current Stock:{" "}
                     {inventoryByProductId[product.id] ?? "Loading..."}
                   </p>
+                  <button
+                    onClick={() => generateRecommendationForProduct(product.id)}
+                  >
+                    Generate Recommendation
+                  </button>
                 </div>
               </li>
             ))}
