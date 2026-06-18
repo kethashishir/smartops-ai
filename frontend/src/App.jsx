@@ -4,6 +4,7 @@ import SummaryCards from "./components/SummaryCards";
 import ProductCard from "./components/ProductCard";
 import ProductControls from "./components/ProductControls";
 import ProductForm from "./components/ProductForm";
+import RecommendationsSection from "./components/RecommendationsSection";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -362,61 +363,18 @@ function App() {
           </ul>
         )}
       </section>
-      <section className="section">
-        <h2>Recommendations</h2>
-
-        <button
-          onClick={generateRecommendations}
-          disabled={loadingRecommendations}
-        >
-          {loadingRecommendations
-            ? "Generating..."
-            : "Generate Recommendations"}
-        </button>
-        <button
-          onClick={fetchRecommendations}
-          disabled={loadingRecommendations}
-        >
-          Refresh Recommendations
-        </button>
-        {loadingRecommendations && <p>Loading recommendations...</p>}
-        {recommendationsError && (
-          <p className="error">{recommendationsError}</p>
-        )}
-        {recommendationSuccess && (
-          <p className="success">{recommendationSuccess}</p>
-        )}
-        {recommendations.length > 0 && (
-          <p className="filter-count">
-            Showing {latestRecommendations.length} recommendations
-          </p>
-        )}
-        {hasGeneratedRecommendations &&
-          recommendations.length === 0 &&
-          !loadingRecommendations &&
-          !recommendationsError &&
-          !productsError && (
-            <p style={{ color: "#666", fontStyle: "italic" }}>
-              No recommendations generated yet.
-            </p>
-          )}
-        {recommendations.length > 0 && (
-          <ul>
-            {latestRecommendations.map((recommendation) => (
-              <li key={recommendation.id}>
-                <div className="card">
-                  <h2>Product: {getProductName(recommendation.product_id)}</h2>
-                  <p className="recommendation-label">Restock Recommended</p>
-                  <p>
-                    Recommended Quantity: {recommendation.recommended_quantity}
-                  </p>
-                  <p>Reason: {recommendation.reason}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <RecommendationsSection
+        loadingRecommendations={loadingRecommendations}
+        recommendationsError={recommendationsError}
+        recommendationSuccess={recommendationSuccess}
+        recommendations={recommendations}
+        latestRecommendations={latestRecommendations}
+        hasGeneratedRecommendations={hasGeneratedRecommendations}
+        productsError={productsError}
+        onGenerateRecommendations={generateRecommendations}
+        onRefreshRecommendations={fetchRecommendations}
+        getProductName={getProductName}
+      />
     </div>
   );
 }
