@@ -182,7 +182,7 @@ function App() {
     } catch (error) {
       console.error("Error generating recommendations:", error.message);
       setRecommendationsError(
-        "Could not generate recommendations. Please check the backend.",
+        "Could not generate recommendations. Some products may be missing forecast or inventory data.",
       );
     } finally {
       setLoadingRecommendations(false);
@@ -216,7 +216,7 @@ function App() {
         error.message,
       );
       setRecommendationsError(
-        "Could not generate recommendation for this product. Please check the backend.",
+        "Could not generate recommendation. This product may be missing forecast or inventory data.",
       );
     } finally {
       setGeneratingProductId(null);
