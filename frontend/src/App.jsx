@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import SummaryCards from "./components/SummaryCards";
+import ProductStatusLabel from "./components/ProductStatusLabel";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -434,11 +435,7 @@ function App() {
                   className={`card ${isLowStock(product) ? "low-stock-card" : ""}`}
                 >
                   <h2>{product.name}</h2>
-                  {isLowStock(product) ? (
-                    <p className="low-stock-label">Low Stock</p>
-                  ) : (
-                    <p className="healthy-stock-label">Healthy Stock</p>
-                  )}
+                  <ProductStatusLabel isLowStock={isLowStock(product)} />
                   <p>SKU: {product.sku}</p>
                   <p>Category: {product.category}</p>
                   <p>Price: ${product.unit_price.toFixed(2)}</p>
