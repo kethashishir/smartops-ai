@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import SummaryCards from "./components/SummaryCards";
-import ProductCard from "./components/ProductCard";
-import ProductControls from "./components/ProductControls";
-import ProductForm from "./components/ProductForm";
-import RecommendationsSection from "./components/RecommendationsSection";
+import SummaryCards from "./components/SummaryCards.jsx";
+import RecommendationsSection from "./components/RecommendationsSection.jsx";
+import ProductsSection from "./components/ProductsSection.jsx";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -316,53 +314,29 @@ function App() {
         recommendationsCount={latestRecommendations.length}
         lowStockProductsCount={lowStockProductsCount}
       />
-      <section className="section">
-        {productSuccess && <p className="success">{productSuccess}</p>}
-        {productsError && <p className="error">{productsError}</p>}
-        {loadingProducts && <p>Loading products...</p>}
-        <ProductForm
-          newProduct={newProduct}
-          onInputChange={handleProductInputChange}
-          onCreateProduct={createProduct}
-          creatingProduct={creatingProduct}
-        />
-        <button onClick={fetchProducts} disabled={loadingProducts}>
-          {loadingProducts ? "Refreshing..." : "Refresh Products"}
-        </button>
-        <h2>Products</h2>
-        <ProductControls
-          productSearch={productSearch}
-          setProductSearch={setProductSearch}
-          productFilter={productFilter}
-          setProductFilter={setProductFilter}
-          filteredProductsCount={filteredProducts.length}
-          productsCount={products.length}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-        />
-        {filteredProducts.length === 0 &&
-          !loadingProducts &&
-          !productsError && (
-            <p style={{ color: "#666", fontStyle: "italic" }}>
-              No products match this filter.
-            </p>
-          )}
-        {!loadingProducts && !productsError && filteredProducts.length > 0 && (
-          <ul>
-            {sortedProducts.map((product) => (
-              <li key={product.id}>
-                <ProductCard
-                  product={product}
-                  currentStock={inventoryByProductId[product.id]}
-                  isLowStock={isLowStock(product)}
-                  generatingProductId={generatingProductId}
-                  onGenerateRecommendation={generateRecommendationForProduct}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <ProductsSection
+        productSuccess={productSuccess}
+        productsError={productsError}
+        loadingProducts={loadingProducts}
+        newProduct={newProduct}
+        onInputChange={handleProductInputChange}
+        onCreateProduct={createProduct}
+        creatingProduct={creatingProduct}
+        onRefreshProducts={fetchProducts}
+        productSearch={productSearch}
+        setProductSearch={setProductSearch}
+        productFilter={productFilter}
+        setProductFilter={setProductFilter}
+        filteredProducts={filteredProducts}
+        products={products}
+        sortOption={sortOption}
+        setSortOption={setSortOption}
+        sortedProducts={sortedProducts}
+        isLowStock={isLowStock}
+        inventoryByProductId={inventoryByProductId}
+        generatingProductId={generatingProductId}
+        onGenerateRecommendation={generateRecommendationForProduct}
+      />
       <RecommendationsSection
         loadingRecommendations={loadingRecommendations}
         recommendationsError={recommendationsError}
