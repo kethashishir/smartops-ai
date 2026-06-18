@@ -76,6 +76,17 @@ smartops-ai/
 
 ---
 
+## Frontend Architecture
+
+The React frontend is organized into reusable components and API service files.
+
+- `src/components/` contains UI components such as product cards, product controls, summary cards, and recommendation sections.
+- `src/api/` contains frontend service functions for calling the FastAPI backend.
+- `src/api/config.js` stores the backend API base URL used by the frontend.
+- `App.jsx` manages top-level state, data loading, and page composition.
+
+---
+
 ## 🏗️ Core Features
 
 - Product management with reorder thresholds
@@ -156,6 +167,10 @@ Recommended Quantity = 100
 ---
 
 ## 📡 API Endpoints
+
+### Health
+
+- GET /health
 
 ### Products
 
