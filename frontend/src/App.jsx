@@ -3,6 +3,7 @@ import "./App.css";
 import SummaryCards from "./components/SummaryCards";
 import ProductCard from "./components/ProductCard";
 import ProductControls from "./components/ProductControls";
+import ProductForm from "./components/ProductForm";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -318,59 +319,12 @@ function App() {
         {productSuccess && <p className="success">{productSuccess}</p>}
         {productsError && <p className="error">{productsError}</p>}
         {loadingProducts && <p>Loading products...</p>}
-        <h3>Create New Product</h3>
-        <form className="product-form" onSubmit={createProduct}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Product name"
-            value={newProduct.name}
-            onChange={handleProductInputChange}
-            required
-          />
-
-          <input
-            type="text"
-            name="sku"
-            placeholder="SKU"
-            value={newProduct.sku}
-            onChange={handleProductInputChange}
-            required
-          />
-
-          <input
-            type="text"
-            name="category"
-            placeholder="Category"
-            value={newProduct.category}
-            onChange={handleProductInputChange}
-            required
-          />
-
-          <input
-            type="number"
-            name="unit_price"
-            placeholder="Unit price"
-            value={newProduct.unit_price}
-            onChange={handleProductInputChange}
-            step="0.01"
-            min="0"
-            required
-          />
-
-          <input
-            type="number"
-            name="reorder_threshold"
-            placeholder="Reorder threshold"
-            value={newProduct.reorder_threshold}
-            onChange={handleProductInputChange}
-            min="0"
-            required
-          />
-          <button type="submit" disabled={creatingProduct}>
-            {creatingProduct ? "Creating..." : "Create Product"}
-          </button>
-        </form>
+        <ProductForm
+          newProduct={newProduct}
+          onInputChange={handleProductInputChange}
+          onCreateProduct={createProduct}
+          creatingProduct={creatingProduct}
+        />
         <button onClick={fetchProducts} disabled={loadingProducts}>
           {loadingProducts ? "Refreshing..." : "Refresh Products"}
         </button>
