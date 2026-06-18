@@ -23,6 +23,7 @@ function App() {
   const [productFilter, setProductFilter] = useState("all");
   const [sortOption, setSortOption] = useState("default");
   const [productSearch, setProductSearch] = useState("");
+  const [recommendationSuccess, setRecommendationSuccess] = useState("");
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -157,6 +158,7 @@ function App() {
 
   async function generateRecommendations() {
     try {
+      setRecommendationSuccess("");
       setRecommendationsError("");
       setLoadingRecommendations(true);
       console.log("Generating recommendations...");
@@ -188,6 +190,7 @@ function App() {
 
   async function generateRecommendationForProduct(productId) {
     try {
+      setRecommendationSuccess("");
       setRecommendationsError("");
       setLoadingRecommendations(true);
 
@@ -203,6 +206,7 @@ function App() {
       }
 
       await fetchRecommendations();
+      setRecommendationSuccess("Recommendation updated successfully.");
     } catch (error) {
       console.error(
         "Error generating recommendation for product:",
@@ -478,6 +482,9 @@ function App() {
         {loadingRecommendations && <p>Loading recommendations...</p>}
         {recommendationsError && (
           <p className="error">{recommendationsError}</p>
+        )}
+        {recommendationSuccess && (
+          <p className="success">{recommendationSuccess}</p>
         )}
         {recommendations.length > 0 && (
           <p className="filter-count">
