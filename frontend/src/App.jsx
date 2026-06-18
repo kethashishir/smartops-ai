@@ -24,6 +24,7 @@ function App() {
   const [sortOption, setSortOption] = useState("default");
   const [productSearch, setProductSearch] = useState("");
   const [recommendationSuccess, setRecommendationSuccess] = useState("");
+  const [generatingProductId, setGeneratingProductId] = useState(null);
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -190,6 +191,7 @@ function App() {
 
   async function generateRecommendationForProduct(productId) {
     try {
+      setGeneratingProductId(productId);
       setRecommendationSuccess("");
       setRecommendationsError("");
       setLoadingRecommendations(true);
@@ -216,6 +218,7 @@ function App() {
         "Could not generate recommendation for this product. Please check the backend.",
       );
     } finally {
+      setGeneratingProductId(null);
       setLoadingRecommendations(false);
       setHasGeneratedRecommendations(true);
     }
@@ -453,8 +456,11 @@ function App() {
                   </p>
                   <button
                     onClick={() => generateRecommendationForProduct(product.id)}
+                    disabled={generatingProductId === product.id}
                   >
-                    Generate Recommendation
+                    {generatingProductId === product.id
+                      ? "Generating..."
+                      : "Generate Recommendation"}
                   </button>
                 </div>
               </li>
