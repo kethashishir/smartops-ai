@@ -7,6 +7,7 @@ import {
   getProducts,
   createProduct as createProductApi,
 } from "./api/productsApi.js";
+import { getInventoryForProduct } from "./api/inventoryApi.js";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -105,14 +106,7 @@ function App() {
 
     for (const product of productsList) {
       try {
-        const response = await fetch(`${API_BASE_URL}/inventory/${product.id}`);
-
-        if (!response.ok) {
-          inventoryMap[product.id] = "N/A";
-          continue;
-        }
-
-        const inventory = await response.json();
+        const inventory = await getInventoryForProduct(product.id);
         inventoryMap[product.id] = inventory.current_stock;
       } catch (error) {
         console.error(
