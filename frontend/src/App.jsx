@@ -135,6 +135,7 @@ function App() {
 
   useEffect(() => {
     fetchProducts();
+    fetchRecommendations();
   }, []);
 
   async function fetchRecommendations() {
