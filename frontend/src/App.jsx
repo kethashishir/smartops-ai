@@ -8,6 +8,11 @@ import {
   createProduct as createProductApi,
 } from "./api/productsApi.js";
 import { getInventoryForProduct } from "./api/inventoryApi.js";
+import {
+  getRecommendations,
+  generateAllRecommendations,
+  generateRecommendation,
+} from "./api/recommendationsApi.js";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -129,12 +134,7 @@ function App() {
     try {
       setRecommendationsError("");
       console.log("Fetching recommendations...");
-      const response = await fetch(`${API_BASE_URL}/recommendations/`);
-      console.log("Response status:", response.status);
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await getRecommendations();
       console.log("Recommendations fetched:", data);
       setRecommendations(data);
     } catch (error) {
@@ -152,17 +152,7 @@ function App() {
       setLoadingRecommendations(true);
       console.log("Generating recommendations...");
 
-      const response = await fetch(
-        `${API_BASE_URL}/recommendations/generate_all`,
-        {
-          method: "POST",
-        },
-      );
-      console.log("Response status:", response.status);
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await generateAllRecommendations();
       console.log("New recommendations generated:", data);
 
       await fetchRecommendations();
@@ -184,16 +174,7 @@ function App() {
       setRecommendationsError("");
       setLoadingRecommendations(true);
 
-      const response = await fetch(
-        `${API_BASE_URL}/recommendations/generate/${productId}`,
-        {
-          method: "POST",
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.status}`);
-      }
+      await generateRecommendation(productId);
 
       await fetchRecommendations();
       setRecommendationSuccess("Recommendation updated successfully.");
