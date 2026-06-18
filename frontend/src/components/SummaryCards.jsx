@@ -1,0 +1,26 @@
+function SummaryCards({
+  productsCount,
+  recommendationsCount,
+  lowStockProductsCount,
+}) {
+  return (
+    <section className="summary">
+      <div className="summary-card">
+        <h3>Total Products</h3>
+        <p>{productsCount}</p>
+      </div>
+
+      <div className="summary-card">
+        <h3>Active Recommendations</h3>
+        <p>{recommendationsCount}</p>
+      </div>
+
+      <div className="summary-card">
+        <h3>Low Stock Products</h3>
+        <p>{lowStockProductsCount}</p>
+      </div>
+    </section>
+  );
+}
+
+export default SummaryCards;

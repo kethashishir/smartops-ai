@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import SummaryCards from "./components/SummaryCards";
 
 // Backend API base URL for local development
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -306,21 +307,11 @@ function App() {
         Backend-connected dashboard for product inventory and reorder
         recommendations.
       </p>
-      <section className="summary">
-        <div className="summary-card">
-          <h3>Total Products</h3>
-          <p>{products.length}</p>
-        </div>
-
-        <div className="summary-card">
-          <h3>Active Recommendations</h3>
-          <p>{latestRecommendations.length}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Low Stock Products</h3>
-          <p>{lowStockProductsCount}</p>
-        </div>
-      </section>
+      <SummaryCards
+        productsCount={products.length}
+        recommendationsCount={latestRecommendations.length}
+        lowStockProductsCount={lowStockProductsCount}
+      />
       <section className="section">
         {productSuccess && <p className="success">{productSuccess}</p>}
         {productsError && <p className="error">{productsError}</p>}
