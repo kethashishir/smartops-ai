@@ -83,6 +83,11 @@ smartops-ai/
 - Low-stock and healthy-stock visual labels
 - Product creation from the React interface
 - Recommendation generation and display from the frontend
+- Product stock filtering by low-stock and healthy-stock status
+- Product search by name, SKU, and category
+- Product sorting by price and stock level
+- Per-product recommendation generation from the dashboard
+- Automatic recommendation loading on page load
 
 ---
 
