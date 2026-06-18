@@ -48,6 +48,10 @@ smartops-ai/
 │   └── app/
 ├── frontend/           # React + Vite user interface
 │   └── src/
+│       ├── api/        # Frontend API service functions
+│       ├── components/ # Reusable React components
+│       ├── App.jsx
+│       └── App.css
 ├── ml/                 # Machine learning models & training scripts
 ├── ai/                 # AI agents & prompt engineering
 ├── simulator/          # Environment simulation logic
