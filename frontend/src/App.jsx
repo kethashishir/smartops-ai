@@ -13,6 +13,7 @@ import {
   generateAllRecommendations,
   generateRecommendation,
 } from "./api/recommendationsApi.js";
+import { getHealthStatus } from "./api/healthApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -38,6 +39,7 @@ function App() {
   const [productSearch, setProductSearch] = useState("");
   const [recommendationSuccess, setRecommendationSuccess] = useState("");
   const [generatingProductId, setGeneratingProductId] = useState(null);
+  const [backendStatus, setBackendStatus] = useState("checking");
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -122,7 +124,18 @@ function App() {
     setInventoryByProductId(inventoryMap);
   }
 
+  async function checkBackendHealth() {
+    try {
+      await getHealthStatus();
+      setBackendStatus("connected");
+    } catch (error) {
+      console.error("Error checking backend health:", error.message);
+      setBackendStatus("offline");
+    }
+  }
+
   useEffect(() => {
+    checkBackendHealth();
     fetchProducts();
     fetchRecommendations();
   }, []);
@@ -269,6 +282,14 @@ function App() {
       <p className="subtitle">
         Backend-connected dashboard for product inventory and reorder
         recommendations.
+      </p>
+      <p className={`backend-status ${backendStatus}`}>
+        Backend{" "}
+        {backendStatus === "checking"
+          ? "Checking..."
+          : backendStatus === "connected"
+            ? "Connected"
+            : "Offline"}
       </p>
       <SummaryCards
         productsCount={products.length}

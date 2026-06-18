@@ -176,3 +176,27 @@ button {
   font-size: 0.85rem;
   font-weight: bold;
 }
+
+.backend-status {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.backend-status.checking {
+  color: #555;
+  background: #eeeeee;
+}
+
+.backend-status.connected {
+  color: #0f6b2f;
+  background: #dff5e8;
+}
+
+.backend-status.offline {
+  color: #b00020;
+  background: #ffe8ec;
+}
