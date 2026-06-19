@@ -7,7 +7,10 @@ import {
   getProducts,
   createProduct as createProductApi,
 } from "./api/productsApi.js";
-import { getInventoryForProduct } from "./api/inventoryApi.js";
+import {
+  getInventoryForProduct,
+  updateInventoryForProduct,
+} from "./api/inventoryApi.js";
 import {
   getRecommendations,
   generateAllRecommendations,
@@ -40,7 +43,8 @@ function App() {
   const [recommendationSuccess, setRecommendationSuccess] = useState("");
   const [generatingProductId, setGeneratingProductId] = useState(null);
   const [backendStatus, setBackendStatus] = useState("checking");
-
+  const [stockUpdates, setStockUpdates] = useState({});
+  const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
   function handleProductInputChange(event) {
     setProductSuccess("");
     const { name, value } = event.target;
@@ -48,6 +52,13 @@ function App() {
     setNewProduct({
       ...newProduct,
       [name]: value,
+    });
+  }
+
+  function handleStockInputChange(productId, value) {
+    setStockUpdates({
+      ...stockUpdates,
+      [productId]: value,
     });
   }
 
@@ -131,6 +142,35 @@ function App() {
     } catch (error) {
       console.error("Error checking backend health:", error.message);
       setBackendStatus("offline");
+    }
+  }
+
+  async function updateProductStock(productId) {
+    try {
+      setProductsError("");
+      setUpdatingStockProductId(productId);
+
+      const updatedInventory = await updateInventoryForProduct(
+        productId,
+        stockUpdates[productId],
+      );
+
+      setInventoryByProductId({
+        ...inventoryByProductId,
+        [productId]: updatedInventory.current_stock,
+      });
+
+      setProductSuccess("Inventory updated successfully.");
+
+      setStockUpdates({
+        ...stockUpdates,
+        [productId]: "",
+      });
+    } catch (error) {
+      console.error("Error updating inventory:", error.message);
+      setProductsError("Could not update inventory. Please check the backend.");
+    } finally {
+      setUpdatingStockProductId(null);
     }
   }
 
@@ -318,6 +358,10 @@ function App() {
         inventoryByProductId={inventoryByProductId}
         generatingProductId={generatingProductId}
         onGenerateRecommendation={generateRecommendationForProduct}
+        stockUpdates={stockUpdates}
+        updatingStockProductId={updatingStockProductId}
+        onStockInputChange={handleStockInputChange}
+        onUpdateStock={updateProductStock}
       />
       <RecommendationsSection
         loadingRecommendations={loadingRecommendations}

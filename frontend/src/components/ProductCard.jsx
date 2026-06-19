@@ -6,6 +6,10 @@ function ProductCard({
   isLowStock,
   generatingProductId,
   onGenerateRecommendation,
+  stockUpdateValue,
+  updatingStockProductId,
+  onStockInputChange,
+  onUpdateStock,
 }) {
   return (
     <div className={`card ${isLowStock ? "low-stock-card" : ""}`}>
@@ -18,6 +22,26 @@ function ProductCard({
       <p>Price: ${product.unit_price.toFixed(2)}</p>
       <p>Reorder Threshold: {product.reorder_threshold}</p>
       <p>Current Stock: {currentStock ?? "Loading..."}</p>
+      <div className="stock-update">
+        <input
+          type="number"
+          min="0"
+          placeholder="New stock"
+          value={stockUpdateValue}
+          onChange={(event) =>
+            onStockInputChange(product.id, event.target.value)
+          }
+        />
+
+        <button
+          onClick={() => onUpdateStock(product.id)}
+          disabled={updatingStockProductId === product.id}
+        >
+          {updatingStockProductId === product.id
+            ? "Updating..."
+            : "Update Stock"}
+        </button>
+      </div>
 
       <button
         onClick={() => onGenerateRecommendation(product.id)}

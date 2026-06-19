@@ -24,6 +24,10 @@ function ProductsSection({
   inventoryByProductId,
   generatingProductId,
   onGenerateRecommendation,
+  stockUpdates,
+  updatingStockProductId,
+  onStockInputChange,
+  onUpdateStock,
 }) {
   return (
     <section className="section">
@@ -71,6 +75,10 @@ function ProductsSection({
                 isLowStock={isLowStock(product)}
                 generatingProductId={generatingProductId}
                 onGenerateRecommendation={onGenerateRecommendation}
+                stockUpdateValue={stockUpdates[product.id] ?? ""}
+                updatingStockProductId={updatingStockProductId}
+                onStockInputChange={onStockInputChange}
+                onUpdateStock={onUpdateStock}
               />
             </li>
           ))}
