@@ -35,7 +35,9 @@ function ProductCard({
 
         <button
           onClick={() => onUpdateStock(product.id)}
-          disabled={updatingStockProductId === product.id}
+          disabled={
+            updatingStockProductId === product.id || stockUpdateValue === ""
+          }
         >
           {updatingStockProductId === product.id
             ? "Updating..."
