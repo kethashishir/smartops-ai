@@ -317,64 +317,72 @@ function App() {
   });
 
   return (
-    <div className="page">
-      <h1>SmartOps Frontend</h1>
-      <p className="subtitle">
-        Backend-connected dashboard for product inventory and reorder
-        recommendations.
-      </p>
-      <p className={`backend-status ${backendStatus}`}>
-        Backend{" "}
-        {backendStatus === "checking"
-          ? "Checking..."
-          : backendStatus === "connected"
-            ? "Connected"
-            : "Offline"}
-      </p>
-      <SummaryCards
-        productsCount={products.length}
-        recommendationsCount={latestRecommendations.length}
-        lowStockProductsCount={lowStockProductsCount}
-      />
-      <ProductsSection
-        productSuccess={productSuccess}
-        productsError={productsError}
-        loadingProducts={loadingProducts}
-        newProduct={newProduct}
-        onInputChange={handleProductInputChange}
-        onCreateProduct={createProduct}
-        creatingProduct={creatingProduct}
-        onRefreshProducts={fetchProducts}
-        productSearch={productSearch}
-        setProductSearch={setProductSearch}
-        productFilter={productFilter}
-        setProductFilter={setProductFilter}
-        filteredProducts={filteredProducts}
-        products={products}
-        sortOption={sortOption}
-        setSortOption={setSortOption}
-        sortedProducts={sortedProducts}
-        isLowStock={isLowStock}
-        inventoryByProductId={inventoryByProductId}
-        generatingProductId={generatingProductId}
-        onGenerateRecommendation={generateRecommendationForProduct}
-        stockUpdates={stockUpdates}
-        updatingStockProductId={updatingStockProductId}
-        onStockInputChange={handleStockInputChange}
-        onUpdateStock={updateProductStock}
-      />
-      <RecommendationsSection
-        loadingRecommendations={loadingRecommendations}
-        recommendationsError={recommendationsError}
-        recommendationSuccess={recommendationSuccess}
-        recommendations={recommendations}
-        latestRecommendations={latestRecommendations}
-        hasGeneratedRecommendations={hasGeneratedRecommendations}
-        productsError={productsError}
-        onGenerateRecommendations={generateRecommendations}
-        onRefreshRecommendations={fetchRecommendations}
-        getProductName={getProductName}
-      />
+    <div className="app-shell">
+      <header className="app-header">
+        <div>
+          <h1>SmartOps AI</h1>
+          <p className="subtitle">
+            Operations dashboard for inventory, stock health, and reorder
+            recommendations.
+          </p>
+        </div>
+
+        <p className={`backend-status ${backendStatus}`}>
+          Backend{" "}
+          {backendStatus === "checking"
+            ? "Checking..."
+            : backendStatus === "connected"
+              ? "Connected"
+              : "Offline"}
+        </p>
+      </header>
+
+      <main className="dashboard-content">
+        <SummaryCards
+          productsCount={products.length}
+          recommendationsCount={latestRecommendations.length}
+          lowStockProductsCount={lowStockProductsCount}
+        />
+        <ProductsSection
+          productSuccess={productSuccess}
+          productsError={productsError}
+          loadingProducts={loadingProducts}
+          newProduct={newProduct}
+          onInputChange={handleProductInputChange}
+          onCreateProduct={createProduct}
+          creatingProduct={creatingProduct}
+          onRefreshProducts={fetchProducts}
+          productSearch={productSearch}
+          setProductSearch={setProductSearch}
+          productFilter={productFilter}
+          setProductFilter={setProductFilter}
+          filteredProducts={filteredProducts}
+          products={products}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          sortedProducts={sortedProducts}
+          isLowStock={isLowStock}
+          inventoryByProductId={inventoryByProductId}
+          generatingProductId={generatingProductId}
+          onGenerateRecommendation={generateRecommendationForProduct}
+          stockUpdates={stockUpdates}
+          updatingStockProductId={updatingStockProductId}
+          onStockInputChange={handleStockInputChange}
+          onUpdateStock={updateProductStock}
+        />
+        <RecommendationsSection
+          loadingRecommendations={loadingRecommendations}
+          recommendationsError={recommendationsError}
+          recommendationSuccess={recommendationSuccess}
+          recommendations={recommendations}
+          latestRecommendations={latestRecommendations}
+          hasGeneratedRecommendations={hasGeneratedRecommendations}
+          productsError={productsError}
+          onGenerateRecommendations={generateRecommendations}
+          onRefreshRecommendations={fetchRecommendations}
+          getProductName={getProductName}
+        />
+      </main>
     </div>
   );
 }

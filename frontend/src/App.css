@@ -1,8 +1,48 @@
+body {
+  margin: 0;
+  background: #f6f7fb;
+  color: #111827;
+}
+
 #root {
-  max-width: 1100px;
+  width: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 4rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.app-header > div {
+  text-align: left;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.subtitle {
+  margin: 0.5rem 0 0;
+  color: #6b7280;
+}
+
+.dashboard-content {
+  width: min(1200px, calc(100% - 4rem));
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 2rem 0 4rem;
 }
 
 .page {
@@ -10,7 +50,12 @@
 }
 
 .section {
-  margin-top: 2rem;
+  margin-top: 3rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 ul {
@@ -20,13 +65,14 @@ ul {
 }
 
 .card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem;
   margin: 1rem auto;
-  max-width: 650px;
+  max-width: 900px;
   text-align: left;
   background: #ffffff;
+  box-shadow: none;
 }
 
 .card h2 {
@@ -35,8 +81,39 @@ ul {
 
 button {
   margin: 1rem 0;
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1rem;
   cursor: pointer;
+  border: 1px solid #cfd4dc;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 600;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.product-form button[type="submit"] {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.product-form button[type="submit"]:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .error {
@@ -45,24 +122,36 @@ button {
   border: 1px solid #f5b5c0;
   border-radius: 8px;
   padding: 0.75rem;
-  max-width: 650px;
+  max-width: 900px;
   margin: 1rem auto;
 }
+
+.success {
+  color: #0f6b2f;
+  background: #e8f7ee;
+  border: 1px solid #a9dfbf;
+  border-radius: 8px;
+  padding: 0.75rem;
+  max-width: 900px;
+  margin: 1rem auto;
+}
+
 .summary {
   display: flex;
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .summary-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  min-width: 220px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem;
+  min-width: 280px;
   background: #ffffff;
   text-align: center;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 .summary-card h3 {
@@ -75,34 +164,18 @@ button {
   margin: 0;
 }
 
-.subtitle {
-  color: #666;
-  margin-top: -0.5rem;
-  margin-bottom: 1.5rem;
-}
-
 .product-form {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  max-width: 650px;
+  max-width: 900px;
   margin: 1rem auto 2rem auto;
 }
 
 .product-form input {
-  padding: 0.6rem;
-  border: 1px solid #ddd;
+  padding: 0.65rem;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-}
-
-.success {
-  color: #0f6b2f;
-  background: #e8f7ee;
-  border: 1px solid #a9dfbf;
-  border-radius: 8px;
-  padding: 0.75rem;
-  max-width: 650px;
-  margin: 1rem auto;
 }
 
 .low-stock-card {
@@ -136,13 +209,14 @@ button {
   justify-content: center;
   margin: 1rem 0;
 }
+
 .active-filter {
   font-weight: bold;
-  border: 2px solid #333;
+  border: 2px solid #111827;
 }
 
 .filter-count {
-  color: #666;
+  color: #6b7280;
   font-size: 0.9rem;
   margin-top: -0.25rem;
 }
@@ -159,9 +233,9 @@ button {
 
 .search-input {
   width: 100%;
-  max-width: 650px;
+  max-width: 900px;
   padding: 0.65rem;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   margin: 1rem auto;
   display: block;
@@ -180,10 +254,10 @@ button {
 .backend-status {
   display: inline-block;
   border-radius: 999px;
-  padding: 0.35rem 0.75rem;
+  padding: 0.45rem 0.85rem;
   font-size: 0.9rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  white-space: nowrap;
 }
 
 .backend-status.checking {
@@ -210,6 +284,26 @@ button {
 .stock-update input {
   flex: 1;
   padding: 0.45rem;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
+}
+
+@media (max-width: 800px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+
+  .dashboard-content {
+    width: min(100% - 2rem, 1200px);
+  }
+
+  .summary-card {
+    width: 100%;
+  }
+
+  .stock-update {
+    flex-direction: column;
+  }
 }
