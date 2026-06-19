@@ -213,6 +213,8 @@ function App() {
       );
 
       setForecasts(sortedForecasts);
+      await generateAllRecommendations();
+      await fetchRecommendations();
     } catch (error) {
       console.error("Error refreshing forecasts:", error.message);
       setForecastsError(error.message || "Could not refresh forecasts.");
