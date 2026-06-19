@@ -322,72 +322,95 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <h1>SmartOps AI</h1>
-          <p className="subtitle">
-            Operations dashboard for inventory, stock health, and reorder
-            recommendations.
-          </p>
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-icon">S</div>
+          <div>
+            <h2>SmartOps</h2>
+            <p>AI Operations</p>
+          </div>
         </div>
 
-        <p className={`backend-status ${backendStatus}`}>
-          Backend{" "}
-          {backendStatus === "checking"
-            ? "Checking..."
-            : backendStatus === "connected"
-              ? "Connected"
-              : "Offline"}
-        </p>
-      </header>
+        <nav className="sidebar-nav">
+          <button className="sidebar-link active">Dashboard</button>
+          <button className="sidebar-link">Products</button>
+          <button className="sidebar-link">Inventory</button>
+          <button className="sidebar-link">Recommendations</button>
+          <button className="sidebar-link">Forecasts</button>
+        </nav>
+      </aside>
 
-      <main className="dashboard-content">
-        <SummaryCards
-          productsCount={products.length}
-          recommendationsCount={latestRecommendations.length}
-          lowStockProductsCount={lowStockProductsCount}
-        />
-        <ProductsSection
-          productSuccess={productSuccess}
-          productsError={productsError}
-          loadingProducts={loadingProducts}
-          newProduct={newProduct}
-          onInputChange={handleProductInputChange}
-          onCreateProduct={createProduct}
-          creatingProduct={creatingProduct}
-          onRefreshProducts={fetchProducts}
-          productSearch={productSearch}
-          setProductSearch={setProductSearch}
-          productFilter={productFilter}
-          setProductFilter={setProductFilter}
-          filteredProducts={filteredProducts}
-          products={products}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-          sortedProducts={sortedProducts}
-          isLowStock={isLowStock}
-          inventoryByProductId={inventoryByProductId}
-          generatingProductId={generatingProductId}
-          onGenerateRecommendation={generateRecommendationForProduct}
-          stockUpdates={stockUpdates}
-          updatingStockProductId={updatingStockProductId}
-          onStockInputChange={handleStockInputChange}
-          onUpdateStock={updateProductStock}
-          latestRecommendations={latestRecommendations}
-        />
-        <RecommendationsSection
-          loadingRecommendations={loadingRecommendations}
-          recommendationsError={recommendationsError}
-          recommendationSuccess={recommendationSuccess}
-          recommendations={recommendations}
-          latestRecommendations={latestRecommendations}
-          hasGeneratedRecommendations={hasGeneratedRecommendations}
-          productsError={productsError}
-          onGenerateRecommendations={generateRecommendations}
-          onRefreshRecommendations={fetchRecommendations}
-          getProductName={getProductName}
-        />
-      </main>
+      <div className="main-shell">
+        <header className="app-header">
+          <div>
+            <p className="eyebrow">Operations Dashboard</p>
+            <h1>SmartOps AI</h1>
+            <p className="subtitle">
+              Monitor inventory health, stock levels, and reorder
+              recommendations.
+            </p>
+          </div>
+
+          <p className={`backend-status ${backendStatus}`}>
+            Backend{" "}
+            {backendStatus === "checking"
+              ? "Checking..."
+              : backendStatus === "connected"
+                ? "Connected"
+                : "Offline"}
+          </p>
+        </header>
+
+        <main className="dashboard-content">
+          <SummaryCards
+            productsCount={products.length}
+            recommendationsCount={latestRecommendations.length}
+            lowStockProductsCount={lowStockProductsCount}
+          />
+
+          <ProductsSection
+            productSuccess={productSuccess}
+            productsError={productsError}
+            loadingProducts={loadingProducts}
+            newProduct={newProduct}
+            onInputChange={handleProductInputChange}
+            onCreateProduct={createProduct}
+            creatingProduct={creatingProduct}
+            onRefreshProducts={fetchProducts}
+            productSearch={productSearch}
+            setProductSearch={setProductSearch}
+            productFilter={productFilter}
+            setProductFilter={setProductFilter}
+            filteredProducts={filteredProducts}
+            products={products}
+            sortOption={sortOption}
+            setSortOption={setSortOption}
+            sortedProducts={sortedProducts}
+            isLowStock={isLowStock}
+            inventoryByProductId={inventoryByProductId}
+            generatingProductId={generatingProductId}
+            latestRecommendations={latestRecommendations}
+            onGenerateRecommendation={generateRecommendationForProduct}
+            stockUpdates={stockUpdates}
+            updatingStockProductId={updatingStockProductId}
+            onStockInputChange={handleStockInputChange}
+            onUpdateStock={updateProductStock}
+          />
+
+          <RecommendationsSection
+            loadingRecommendations={loadingRecommendations}
+            recommendationsError={recommendationsError}
+            recommendationSuccess={recommendationSuccess}
+            recommendations={recommendations}
+            latestRecommendations={latestRecommendations}
+            hasGeneratedRecommendations={hasGeneratedRecommendations}
+            productsError={productsError}
+            onGenerateRecommendations={generateRecommendations}
+            onRefreshRecommendations={fetchRecommendations}
+            getProductName={getProductName}
+          />
+        </main>
+      </div>
     </div>
   );
 }
