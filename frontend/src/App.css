@@ -654,3 +654,69 @@ html {
 .section h2 {
   letter-spacing: -0.02em;
 }
+
+.orders-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.orders-header h2 {
+  margin: 0;
+}
+
+.orders-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-form input,
+.order-form select {
+  padding: 0.65rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.order-form button[type="submit"] {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.order-form button[type="submit"]:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.orders-list {
+  min-width: 0;
+}
+
+.order-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: #ffffff;
+}
+
+.order-card p {
+  margin: 0.35rem 0;
+  color: #4b5563;
+}
+
+@media (max-width: 1100px) {
+  .orders-layout {
+    grid-template-columns: 1fr;
+  }
+}

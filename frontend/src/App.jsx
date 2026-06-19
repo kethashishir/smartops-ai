@@ -3,6 +3,7 @@ import "./App.css";
 import SummaryCards from "./components/SummaryCards.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
+import OrdersSection from "./components/OrdersSection.jsx";
 import {
   getProducts,
   createProduct as createProductApi,
@@ -17,6 +18,7 @@ import {
   generateRecommendation,
 } from "./api/recommendationsApi.js";
 import { getHealthStatus } from "./api/healthApi.js";
+import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -46,6 +48,17 @@ function App() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [stockUpdates, setStockUpdates] = useState({});
   const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [ordersError, setOrdersError] = useState("");
+  const [orderSuccess, setOrderSuccess] = useState("");
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [newOrder, setNewOrder] = useState({
+    product_id: "",
+    quantity: "",
+    source: "dashboard",
+  });
+
   function handleProductInputChange(event) {
     setProductSuccess("");
     const { name, value } = event.target;
@@ -73,6 +86,88 @@ function App() {
         behavior: "smooth",
         block: "start",
       });
+    }
+  }
+
+  function handleOrderInputChange(event) {
+    setOrderSuccess("");
+    setOrdersError("");
+
+    const { name, value } = event.target;
+
+    setNewOrder({
+      ...newOrder,
+      [name]: value,
+    });
+  }
+
+  async function fetchOrders() {
+    try {
+      setLoadingOrders(true);
+      setOrdersError("");
+
+      const data = await getOrders();
+
+      const sortedOrders = [...data].sort(
+        (a, b) => new Date(b.order_time) - new Date(a.order_time),
+      );
+
+      setOrders(sortedOrders);
+    } catch (error) {
+      console.error("Error fetching orders:", error.message);
+      setOrdersError("Could not load orders. Please check the backend.");
+    } finally {
+      setLoadingOrders(false);
+    }
+  }
+
+  async function createOrder(event) {
+    event.preventDefault();
+
+    try {
+      setCreatingOrder(true);
+      setOrdersError("");
+      setOrderSuccess("");
+      setProductsError("");
+      setRecommendationsError("");
+
+      await createOrderApi(newOrder);
+
+      await fetchOrders();
+      await fetchProducts();
+
+      if (newOrder.product_id) {
+        await generateRecommendation(Number(newOrder.product_id));
+        await fetchRecommendations();
+      }
+
+      const product = products.find(
+        (product) => product.id === Number(newOrder.product_id),
+      );
+
+      setOrderSuccess(
+        `Order created for ${product?.name || "selected product"}. Inventory and recommendation refreshed.`,
+      );
+
+      setActiveSection("orders");
+
+      setTimeout(() => {
+        document.getElementById("orders-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+
+      setNewOrder({
+        product_id: "",
+        quantity: "",
+        source: "dashboard",
+      });
+    } catch (error) {
+      console.error("Error creating order:", error.message);
+      setOrdersError(error.message || "Could not create order.");
+    } finally {
+      setCreatingOrder(false);
     }
   }
 
@@ -205,6 +300,7 @@ function App() {
     checkBackendHealth();
     fetchProducts();
     fetchRecommendations();
+    fetchOrders();
   }, []);
 
   async function fetchRecommendations() {
@@ -383,6 +479,13 @@ function App() {
           </button>
 
           <button
+            className={`sidebar-link ${activeSection === "orders" ? "active" : ""}`}
+            onClick={() => scrollToSection("orders-section", "orders")}
+          >
+            Orders
+          </button>
+
+          <button
             className={`sidebar-link ${
               activeSection === "recommendations" ? "active" : ""
             }`}
@@ -462,6 +565,21 @@ function App() {
             updatingStockProductId={updatingStockProductId}
             onStockInputChange={handleStockInputChange}
             onUpdateStock={updateProductStock}
+          />
+
+          <OrdersSection
+            sectionId="orders-section"
+            products={products}
+            orders={orders}
+            newOrder={newOrder}
+            ordersError={ordersError}
+            orderSuccess={orderSuccess}
+            loadingOrders={loadingOrders}
+            creatingOrder={creatingOrder}
+            onOrderInputChange={handleOrderInputChange}
+            onCreateOrder={createOrder}
+            onRefreshOrders={fetchOrders}
+            getProductName={getProductName}
           />
 
           <RecommendationsSection
