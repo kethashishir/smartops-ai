@@ -20,6 +20,8 @@ Implemented features include:
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
+The dashboard supports updating product inventory directly from product cards. Stock status labels and low-stock counts update after inventory changes.
+
 ## 🎯 Objective
 
 Build a realistic operations platform where a user can:
@@ -103,6 +105,8 @@ The React frontend is organized into reusable components and API service files.
 - Product sorting by price and stock level
 - Per-product recommendation generation from the dashboard
 - Automatic recommendation loading on page load
+- Inventory stock updates from the React dashboard
+- Real-time stock status updates after inventory changes
 
 ---
 
