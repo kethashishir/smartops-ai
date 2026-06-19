@@ -47,3 +47,17 @@ def test_get_latest_forecasts_returns_list_or_not_found():
 
         product_ids = [forecast["product_id"] for forecast in forecasts]
         assert len(product_ids) == len(set(product_ids))
+
+def test_generate_forecasts_returns_generation_summary():
+    response = client.post("/forecast/generate")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["model_version"] == "baseline-v1"
+    assert "forecast_date" in data
+    assert "created_count" in data
+    assert "updated_count" in data
+    assert isinstance(data["created_count"], int)
+    assert isinstance(data["updated_count"], int)
