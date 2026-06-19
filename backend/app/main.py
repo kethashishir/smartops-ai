@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from app.database import Base, engine
 from app.models import product, inventories, forecast, recommendation, user, orders  # Ensure the Product and Category models are imported so they're registered with SQLAlchemy
@@ -6,12 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
