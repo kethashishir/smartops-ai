@@ -43,6 +43,7 @@ function App() {
   const [recommendationSuccess, setRecommendationSuccess] = useState("");
   const [generatingProductId, setGeneratingProductId] = useState(null);
   const [backendStatus, setBackendStatus] = useState("checking");
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [stockUpdates, setStockUpdates] = useState({});
   const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
   function handleProductInputChange(event) {
@@ -62,7 +63,9 @@ function App() {
     });
   }
 
-  function scrollToSection(sectionId) {
+  function scrollToSection(sectionId, activeName) {
+    setActiveSection(activeName);
+
     const section = document.getElementById(sectionId);
 
     if (section) {
@@ -344,15 +347,15 @@ function App() {
 
         <nav className="sidebar-nav">
           <button
-            className="sidebar-link active"
-            onClick={() => scrollToSection("dashboard-overview")}
+            className={`sidebar-link ${activeSection === "dashboard" ? "active" : ""}`}
+            onClick={() => scrollToSection("dashboard-overview", "dashboard")}
           >
             Dashboard
           </button>
 
           <button
-            className="sidebar-link"
-            onClick={() => scrollToSection("products-section")}
+            className={`sidebar-link ${activeSection === "products" ? "active" : ""}`}
+            onClick={() => scrollToSection("products-section", "products")}
           >
             Products
           </button>
@@ -366,8 +369,12 @@ function App() {
           </button>
 
           <button
-            className="sidebar-link"
-            onClick={() => scrollToSection("recommendations-section")}
+            className={`sidebar-link ${
+              activeSection === "recommendations" ? "active" : ""
+            }`}
+            onClick={() =>
+              scrollToSection("recommendations-section", "recommendations")
+            }
           >
             Recommendations
           </button>

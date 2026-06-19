@@ -406,16 +406,25 @@ button:disabled {
   color: #4b5563;
   text-align: left;
   font-weight: 700;
+  box-shadow: none;
+  transform: none;
 }
 
-.sidebar-link:hover {
+.sidebar-link:hover:not(.active):not(.disabled) {
   background: #f3f4f6;
+  color: #111827;
   transform: none;
 }
 
 .sidebar-link.active {
   background: #111827;
   color: #ffffff;
+}
+
+.sidebar-link.active:hover {
+  background: #111827;
+  color: #ffffff;
+  transform: none;
 }
 
 .main-shell {
@@ -579,9 +588,12 @@ html {
 .sidebar-link.disabled {
   opacity: 0.45;
   cursor: not-allowed;
+  background: transparent;
+  color: #6b7280;
 }
 
 .sidebar-link.disabled:hover {
   background: transparent;
+  color: #6b7280;
   transform: none;
 }
