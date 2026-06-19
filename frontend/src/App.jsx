@@ -471,41 +471,6 @@ function App() {
     return 0;
   });
 
-  const latestForecasts = Object.values(
-    forecasts.reduce((latestByProductId, forecast) => {
-      const existingForecast = latestByProductId[forecast.product_id];
-
-      if (!existingForecast) {
-        latestByProductId[forecast.product_id] = forecast;
-        return latestByProductId;
-      }
-
-      const forecastIsBaseline = forecast.model_version === "baseline-v1";
-      const existingIsBaseline =
-        existingForecast.model_version === "baseline-v1";
-
-      if (forecastIsBaseline && !existingIsBaseline) {
-        latestByProductId[forecast.product_id] = forecast;
-        return latestByProductId;
-      }
-
-      if (forecastIsBaseline === existingIsBaseline) {
-        const forecastDate = new Date(forecast.forecast_date);
-        const existingDate = new Date(existingForecast.forecast_date);
-
-        if (
-          forecastDate > existingDate ||
-          (forecastDate.getTime() === existingDate.getTime() &&
-            forecast.id > existingForecast.id)
-        ) {
-          latestByProductId[forecast.product_id] = forecast;
-        }
-      }
-
-      return latestByProductId;
-    }, {}),
-  );
-
   return (
     <div className="app-shell">
       <Sidebar activeSection={activeSection} onNavigate={scrollToSection} />
@@ -518,7 +483,7 @@ function App() {
             <SummaryCards
               productsCount={products.length}
               ordersCount={orders.length}
-              forecastsCount={latestForecasts.length}
+              forecastsCount={forecasts.length}
               lowStockProductsCount={lowStockProductsCount}
             />
           </section>
@@ -570,7 +535,7 @@ function App() {
 
           <ForecastsSection
             sectionId="forecasts-section"
-            forecasts={latestForecasts}
+            forecasts={forecasts}
             forecastsError={forecastsError}
             loadingForecasts={loadingForecasts}
             onRefreshForecasts={fetchForecasts}
