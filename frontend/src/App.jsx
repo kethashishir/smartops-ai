@@ -5,6 +5,7 @@ import RecommendationsSection from "./components/RecommendationsSection.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import OrdersSection from "./components/OrdersSection.jsx";
 import ForecastsSection from "./components/ForecastsSection.jsx";
+import Sidebar from "./components/Sidebar.jsx";
 import {
   getProducts,
   createProduct as createProductApi,
@@ -471,56 +472,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="brand-icon">S</div>
-          <div>
-            <h2>SmartOps</h2>
-            <p>AI Operations</p>
-          </div>
-        </div>
-
-        <nav className="sidebar-nav">
-          <button
-            className={`sidebar-link ${activeSection === "dashboard" ? "active" : ""}`}
-            onClick={() => scrollToSection("dashboard-overview", "dashboard")}
-          >
-            Dashboard
-          </button>
-
-          <button
-            className={`sidebar-link ${activeSection === "products" ? "active" : ""}`}
-            onClick={() => scrollToSection("products-section", "products")}
-          >
-            Products
-          </button>
-
-          <button
-            className={`sidebar-link ${activeSection === "orders" ? "active" : ""}`}
-            onClick={() => scrollToSection("orders-section", "orders")}
-          >
-            Orders
-          </button>
-
-          <button
-            className={`sidebar-link ${activeSection === "forecasts" ? "active" : ""}`}
-            onClick={() => scrollToSection("forecasts-section", "forecasts")}
-          >
-            Forecasts
-          </button>
-
-          <button
-            className={`sidebar-link ${
-              activeSection === "recommendations" ? "active" : ""
-            }`}
-            onClick={() =>
-              scrollToSection("recommendations-section", "recommendations")
-            }
-          >
-            Recommendations
-          </button>
-        </nav>
-      </aside>
+      <Sidebar activeSection={activeSection} onNavigate={scrollToSection} />
 
       <div className="main-shell">
         <header id="dashboard-overview" className="app-header">
