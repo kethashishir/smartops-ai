@@ -618,3 +618,39 @@ html {
   background: #f3f4f6;
   color: #9ca3af;
 }
+
+/* Dashboard polish */
+
+.app-header {
+  padding: 1.75rem 3rem;
+}
+
+.dashboard-content {
+  padding-top: 1.5rem;
+}
+
+.summary {
+  margin-top: 0;
+}
+
+.summary-card {
+  padding: 1.1rem 1.25rem;
+}
+
+.section {
+  margin-top: 1.5rem;
+}
+
+.products-layout {
+  gap: 1.75rem;
+}
+
+.products-list-header {
+  margin-bottom: 0.75rem;
+}
+
+.products-form-panel h2,
+.products-list-header h2,
+.section h2 {
+  letter-spacing: -0.02em;
+}
