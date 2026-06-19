@@ -470,15 +470,6 @@ function App() {
           </button>
 
           <button
-            className="sidebar-link disabled"
-            type="button"
-            title="Inventory page coming soon"
-          >
-            <span>Inventory</span>
-            <span className="sidebar-badge">Soon</span>
-          </button>
-
-          <button
             className={`sidebar-link ${activeSection === "orders" ? "active" : ""}`}
             onClick={() => scrollToSection("orders-section", "orders")}
           >
@@ -532,6 +523,7 @@ function App() {
           <section>
             <SummaryCards
               productsCount={products.length}
+              ordersCount={orders.length}
               recommendationsCount={latestRecommendations.length}
               lowStockProductsCount={lowStockProductsCount}
             />

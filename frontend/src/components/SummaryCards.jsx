@@ -1,5 +1,6 @@
 function SummaryCards({
   productsCount,
+  ordersCount,
   recommendationsCount,
   lowStockProductsCount,
 }) {
@@ -8,6 +9,11 @@ function SummaryCards({
       <div className="summary-card">
         <h3>Total Products</h3>
         <p>{productsCount}</p>
+      </div>
+
+      <div className="summary-card">
+        <h3>Orders</h3>
+        <p>{ordersCount}</p>
       </div>
 
       <div className="summary-card">
