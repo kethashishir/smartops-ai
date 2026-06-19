@@ -27,6 +27,9 @@ Implemented features include:
 - Sidebar navigation with active section tracking
 - Coming-soon indicators for planned Inventory and Forecasts views
 - Automatic recommendation refresh after inventory stock updates
+- Order creation from the React dashboard
+- Recent orders display in the frontend
+- Inventory and recommendation refresh after order creation
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
@@ -111,6 +114,8 @@ The frontend now uses a SaaS-style dashboard shell with a fixed sidebar, dashboa
 
 When product stock is updated from the dashboard, the frontend refreshes the related product recommendation so stock and recommendation status stay aligned.
 
+The dashboard includes an Orders section where users can simulate customer orders. Creating an order reduces product inventory through the backend and refreshes the affected product recommendation so dashboard data stays aligned.
+
 ---
 
 ## 🏗️ Core Features
@@ -134,6 +139,8 @@ When product stock is updated from the dashboard, the frontend refreshes the rel
 - Backend health status indicator in the frontend
 - Product-level recommendation status displayed in the dashboard
 - Recommendation status refresh after inventory changes
+- Frontend order creation that reduces inventory
+- Recent order history display
 
 ---
 
