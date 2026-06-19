@@ -548,7 +548,7 @@ function App() {
             <SummaryCards
               productsCount={products.length}
               ordersCount={orders.length}
-              recommendationsCount={latestRecommendations.length}
+              forecastsCount={forecasts.length}
               lowStockProductsCount={lowStockProductsCount}
             />
           </section>

@@ -1,7 +1,7 @@
 function SummaryCards({
   productsCount,
   ordersCount,
-  recommendationsCount,
+  forecastsCount,
   lowStockProductsCount,
 }) {
   return (
@@ -17,8 +17,8 @@ function SummaryCards({
       </div>
 
       <div className="summary-card">
-        <h3>Recommendations</h3>
-        <p>{recommendationsCount}</p>
+        <h3>Forecasts</h3>
+        <p>{forecastsCount}</p>
       </div>
 
       <div className="summary-card">
