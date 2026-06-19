@@ -227,7 +227,11 @@ function App() {
       await generateRecommendation(productId);
 
       await fetchRecommendations();
-      setRecommendationSuccess("Recommendation updated successfully.");
+      const product = products.find((product) => product.id === productId);
+
+      setRecommendationSuccess(
+        `Updated recommendation for ${product?.name || "selected product"}.`,
+      );
     } catch (error) {
       console.error(
         "Error generating recommendation for product:",

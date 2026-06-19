@@ -1,4 +1,4 @@
-import ProductStatusLabel from "./ProductStatusLabel";
+import ProductStatusLabel from "./ProductStatusLabel.jsx";
 
 function ProductCard({
   product,
@@ -50,8 +50,8 @@ function ProductCard({
         disabled={generatingProductId === product.id}
       >
         {generatingProductId === product.id
-          ? "Generating..."
-          : "Generate Recommendation"}
+          ? "Updating..."
+          : "Update Recommendation"}
       </button>
     </div>
   );
