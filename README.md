@@ -26,6 +26,7 @@ Implemented features include:
 - SaaS-style dashboard layout with sidebar navigation
 - Sidebar navigation with active section tracking
 - Coming-soon indicators for planned Inventory and Forecasts views
+- Automatic recommendation refresh after inventory stock updates
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
@@ -108,6 +109,8 @@ Product cards display current inventory status and recommendation status so user
 
 The frontend now uses a SaaS-style dashboard shell with a fixed sidebar, dashboard header, summary cards, product management section, and recommendation section. Sidebar navigation scrolls to active dashboard sections while planned future views are marked as coming soon.
 
+When product stock is updated from the dashboard, the frontend refreshes the related product recommendation so stock and recommendation status stay aligned.
+
 ---
 
 ## 🏗️ Core Features
@@ -130,6 +133,7 @@ The frontend now uses a SaaS-style dashboard shell with a fixed sidebar, dashboa
 - Automatic recommendation loading on page load
 - Backend health status indicator in the frontend
 - Product-level recommendation status displayed in the dashboard
+- Recommendation status refresh after inventory changes
 
 ---
 
