@@ -22,7 +22,7 @@ import {
 } from "./api/recommendationsApi.js";
 import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
-import { getForecasts } from "./api/forecastsApi.js";
+import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -185,14 +185,37 @@ function App() {
 
       const data = await getForecasts();
 
-      const sortedForecasts = [...data].sort(
-        (a, b) => new Date(b.forecast_date) - new Date(a.forecast_date),
+      const sortedForecasts = [...data].sort((a, b) =>
+        getProductName(a.product_id).localeCompare(
+          getProductName(b.product_id),
+        ),
       );
 
       setForecasts(sortedForecasts);
     } catch (error) {
       console.error("Error fetching forecasts:", error.message);
       setForecastsError(error.message || "Could not load forecasts.");
+    } finally {
+      setLoadingForecasts(false);
+    }
+  }
+
+  async function handleRefreshForecasts() {
+    try {
+      setLoadingForecasts(true);
+      setForecastsError("");
+
+      await generateForecasts();
+      const data = await getForecasts();
+
+      const sortedForecasts = [...data].sort(
+        (a, b) => new Date(b.forecast_date) - new Date(a.forecast_date),
+      );
+
+      setForecasts(sortedForecasts);
+    } catch (error) {
+      console.error("Error refreshing forecasts:", error.message);
+      setForecastsError(error.message || "Could not refresh forecasts.");
     } finally {
       setLoadingForecasts(false);
     }
@@ -538,7 +561,7 @@ function App() {
             forecasts={forecasts}
             forecastsError={forecastsError}
             loadingForecasts={loadingForecasts}
-            onRefreshForecasts={fetchForecasts}
+            onRefreshForecasts={handleRefreshForecasts}
             getProductName={getProductName}
           />
 

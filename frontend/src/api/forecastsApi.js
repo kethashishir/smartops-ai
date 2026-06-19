@@ -10,3 +10,16 @@ export async function getForecasts() {
 
   return response.json();
 }
+
+export async function generateForecasts() {
+  const response = await fetch(`${API_BASE_URL}/forecast/generate`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || "Failed to generate forecasts");
+  }
+
+  return response.json();
+}
