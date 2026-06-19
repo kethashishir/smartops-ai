@@ -28,3 +28,15 @@ dist-ssr/
 *.key
 
 logo.png
+
+# Test / cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Frontend build output
+frontend/dist/
+frontend/dist-ssr/
+
+# IDE settings
+.idea/
