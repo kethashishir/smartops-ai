@@ -571,3 +571,17 @@ button:disabled {
     position: static;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+.sidebar-link.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sidebar-link.disabled:hover {
+  background: transparent;
+  transform: none;
+}

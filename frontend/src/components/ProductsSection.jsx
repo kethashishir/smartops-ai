@@ -3,6 +3,7 @@ import ProductControls from "./ProductControls.jsx";
 import ProductCard from "./ProductCard.jsx";
 
 function ProductsSection({
+  sectionId,
   productSuccess,
   productsError,
   loadingProducts,
@@ -31,7 +32,7 @@ function ProductsSection({
   onUpdateStock,
 }) {
   return (
-    <section className="section">
+    <section id={sectionId} className="section">
       {productSuccess && <p className="success">{productSuccess}</p>}
       {productsError && <p className="error">{productsError}</p>}
       {loadingProducts && <p>Loading products...</p>}

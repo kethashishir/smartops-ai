@@ -1,4 +1,5 @@
 function RecommendationsSection({
+  sectionId,
   loadingRecommendations,
   recommendationsError,
   recommendationSuccess,
@@ -11,7 +12,7 @@ function RecommendationsSection({
   getProductName,
 }) {
   return (
-    <section className="section">
+    <section id={sectionId} className="section">
       <h2>Recommendations</h2>
 
       <button

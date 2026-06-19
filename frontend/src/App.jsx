@@ -62,6 +62,17 @@ function App() {
     });
   }
 
+  function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }
+
   async function createProduct(event) {
     event.preventDefault();
 
@@ -332,11 +343,42 @@ function App() {
         </div>
 
         <nav className="sidebar-nav">
-          <button className="sidebar-link active">Dashboard</button>
-          <button className="sidebar-link">Products</button>
-          <button className="sidebar-link">Inventory</button>
-          <button className="sidebar-link">Recommendations</button>
-          <button className="sidebar-link">Forecasts</button>
+          <button
+            className="sidebar-link active"
+            onClick={() => scrollToSection("dashboard-overview")}
+          >
+            Dashboard
+          </button>
+
+          <button
+            className="sidebar-link"
+            onClick={() => scrollToSection("products-section")}
+          >
+            Products
+          </button>
+
+          <button
+            className="sidebar-link disabled"
+            type="button"
+            title="Inventory page coming soon"
+          >
+            Inventory
+          </button>
+
+          <button
+            className="sidebar-link"
+            onClick={() => scrollToSection("recommendations-section")}
+          >
+            Recommendations
+          </button>
+
+          <button
+            className="sidebar-link disabled"
+            type="button"
+            title="Forecasts page coming soon"
+          >
+            Forecasts
+          </button>
         </nav>
       </aside>
 
@@ -362,13 +404,16 @@ function App() {
         </header>
 
         <main className="dashboard-content">
-          <SummaryCards
-            productsCount={products.length}
-            recommendationsCount={latestRecommendations.length}
-            lowStockProductsCount={lowStockProductsCount}
-          />
+          <section id="dashboard-overview">
+            <SummaryCards
+              productsCount={products.length}
+              recommendationsCount={latestRecommendations.length}
+              lowStockProductsCount={lowStockProductsCount}
+            />
+          </section>
 
           <ProductsSection
+            sectionId="products-section"
             productSuccess={productSuccess}
             productsError={productsError}
             loadingProducts={loadingProducts}
@@ -398,6 +443,7 @@ function App() {
           />
 
           <RecommendationsSection
+            sectionId="recommendations-section"
             loadingRecommendations={loadingRecommendations}
             recommendationsError={recommendationsError}
             recommendationSuccess={recommendationSuccess}
