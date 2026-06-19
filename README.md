@@ -30,6 +30,9 @@ Implemented features include:
 - Order creation from the React dashboard
 - Recent orders display in the frontend
 - Inventory and recommendation refresh after order creation
+- Frontend Orders section for creating and viewing orders
+- Orders summary card in the dashboard overview
+- Sidebar navigation for dashboard sections
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
@@ -116,6 +119,8 @@ When product stock is updated from the dashboard, the frontend refreshes the rel
 
 The dashboard includes an Orders section where users can simulate customer orders. Creating an order reduces product inventory through the backend and refreshes the affected product recommendation so dashboard data stays aligned.
 
+The dashboard now includes Products, Orders, and Recommendations sections inside a SaaS-style layout. Sidebar navigation tracks the active section and scrolls users to the selected dashboard area.
+
 ---
 
 ## 🏗️ Core Features
@@ -141,6 +146,9 @@ The dashboard includes an Orders section where users can simulate customer order
 - Recommendation status refresh after inventory changes
 - Frontend order creation that reduces inventory
 - Recent order history display
+- Dashboard order creation with inventory reduction
+- Orders summary metric in the dashboard overview
+- Active sidebar navigation for dashboard sections
 
 ---
 
