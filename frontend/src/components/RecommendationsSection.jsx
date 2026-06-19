@@ -38,7 +38,7 @@ function RecommendationsSection({
 
       {recommendations.length > 0 && (
         <p className="filter-count">
-          Showing {latestRecommendations.length} recommendations
+          Showing {latestRecommendations.length} recommendation statuses
         </p>
       )}
 
@@ -58,7 +58,17 @@ function RecommendationsSection({
             <li key={recommendation.id}>
               <div className="card">
                 <h2>Product: {getProductName(recommendation.product_id)}</h2>
-                <p className="recommendation-label">Restock Recommended</p>
+                <p
+                  className={
+                    recommendation.recommended_quantity > 0
+                      ? "recommendation-label"
+                      : "no-restock-label"
+                  }
+                >
+                  {recommendation.recommended_quantity > 0
+                    ? "Restock Recommended"
+                    : "No Restock Needed"}
+                </p>
                 <p>
                   Recommended Quantity: {recommendation.recommended_quantity}
                 </p>
