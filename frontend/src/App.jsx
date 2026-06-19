@@ -4,6 +4,7 @@ import SummaryCards from "./components/SummaryCards.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import OrdersSection from "./components/OrdersSection.jsx";
+import ForecastsSection from "./components/ForecastsSection.jsx";
 import {
   getProducts,
   createProduct as createProductApi,
@@ -19,6 +20,7 @@ import {
 } from "./api/recommendationsApi.js";
 import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
+import { getForecasts } from "./api/forecastsApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -58,6 +60,9 @@ function App() {
     quantity: "",
     source: "dashboard",
   });
+  const [forecasts, setForecasts] = useState([]);
+  const [loadingForecasts, setLoadingForecasts] = useState(false);
+  const [forecastsError, setForecastsError] = useState("");
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -168,6 +173,26 @@ function App() {
       setOrdersError(error.message || "Could not create order.");
     } finally {
       setCreatingOrder(false);
+    }
+  }
+
+  async function fetchForecasts() {
+    try {
+      setLoadingForecasts(true);
+      setForecastsError("");
+
+      const data = await getForecasts();
+
+      const sortedForecasts = [...data].sort(
+        (a, b) => new Date(b.forecast_date) - new Date(a.forecast_date),
+      );
+
+      setForecasts(sortedForecasts);
+    } catch (error) {
+      console.error("Error fetching forecasts:", error.message);
+      setForecastsError(error.message || "Could not load forecasts.");
+    } finally {
+      setLoadingForecasts(false);
     }
   }
 
@@ -301,6 +326,7 @@ function App() {
     fetchProducts();
     fetchRecommendations();
     fetchOrders();
+    fetchForecasts();
   }, []);
 
   async function fetchRecommendations() {
@@ -488,12 +514,10 @@ function App() {
           </button>
 
           <button
-            className="sidebar-link disabled"
-            type="button"
-            title="Forecasts page coming soon"
+            className={`sidebar-link ${activeSection === "forecasts" ? "active" : ""}`}
+            onClick={() => scrollToSection("forecasts-section", "forecasts")}
           >
-            <span>Forecasts</span>
-            <span className="sidebar-badge">Soon</span>
+            Forecasts
           </button>
         </nav>
       </aside>
@@ -571,6 +595,15 @@ function App() {
             onOrderInputChange={handleOrderInputChange}
             onCreateOrder={createOrder}
             onRefreshOrders={fetchOrders}
+            getProductName={getProductName}
+          />
+
+          <ForecastsSection
+            sectionId="forecasts-section"
+            forecasts={forecasts}
+            forecastsError={forecastsError}
+            loadingForecasts={loadingForecasts}
+            onRefreshForecasts={fetchForecasts}
             getProductName={getProductName}
           />
 
