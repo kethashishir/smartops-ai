@@ -23,6 +23,7 @@ function ProductsSection({
   isLowStock,
   inventoryByProductId,
   generatingProductId,
+  latestRecommendations,
   onGenerateRecommendation,
   stockUpdates,
   updatingStockProductId,
@@ -67,21 +68,27 @@ function ProductsSection({
 
       {!loadingProducts && !productsError && filteredProducts.length > 0 && (
         <ul>
-          {sortedProducts.map((product) => (
-            <li key={product.id}>
+          {sortedProducts.map((product) => {
+            const productRecommendation = latestRecommendations.find(
+              (recommendation) => recommendation.product_id === product.id,
+            );
+
+            return (
               <ProductCard
+                key={product.id}
                 product={product}
                 currentStock={inventoryByProductId[product.id]}
                 isLowStock={isLowStock(product)}
+                recommendation={productRecommendation}
                 generatingProductId={generatingProductId}
                 onGenerateRecommendation={onGenerateRecommendation}
-                stockUpdateValue={stockUpdates[product.id] ?? ""}
+                stockUpdateValue={stockUpdates[product.id] || ""}
                 updatingStockProductId={updatingStockProductId}
                 onStockInputChange={onStockInputChange}
                 onUpdateStock={onUpdateStock}
               />
-            </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </section>

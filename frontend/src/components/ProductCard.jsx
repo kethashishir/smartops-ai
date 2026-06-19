@@ -4,6 +4,7 @@ function ProductCard({
   product,
   currentStock,
   isLowStock,
+  recommendation,
   generatingProductId,
   onGenerateRecommendation,
   stockUpdateValue,
@@ -22,6 +23,20 @@ function ProductCard({
       <p>Price: ${product.unit_price.toFixed(2)}</p>
       <p>Reorder Threshold: {product.reorder_threshold}</p>
       <p>Current Stock: {currentStock ?? "Loading..."}</p>
+      {recommendation && (
+        <p
+          className={
+            recommendation.recommended_quantity > 0
+              ? "inline-recommendation restock"
+              : "inline-recommendation no-restock"
+          }
+        >
+          Recommendation:{" "}
+          {recommendation.recommended_quantity > 0
+            ? `Restock ${recommendation.recommended_quantity} units`
+            : "No Restock Needed"}
+        </p>
+      )}
       <div className="stock-update">
         <input
           type="number"

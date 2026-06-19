@@ -373,6 +373,7 @@ function App() {
           updatingStockProductId={updatingStockProductId}
           onStockInputChange={handleStockInputChange}
           onUpdateStock={updateProductStock}
+          latestRecommendations={latestRecommendations}
         />
         <RecommendationsSection
           loadingRecommendations={loadingRecommendations}
