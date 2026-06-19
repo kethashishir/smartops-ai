@@ -1,9 +1,8 @@
 # SmartOps AI (In Development)
 
-SmartOps AI is a full-stack software engineering project that simulates a real
-retail or warehouse operations platform. The system manages products, inventory,
-and orders, predicts future demand using machine learning, and includes an AI
-operations assistant built with LangChain and a Hugging Face model.
+SmartOps AI is a full-stack software engineering project that simulates a real retail or warehouse operations platform. The system manages products, inventory, orders, demand forecasts, and reorder recommendations through a FastAPI backend, PostgreSQL database, and React + Vite frontend dashboard.
+
+The long-term goal is to include machine learning demand forecasting and an AI operations assistant built with LangChain and a Hugging Face model.
 
 ## Current Status
 
@@ -13,14 +12,20 @@ Implemented features include:
 
 - Product creation and listing
 - Inventory display per product
+- Inventory stock updates directly from product cards
+- Real-time stock status updates after inventory changes
 - Low-stock and healthy-stock status labels
 - Product search, filtering, and sorting
 - Recommendation generation and display
+- Per-product recommendation generation
+- Automatic recommendation loading on page load
 - Frontend loading, error, and success states
+- Backend health check status in the frontend dashboard
+- Organized React components and frontend API service files
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
-The dashboard supports updating product inventory directly from product cards. Stock status labels and low-stock counts update after inventory changes.
+---
 
 ## 🎯 Objective
 
@@ -29,8 +34,9 @@ Build a realistic operations platform where a user can:
 - log in
 - manage products
 - track inventory
+- update stock levels
 - simulate incoming orders
-- monitor stock levels
+- monitor low-stock products
 - run demand forecasts
 - get reorder suggestions
 - ask an AI assistant operational questions in natural language
@@ -41,6 +47,8 @@ Example AI questions:
 - What should I reorder right now?
 - Why is Product A more risky than Product B?
 - Which products have the highest forecasted demand?
+
+---
 
 ## 🏗 Project Structure
 
@@ -82,10 +90,15 @@ smartops-ai/
 
 The React frontend is organized into reusable components and API service files.
 
-- `src/components/` contains UI components such as product cards, product controls, summary cards, and recommendation sections.
+- `src/components/` contains reusable UI components such as product cards, product controls, summary cards, product forms, and recommendation sections.
 - `src/api/` contains frontend service functions for calling the FastAPI backend.
 - `src/api/config.js` stores the backend API base URL used by the frontend.
 - `App.jsx` manages top-level state, data loading, and page composition.
+- `App.css` contains the dashboard layout, card styling, status labels, form styling, and responsive behavior.
+
+The dashboard supports updating product inventory directly from product cards. Stock status labels and low-stock counts update after inventory changes.
+
+The current UI has been improved with a dashboard-style layout, summary cards, grouped sections, status badges, and cleaner spacing. A more advanced SaaS-style redesign with sidebar navigation, tabs, charts, and wider dashboard modules is planned for a later phase.
 
 ---
 
@@ -93,6 +106,8 @@ The React frontend is organized into reusable components and API service files.
 
 - Product management with reorder thresholds
 - Inventory tracking per product
+- Inventory stock updates from the React dashboard
+- Real-time stock status updates after inventory changes
 - Order processing with stock validation
 - Demand forecasting storage
 - Automated recommendation engine for restocking
@@ -105,8 +120,7 @@ The React frontend is organized into reusable components and API service files.
 - Product sorting by price and stock level
 - Per-product recommendation generation from the dashboard
 - Automatic recommendation loading on page load
-- Inventory stock updates from the React dashboard
-- Real-time stock status updates after inventory changes
+- Backend health status indicator in the frontend
 
 ---
 
@@ -120,20 +134,26 @@ Products → Inventory → Orders → Forecast → Recommendations
 
 ### 1. Products
 
-- Each product has a reorder threshold
+- Each product has product details such as name, SKU, category, unit price, and reorder threshold.
+- Products can be created from the frontend dashboard.
+- Products are used as the base entity for inventory, orders, forecasts, and recommendations.
 
 ### 2. Inventory
 
-- Tracks current stock per product
+- Tracks current stock per product.
+- Inventory stock can be viewed from the frontend dashboard.
+- Inventory stock can be updated directly from product cards.
+- Stock updates immediately affect low-stock and healthy-stock labels.
 
 ### 3. Orders
 
-- Reduce inventory when purchases occur
-- Prevent orders if stock is insufficient
+- Orders reduce inventory when purchases occur.
+- Orders are validated to prevent purchases when stock is insufficient.
 
 ### 4. Forecast
 
-- Stores predicted future demand for each product
+- Stores predicted future demand for each product.
+- Forecast records are used by the recommendation engine.
 
 ### 5. Recommendations
 
@@ -142,17 +162,23 @@ Products → Inventory → Orders → Forecast → Recommendations
   - reorder threshold
   - predicted demand
 
+- Recommendations can be generated for all qualifying products.
+- Recommendations can also be generated for a single product from the product card.
+- Existing recommendation records are updated instead of creating duplicate recommendation rows.
+
 ---
 
 ## 🧮 Recommendation Logic
 
 For each product:
 
+```text
 If current_stock <= reorder_threshold:
 
 recommended_quantity = predicted_demand - current_stock
 
-If result is negative → set to 0
+If recommended_quantity is negative, set it to 0.
+```
 
 Each recommendation includes an explanation for transparency.
 
@@ -231,6 +257,12 @@ Open backend API docs:
 http://127.0.0.1:8000/docs
 ```
 
+Check backend health:
+
+```text
+http://127.0.0.1:8000/health
+```
+
 ### 3. Run the frontend
 
 Open a second terminal:
@@ -246,3 +278,19 @@ Open frontend app:
 ```text
 http://localhost:5173
 ```
+
+---
+
+## Planned Improvements
+
+Planned future work includes:
+
+- Authentication and login flow
+- Machine learning model for demand forecasting
+- AI operations assistant using LangChain and a Hugging Face model
+- Charts for stock levels, demand forecasts, and recommendation trends
+- More professional SaaS-style dashboard redesign with sidebar navigation and tabs
+- Deployment setup
+- Automated tests
+- Database migrations with Alembic
+- Screenshots and demo video for portfolio presentation
