@@ -17,7 +17,7 @@ function SummaryCards({
       </div>
 
       <div className="summary-card">
-        <h3>Active Recommendations</h3>
+        <h3>Recommendations</h3>
         <p>{recommendationsCount}</p>
       </div>
 
