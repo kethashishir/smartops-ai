@@ -35,6 +35,8 @@ Implemented features include:
 - Sidebar navigation for dashboard sections
 - Forecasts dashboard section for viewing predicted demand
 - Forecast data display by product, date, model version, and predicted demand
+- Forecasts summary card in the dashboard overview
+- Sidebar navigation ordered by operations workflow
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
@@ -124,6 +126,8 @@ The dashboard includes an Orders section where users can simulate customer order
 The dashboard now includes Products, Orders, and Recommendations sections inside a SaaS-style layout. Sidebar navigation tracks the active section and scrolls users to the selected dashboard area.
 
 The dashboard includes a Forecasts section that displays backend forecast records used by the recommendation engine, including forecast date, model version, and predicted demand for each product.
+
+The sidebar navigation follows the operational workflow: Dashboard, Products, Orders, Forecasts, and Recommendations. The dashboard overview includes summary metrics for products, orders, forecasts, and low-stock products.
 
 ---
 
