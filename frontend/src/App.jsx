@@ -503,6 +503,13 @@ function App() {
           </button>
 
           <button
+            className={`sidebar-link ${activeSection === "forecasts" ? "active" : ""}`}
+            onClick={() => scrollToSection("forecasts-section", "forecasts")}
+          >
+            Forecasts
+          </button>
+
+          <button
             className={`sidebar-link ${
               activeSection === "recommendations" ? "active" : ""
             }`}
@@ -511,13 +518,6 @@ function App() {
             }
           >
             Recommendations
-          </button>
-
-          <button
-            className={`sidebar-link ${activeSection === "forecasts" ? "active" : ""}`}
-            onClick={() => scrollToSection("forecasts-section", "forecasts")}
-          >
-            Forecasts
           </button>
         </nav>
       </aside>
