@@ -22,6 +22,7 @@ Implemented features include:
 - Frontend loading, error, and success states
 - Backend health check status in the frontend dashboard
 - Organized React components and frontend API service files
+- Recommendation status displayed directly on product cards
 
 Machine learning forecasting and AI assistant features are planned but still in development.
 
@@ -100,6 +101,8 @@ The dashboard supports updating product inventory directly from product cards. S
 
 The current UI has been improved with a dashboard-style layout, summary cards, grouped sections, status badges, and cleaner spacing. A more advanced SaaS-style redesign with sidebar navigation, tabs, charts, and wider dashboard modules is planned for a later phase.
 
+Product cards display current inventory status and recommendation status so users can quickly see whether each product needs restocking.
+
 ---
 
 ## 🏗️ Core Features
@@ -121,6 +124,7 @@ The current UI has been improved with a dashboard-style layout, summary cards, g
 - Per-product recommendation generation from the dashboard
 - Automatic recommendation loading on page load
 - Backend health status indicator in the frontend
+- Product-level recommendation status displayed in the dashboard
 
 ---
 
