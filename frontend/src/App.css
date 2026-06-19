@@ -742,3 +742,27 @@ html {
     grid-template-columns: 1fr;
   }
 }
+
+.order-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+}
+
+.order-card p {
+  margin: 0.25rem 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.order-quantity {
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+}

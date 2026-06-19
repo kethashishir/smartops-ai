@@ -76,15 +76,17 @@ function OrdersSection({
               {orders.slice(0, 5).map((order) => (
                 <li key={order.id}>
                   <div className="order-card">
-                    <strong>{getProductName(order.product_id)}</strong>
-                    <p>Quantity: {order.quantity}</p>
-                    <p>
-                      Time:{" "}
-                      {new Date(order.order_time).toLocaleString(undefined, {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
-                    </p>
+                    <div>
+                      <strong>{getProductName(order.product_id)}</strong>
+                      <p>
+                        {new Date(order.order_time).toLocaleString(undefined, {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                    </div>
+
+                    <span className="order-quantity">Qty {order.quantity}</span>
                   </div>
                 </li>
               ))}
