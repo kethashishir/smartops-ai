@@ -205,6 +205,40 @@ Products → Inventory → Orders → Forecast → Recommendations
 
 ---
 
+## Forecasting and Recommendations Workflow
+
+SmartOps AI includes a baseline forecasting workflow that connects the ML pipeline, backend API, PostgreSQL database, and React dashboard.
+
+The current workflow is:
+
+1. Products and historical orders are stored in PostgreSQL.
+2. The backend baseline forecasting service calculates predicted demand using product reorder thresholds and total order quantity.
+3. Forecasts are stored in the database with model version `baseline-v1`.
+4. The dashboard can generate forecasts from the Forecasts section.
+5. The backend returns one latest forecast per product through `/forecast/latest`.
+6. Recommendations are regenerated after forecast generation so restock advice stays synchronized with the latest forecast data.
+
+Current forecast generation endpoint:
+
+```http
+POST /forecast/generate
+```
+
+Latest forecast endpoint:
+
+```http
+GET /forecast/latest
+```
+
+Current baseline formula:
+
+```text
+baseline = max(total_order_quantity, reorder_threshold)
+predicted_demand = baseline * 1.15
+```
+
+This gives the app a complete end-to-end flow from operational data to demand forecasting to restock recommendations.
+
 ## 🧮 Recommendation Logic
 
 For each product:
