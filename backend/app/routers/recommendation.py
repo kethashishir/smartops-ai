@@ -35,7 +35,12 @@ def generate_recommendation(product_id: int, db: Session = Depends(get_db)):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    forecast = db.query(Forecast).filter(Forecast.product_id == product_id).order_by(Forecast.forecast_date.desc()).first()
+    forecast = (
+        db.query(Forecast)
+        .filter(Forecast.product_id == product_id)
+        .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
+        .first()
+    )
     inventory = db.query(Inventory).filter(Inventory.product_id == product_id).first()
 
     if not forecast or not inventory:
@@ -80,7 +85,7 @@ def generate_recommendations_for_all_products(db: Session = Depends(get_db)):
         forecast = (
             db.query(Forecast)
             .filter(Forecast.product_id == product.id)
-            .order_by(Forecast.forecast_date.desc())
+            .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
             .first()
         )
 
