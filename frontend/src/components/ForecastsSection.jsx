@@ -17,7 +17,7 @@ function ForecastsSection({
         </div>
 
         <button onClick={onRefreshForecasts} disabled={loadingForecasts}>
-          {loadingForecasts ? "Refreshing..." : "Refresh Forecasts"}
+          {loadingForecasts ? "Generating..." : "Generate Forecasts"}
         </button>
       </div>
 
