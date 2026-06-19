@@ -475,12 +475,31 @@ function App() {
     forecasts.reduce((latestByProductId, forecast) => {
       const existingForecast = latestByProductId[forecast.product_id];
 
-      if (
-        !existingForecast ||
-        new Date(forecast.forecast_date) >
-          new Date(existingForecast.forecast_date)
-      ) {
+      if (!existingForecast) {
         latestByProductId[forecast.product_id] = forecast;
+        return latestByProductId;
+      }
+
+      const forecastIsBaseline = forecast.model_version === "baseline-v1";
+      const existingIsBaseline =
+        existingForecast.model_version === "baseline-v1";
+
+      if (forecastIsBaseline && !existingIsBaseline) {
+        latestByProductId[forecast.product_id] = forecast;
+        return latestByProductId;
+      }
+
+      if (forecastIsBaseline === existingIsBaseline) {
+        const forecastDate = new Date(forecast.forecast_date);
+        const existingDate = new Date(existingForecast.forecast_date);
+
+        if (
+          forecastDate > existingDate ||
+          (forecastDate.getTime() === existingDate.getTime() &&
+            forecast.id > existingForecast.id)
+        ) {
+          latestByProductId[forecast.product_id] = forecast;
+        }
       }
 
       return latestByProductId;
