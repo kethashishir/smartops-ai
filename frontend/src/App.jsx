@@ -6,6 +6,7 @@ import ProductsSection from "./components/ProductsSection.jsx";
 import OrdersSection from "./components/OrdersSection.jsx";
 import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
+import DashboardHeader from "./components/DashboardHeader.jsx";
 import {
   getProducts,
   createProduct as createProductApi,
@@ -475,25 +476,7 @@ function App() {
       <Sidebar activeSection={activeSection} onNavigate={scrollToSection} />
 
       <div className="main-shell">
-        <header id="dashboard-overview" className="app-header">
-          <div>
-            <p className="eyebrow">Operations Dashboard</p>
-            <h1>SmartOps AI</h1>
-            <p className="subtitle">
-              Monitor inventory health, stock levels, and reorder
-              recommendations.
-            </p>
-          </div>
-
-          <p className={`backend-status ${backendStatus}`}>
-            Backend{" "}
-            {backendStatus === "checking"
-              ? "Checking..."
-              : backendStatus === "connected"
-                ? "Connected"
-                : "Offline"}
-          </p>
-        </header>
+        <DashboardHeader backendStatus={backendStatus} />
 
         <main className="dashboard-content">
           <section>
