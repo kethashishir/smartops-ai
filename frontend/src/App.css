@@ -597,3 +597,24 @@ html {
   color: #6b7280;
   transform: none;
 }
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sidebar-badge {
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.sidebar-link.disabled .sidebar-badge {
+  background: #f3f4f6;
+  color: #9ca3af;
+}

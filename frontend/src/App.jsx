@@ -365,7 +365,8 @@ function App() {
             type="button"
             title="Inventory page coming soon"
           >
-            Inventory
+            <span>Inventory</span>
+            <span className="sidebar-badge">Soon</span>
           </button>
 
           <button
@@ -384,13 +385,14 @@ function App() {
             type="button"
             title="Forecasts page coming soon"
           >
-            Forecasts
+            <span>Forecasts</span>
+            <span className="sidebar-badge">Soon</span>
           </button>
         </nav>
       </aside>
 
       <div className="main-shell">
-        <header className="app-header">
+        <header id="dashboard-overview" className="app-header">
           <div>
             <p className="eyebrow">Operations Dashboard</p>
             <h1>SmartOps AI</h1>
@@ -411,7 +413,7 @@ function App() {
         </header>
 
         <main className="dashboard-content">
-          <section id="dashboard-overview">
+          <section>
             <SummaryCards
               productsCount={products.length}
               recommendationsCount={latestRecommendations.length}
