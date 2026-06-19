@@ -162,6 +162,8 @@ function App() {
   async function updateProductStock(productId) {
     try {
       setProductsError("");
+      setRecommendationSuccess("");
+      setRecommendationsError("");
       setUpdatingStockProductId(productId);
 
       const updatedInventory = await updateInventoryForProduct(
@@ -174,7 +176,16 @@ function App() {
         [productId]: updatedInventory.current_stock,
       });
 
-      setProductSuccess("Inventory updated successfully.");
+      await generateRecommendation(productId);
+      await fetchRecommendations();
+
+      const product = products.find((product) => product.id === productId);
+
+      setProductSuccess(
+        `Inventory updated and recommendation refreshed for ${
+          product?.name || "selected product"
+        }.`,
+      );
 
       setStockUpdates({
         ...stockUpdates,
@@ -182,7 +193,9 @@ function App() {
       });
     } catch (error) {
       console.error("Error updating inventory:", error.message);
-      setProductsError("Could not update inventory. Please check the backend.");
+      setProductsError(
+        "Could not update inventory or refresh recommendation. Please check the backend.",
+      );
     } finally {
       setUpdatingStockProductId(null);
     }
