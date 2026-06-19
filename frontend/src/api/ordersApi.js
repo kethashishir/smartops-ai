@@ -25,7 +25,12 @@ export async function createOrder(order) {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.detail || "Failed to create order");
+    const message =
+      errorData.detail === "Not enough stock"
+        ? "Not enough stock available for this order."
+        : errorData.detail || "Failed to create order";
+
+    throw new Error(message);
   }
 
   return response.json();
