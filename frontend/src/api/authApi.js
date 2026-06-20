@@ -33,3 +33,18 @@ export async function loginUser(credentials) {
 
   return response.json();
 }
+
+export async function getCurrentUser(token) {
+  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || "Failed to load current user");
+  }
+
+  return response.json();
+}

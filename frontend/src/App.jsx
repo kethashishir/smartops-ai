@@ -24,7 +24,7 @@ import {
 import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
-import { loginUser, registerUser } from "./api/authApi.js";
+import { getCurrentUser, loginUser, registerUser } from "./api/authApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -78,6 +78,7 @@ function App() {
   const [authError, setAuthError] = useState("");
   const [authSuccess, setAuthSuccess] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -431,6 +432,30 @@ function App() {
     fetchForecasts();
   }, []);
 
+  useEffect(() => {
+    async function restoreAuthSession() {
+      const token = localStorage.getItem("smartops_token");
+
+      if (!token) {
+        setCheckingAuth(false);
+        return;
+      }
+
+      try {
+        const user = await getCurrentUser(token);
+        setCurrentUser(user);
+      } catch (error) {
+        console.error("Error restoring auth session:", error.message);
+        localStorage.removeItem("smartops_token");
+        setCurrentUser(null);
+      } finally {
+        setCheckingAuth(false);
+      }
+    }
+
+    restoreAuthSession();
+  }, []);
+
   async function fetchRecommendations() {
     try {
       setRecommendationsError("");
@@ -570,6 +595,17 @@ function App() {
 
     return 0;
   });
+
+  if (checkingAuth) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <h2>Loading SmartOps AI...</h2>
+          <p className="auth-description">Checking your session.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return (
