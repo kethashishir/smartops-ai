@@ -12,6 +12,12 @@ function OrdersSection({
   onRefreshOrders,
   getProductName,
 }) {
+  const recentOrders = orders.slice(0, 5);
+  const totalOrderQuantity = orders.reduce(
+    (total, order) => total + Number(order.quantity),
+    0,
+  );
+
   return (
     <section id={sectionId} className="section">
       <div className="orders-header">
@@ -31,33 +37,61 @@ function OrdersSection({
       {orderSuccess && <p className="success">{orderSuccess}</p>}
       {loadingOrders && <p>Loading orders...</p>}
 
+      <div className="order-summary">
+        <div>
+          <span>{orders.length}</span>
+          <p>Total Orders</p>
+        </div>
+
+        <div>
+          <span>{totalOrderQuantity}</span>
+          <p>Total Units Ordered</p>
+        </div>
+
+        <div>
+          <span>{recentOrders.length}</span>
+          <p>Recent Orders Shown</p>
+        </div>
+      </div>
+
       <div className="orders-layout">
         <form className="order-form" onSubmit={onCreateOrder}>
-          <h3>Create Order</h3>
+          <div>
+            <h3>Create Order</h3>
+            <p className="section-description">
+              Choose a product and quantity to simulate demand.
+            </p>
+          </div>
 
-          <select
-            name="product_id"
-            value={newOrder.product_id}
-            onChange={onOrderInputChange}
-            required
-          >
-            <option value="">Select product</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
+          <label>
+            Product
+            <select
+              name="product_id"
+              value={newOrder.product_id}
+              onChange={onOrderInputChange}
+              required
+            >
+              <option value="">Select product</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          <input
-            type="number"
-            name="quantity"
-            min="1"
-            placeholder="Quantity"
-            value={newOrder.quantity}
-            onChange={onOrderInputChange}
-            required
-          />
+          <label>
+            Quantity
+            <input
+              type="number"
+              name="quantity"
+              min="1"
+              placeholder="Quantity"
+              value={newOrder.quantity}
+              onChange={onOrderInputChange}
+              required
+            />
+          </label>
 
           <button type="submit" disabled={creatingOrder}>
             {creatingOrder ? "Creating..." : "Create Order"}
@@ -65,15 +99,22 @@ function OrdersSection({
         </form>
 
         <div className="orders-list">
-          <h3>Recent Orders</h3>
+          <div className="orders-list-header">
+            <div>
+              <h3>Recent Orders</h3>
+              <p className="section-description">
+                Latest simulated customer demand activity.
+              </p>
+            </div>
+          </div>
 
           {orders.length === 0 && !loadingOrders && (
             <p style={{ color: "#666", fontStyle: "italic" }}>No orders yet.</p>
           )}
 
           {orders.length > 0 && (
-            <ul>
-              {orders.slice(0, 5).map((order) => (
+            <ul className="order-list">
+              {recentOrders.map((order) => (
                 <li key={order.id}>
                   <div className="order-card">
                     <div>
