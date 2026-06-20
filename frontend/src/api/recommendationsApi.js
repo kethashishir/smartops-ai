@@ -1,6 +1,7 @@
-import { API_BASE_URL } from "./config.js";
+import { apiFetch } from "./config.js";
+
 export async function getRecommendations() {
-  const response = await fetch(`${API_BASE_URL}/recommendations/`);
+  const response = await apiFetch("/recommendations/");
 
   if (!response.ok) {
     throw new Error(`Network response was not ok: ${response.status}`);
@@ -10,7 +11,7 @@ export async function getRecommendations() {
 }
 
 export async function generateAllRecommendations() {
-  const response = await fetch(`${API_BASE_URL}/recommendations/generate_all`, {
+  const response = await apiFetch("/recommendations/generate_all", {
     method: "POST",
   });
 
@@ -22,12 +23,9 @@ export async function generateAllRecommendations() {
 }
 
 export async function generateRecommendation(productId) {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/generate/${productId}`,
-    {
-      method: "POST",
-    },
-  );
+  const response = await apiFetch(`/recommendations/generate/${productId}`, {
+    method: "POST",
+  });
 
   if (!response.ok) {
     throw new Error(`Network response was not ok: ${response.status}`);

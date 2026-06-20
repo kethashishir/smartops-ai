@@ -1,7 +1,7 @@
-import { API_BASE_URL } from "./config.js";
+import { apiFetch } from "./config.js";
 
 export async function getProducts() {
-  const response = await fetch(`${API_BASE_URL}/products/`);
+  const response = await apiFetch("/products/");
 
   if (!response.ok) {
     throw new Error(`Network response was not ok: ${response.status}`);
@@ -11,7 +11,7 @@ export async function getProducts() {
 }
 
 export async function createProduct(product) {
-  const response = await fetch(`${API_BASE_URL}/products/`, {
+  const response = await apiFetch("/products/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,7 +1,7 @@
-import { API_BASE_URL } from "./config.js";
+import { apiFetch } from "./config.js";
 
 export async function getForecasts() {
-  const response = await fetch(`${API_BASE_URL}/forecast/latest`);
+  const response = await apiFetch("/forecast/latest");
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -12,7 +12,7 @@ export async function getForecasts() {
 }
 
 export async function generateForecasts() {
-  const response = await fetch(`${API_BASE_URL}/forecast/generate`, {
+  const response = await apiFetch("/forecast/generate", {
     method: "POST",
   });
 

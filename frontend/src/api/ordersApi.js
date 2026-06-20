@@ -1,7 +1,7 @@
-import { API_BASE_URL } from "./config.js";
+import { apiFetch } from "./config.js";
 
 export async function getOrders() {
-  const response = await fetch(`${API_BASE_URL}/orders/`);
+  const response = await apiFetch("/orders/");
 
   if (!response.ok) {
     throw new Error("Failed to fetch orders");
@@ -11,7 +11,7 @@ export async function getOrders() {
 }
 
 export async function createOrder(order) {
-  const response = await fetch(`${API_BASE_URL}/orders/`, {
+  const response = await apiFetch("/orders/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,7 +1,7 @@
-import { API_BASE_URL } from "./config.js";
+import { apiFetch } from "./config.js";
 
 export async function getInventoryForProduct(productId) {
-  const response = await fetch(`${API_BASE_URL}/inventory/${productId}`);
+  const response = await apiFetch(`/inventory/${productId}`);
 
   if (!response.ok) {
     throw new Error(`Network response was not ok: ${response.status}`);
@@ -11,7 +11,7 @@ export async function getInventoryForProduct(productId) {
 }
 
 export async function updateInventoryForProduct(productId, currentStock) {
-  const response = await fetch(`${API_BASE_URL}/inventory/${productId}`, {
+  const response = await apiFetch(`/inventory/${productId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
