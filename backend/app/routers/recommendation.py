@@ -37,7 +37,10 @@ def generate_recommendation(product_id: int, db: Session = Depends(get_db)):
 
     forecast = (
         db.query(Forecast)
-        .filter(Forecast.product_id == product_id)
+        .filter(
+            Forecast.product_id == product_id,
+            Forecast.model_version == "baseline-v1",
+        )
         .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
         .first()
     )
@@ -84,7 +87,10 @@ def generate_recommendations_for_all_products(db: Session = Depends(get_db)):
     for product in products:
         forecast = (
             db.query(Forecast)
-            .filter(Forecast.product_id == product.id)
+            .filter(
+                Forecast.product_id == product.id,
+                Forecast.model_version == "baseline-v1",
+            )
             .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
             .first()
         )
@@ -93,14 +99,14 @@ def generate_recommendations_for_all_products(db: Session = Depends(get_db)):
 
         if not forecast or not inventory:
             continue
-
-        if inventory.current_stock > product.reorder_threshold:
-            continue
-
-        recommended_quantity = max(
-            int(forecast.predicted_demand) - inventory.current_stock,
-            0,
-        )
+        
+        if inventory.current_stock <= product.reorder_threshold:
+            recommended_quantity = max(
+                int(forecast.predicted_demand) - inventory.current_stock,
+                0,
+            )
+        else:
+            recommended_quantity = 0
 
         reason = (
             f"Current inventory is {inventory.current_stock}, "
