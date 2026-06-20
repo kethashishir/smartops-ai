@@ -5,6 +5,12 @@ from app.auth.security import create_access_token, hash_password, verify_passwor
 from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin, UserResponse
+from app.auth.security import (
+    create_access_token,
+    get_current_user,
+    hash_password,
+    verify_password,
+)
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -48,3 +54,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
             "email": db_user.email,
         },
     }
+
+@router.get("/me", response_model=UserResponse)
+def get_logged_in_user(current_user: User = Depends(get_current_user)):
+    return current_user
