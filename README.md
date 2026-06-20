@@ -42,6 +42,12 @@ Implemented features include:
 - Logout flow from the dashboard header
 - Protected dashboard API routes using bearer token authentication
 - Authenticated frontend API helper for dashboard requests
+- Multi-user data isolation for operational data
+- User-owned products
+- Ownership-protected inventory access
+- User-scoped orders, forecasts, and recommendations
+- Clean empty dashboard states for users with no data yet
+- Regression tests for cross-user data isolation
 
 Baseline machine learning-style forecasting is implemented through a shared backend forecasting service. The AI assistant feature is planned but still in development.
 
@@ -173,6 +179,22 @@ Public backend routes include:
 
 The `/auth/me` route requires a valid bearer token and is used by the frontend to restore the current logged-in user.
 
+### Multi-User Data Isolation
+
+SmartOps AI now supports user-scoped operational data. After login, each user only sees and manages their own workspace data.
+
+Current ownership rules include:
+
+- Products are owned by the authenticated user who created them.
+- Inventory access is restricted through product ownership.
+- Orders are scoped to the authenticated user.
+- Forecast generation only uses the authenticated user's products and orders.
+- Forecast results are scoped to the authenticated user.
+- Recommendations are scoped to the authenticated user.
+- Empty forecast and recommendation lists return clean empty dashboard states instead of leaking another user's data.
+
+Regression tests verify that one user cannot see or mutate another user's products, inventory, orders, forecasts, or recommendations.
+
 ---
 
 ## 🏗️ Core Features
@@ -204,6 +226,7 @@ The `/auth/me` route requires a valid bearer token and is used by the frontend t
 - Read-only forecast dashboard powered by backend forecast data
 - User authentication with password hashing and JWT access tokens
 - Protected dashboard APIs for products, inventory, orders, forecasts, and recommendations
+- Multi-user SaaS-style data isolation across products, inventory, orders, forecasts, and recommendations
 
 ---
 
@@ -230,6 +253,8 @@ This gives the project a more polished SaaS-style dashboard experience while kee
 
 Products → Inventory → Orders → Forecast → Recommendations
 
+Each workflow is scoped to the authenticated user. Products act as the ownership root, inventory access is checked through product ownership, and downstream orders, forecasts, and recommendations are filtered by the logged-in user.
+
 ---
 
 ## 📘 Flow Explanation
@@ -238,6 +263,7 @@ Products → Inventory → Orders → Forecast → Recommendations
 
 - Each product has product details such as name, SKU, category, unit price, and reorder threshold.
 - Products can be created from the frontend dashboard.
+- Products are owned by the authenticated user who created them.
 - Products are used as the base entity for inventory, orders, forecasts, and recommendations.
 
 ### 2. Inventory
@@ -245,17 +271,22 @@ Products → Inventory → Orders → Forecast → Recommendations
 - Tracks current stock per product.
 - Inventory stock can be viewed from the frontend dashboard.
 - Inventory stock can be updated directly from product cards.
+- Inventory access is restricted through product ownership.
 - Stock updates immediately affect low-stock and healthy-stock labels.
 
 ### 3. Orders
 
 - Orders reduce inventory when purchases occur.
 - Orders are validated to prevent purchases when stock is insufficient.
+- Orders are scoped to the authenticated user.
+- Users cannot create orders for another user's products.
 
 ### 4. Forecast
 
 - Stores predicted future demand for each product.
 - Forecast records are used by the recommendation engine.
+- Forecast generation only uses the authenticated user's products and orders.
+- Forecast records are scoped to the authenticated user.
 
 ### 5. Recommendations
 
@@ -264,9 +295,10 @@ Products → Inventory → Orders → Forecast → Recommendations
   - reorder threshold
   - predicted demand
 
-- Recommendations can be generated for all qualifying products.
-- Recommendations can also be generated for a single product from the product card.
+- Recommendations can be generated for all qualifying products owned by the authenticated user.
+- Recommendations can also be generated for a single owned product from the product card.
 - Existing recommendation records are updated instead of creating duplicate recommendation rows.
+- Recommendation records are scoped to the authenticated user.
 
 ---
 
@@ -432,6 +464,7 @@ Planned future work includes:
 - Automated tests
 - Database migrations with Alembic
 - Screenshots and demo video for portfolio presentation
+
 ---
 
 ## Current Verification Status
@@ -439,7 +472,8 @@ Planned future work includes:
 Latest verified project checks:
 
 ```text
-Backend tests: 15 passed
+Backend tests: 19 passed
 Frontend production build: passed
 Protected dashboard API browser sanity check: passed
+Multi-user data isolation browser sanity check: passed
 ```
