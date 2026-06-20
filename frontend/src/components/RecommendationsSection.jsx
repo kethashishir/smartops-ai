@@ -11,23 +11,40 @@ function RecommendationsSection({
   onRefreshRecommendations,
   getProductName,
 }) {
+  const restockRecommendedCount = latestRecommendations.filter(
+    (recommendation) => recommendation.recommended_quantity > 0,
+  ).length;
+
+  const noRestockNeededCount =
+    latestRecommendations.length - restockRecommendedCount;
+
+  const totalRecommendedQuantity = latestRecommendations.reduce(
+    (total, recommendation) =>
+      total + Number(recommendation.recommended_quantity),
+    0,
+  );
+
   return (
     <section id={sectionId} className="section">
       <h2>Recommendations</h2>
 
-      <button
-        onClick={onGenerateRecommendations}
-        disabled={loadingRecommendations}
-      >
-        {loadingRecommendations ? "Generating..." : "Generate Recommendations"}
-      </button>
+      <div className="recommendation-actions">
+        <button
+          onClick={onGenerateRecommendations}
+          disabled={loadingRecommendations}
+        >
+          {loadingRecommendations
+            ? "Generating..."
+            : "Generate Recommendations"}
+        </button>
 
-      <button
-        onClick={onRefreshRecommendations}
-        disabled={loadingRecommendations}
-      >
-        Refresh Recommendations
-      </button>
+        <button
+          onClick={onRefreshRecommendations}
+          disabled={loadingRecommendations}
+        >
+          Refresh Recommendations
+        </button>
+      </div>
 
       {loadingRecommendations && <p>Loading recommendations...</p>}
 
@@ -37,10 +54,34 @@ function RecommendationsSection({
         <p className="success">{recommendationSuccess}</p>
       )}
 
-      {recommendations.length > 0 && (
-        <p className="filter-count">
-          Showing {latestRecommendations.length} recommendation statuses
-        </p>
+      {latestRecommendations.length > 0 && (
+        <>
+          <div className="recommendation-summary">
+            <div>
+              <span>{latestRecommendations.length}</span>
+              <p>Total Recommendations</p>
+            </div>
+
+            <div>
+              <span>{restockRecommendedCount}</span>
+              <p>Restock Recommended</p>
+            </div>
+
+            <div>
+              <span>{noRestockNeededCount}</span>
+              <p>No Restock Needed</p>
+            </div>
+
+            <div>
+              <span>{totalRecommendedQuantity}</span>
+              <p>Total Units Recommended</p>
+            </div>
+          </div>
+
+          <p className="filter-count">
+            Showing {latestRecommendations.length} recommendation statuses
+          </p>
+        </>
       )}
 
       {hasGeneratedRecommendations &&
