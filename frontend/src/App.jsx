@@ -7,6 +7,7 @@ import OrdersSection from "./components/OrdersSection.jsx";
 import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
+import AuthPage from "./components/AuthPage.jsx";
 import {
   getProducts,
   createProduct as createProductApi,
@@ -23,6 +24,7 @@ import {
 import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
+import { loginUser, registerUser } from "./api/authApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -66,6 +68,75 @@ function App() {
   const [loadingForecasts, setLoadingForecasts] = useState(false);
   const [forecastsError, setForecastsError] = useState("");
   const [forecastSuccess, setForecastSuccess] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authMode, setAuthMode] = useState("login");
+  const [authForm, setAuthForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [authError, setAuthError] = useState("");
+  const [authSuccess, setAuthSuccess] = useState("");
+  const [loadingAuth, setLoadingAuth] = useState(false);
+
+  function handleAuthInputChange(event) {
+    setAuthError("");
+    setAuthSuccess("");
+
+    const { name, value } = event.target;
+
+    setAuthForm({
+      ...authForm,
+      [name]: value,
+    });
+  }
+
+  async function handleSubmitAuth(event) {
+    event.preventDefault();
+
+    try {
+      setLoadingAuth(true);
+      setAuthError("");
+      setAuthSuccess("");
+
+      if (authMode === "register") {
+        await registerUser(authForm);
+
+        setAuthSuccess("Account created successfully. You can now log in.");
+        setAuthMode("login");
+        setAuthForm({
+          name: "",
+          email: authForm.email,
+          password: "",
+        });
+
+        return;
+      }
+
+      const data = await loginUser({
+        email: authForm.email,
+        password: authForm.password,
+      });
+
+      localStorage.setItem("smartops_token", data.access_token);
+      setCurrentUser(data.user);
+
+      setAuthForm({
+        name: "",
+        email: "",
+        password: "",
+      });
+    } catch (error) {
+      setAuthError(error.message || "Authentication failed.");
+    } finally {
+      setLoadingAuth(false);
+    }
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("smartops_token");
+    setCurrentUser(null);
+  }
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -499,6 +570,21 @@ function App() {
 
     return 0;
   });
+
+  if (!currentUser) {
+    return (
+      <AuthPage
+        authMode={authMode}
+        setAuthMode={setAuthMode}
+        authForm={authForm}
+        authError={authError}
+        authSuccess={authSuccess}
+        loadingAuth={loadingAuth}
+        onAuthInputChange={handleAuthInputChange}
+        onSubmitAuth={handleSubmitAuth}
+      />
+    );
+  }
 
   return (
     <div className="app-shell">
