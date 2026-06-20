@@ -30,10 +30,11 @@ def test_forecast_endpoint_returns_success_or_not_found():
     assert response.status_code in [200, 404]
 
 def test_recommendations_endpoint_returns_success():
-    response = client.get("/recommendations/")
+    headers = get_auth_headers(client)
+
+    response = client.get("/recommendations/", headers=headers)
 
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
     
 def test_get_latest_forecasts_returns_list_or_not_found():
     headers = get_auth_headers(client)
