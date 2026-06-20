@@ -32,7 +32,6 @@ source .venv/bin/activate
 uvicorn app.main:app --reload
 ```
 
-
 ## Authentication Notes
 
 SmartOps AI uses bearer token authentication for dashboard APIs.
@@ -54,6 +53,24 @@ Authorization: Bearer <access_token>
 ```
 
 The `SECRET_KEY` environment variable should be set to a secure random value in production. Do not reuse the local development secret for deployment.
+
+## Multi-User Data Isolation Notes
+
+Operational dashboard data is scoped by authenticated user.
+
+User-owned and user-scoped data includes:
+
+```text
+Products
+Inventory access through product ownership
+Orders
+Forecasts
+Recommendations
+```
+
+Products are the ownership root for inventory. A user must own a product before they can view or update that product's inventory. Forecast and recommendation generation only uses the authenticated user's operational data.
+
+This project currently uses direct SQLAlchemy model creation and small local database update scripts during development. Before production deployment, this should be replaced with a proper migration workflow such as Alembic.
 
 ## Frontend
 
