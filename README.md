@@ -161,6 +161,25 @@ The sidebar navigation follows the operational workflow: Dashboard, Products, Or
 
 ---
 
+## Dashboard UI
+
+The SmartOps AI frontend uses a dashboard-style layout designed for an operations workflow.
+
+Current dashboard UI features include:
+
+- Sidebar navigation for Dashboard, Products, Orders, Forecasts, and Recommendations.
+- Summary metrics for products, orders, forecasts, and low-stock products.
+- Product search, filtering, sorting, inventory updates, and inline recommendation labels.
+- Forecast summary metrics showing forecasted products, total predicted demand, and active model version.
+- Dashboard-triggered forecast generation through the backend API.
+- Recommendation summary metrics showing total recommendations, restock-needed items, no-restock items, and total units recommended.
+- Priority-sorted recommendations so the highest restock quantities appear first.
+- Success and error feedback for forecast generation, product creation, order creation, and recommendation updates.
+
+This gives the project a more polished SaaS-style dashboard experience while keeping the workflow connected to the backend, database, and forecasting logic.
+
+---
+
 ## 🔁 System Workflow
 
 Products → Inventory → Orders → Forecast → Recommendations
