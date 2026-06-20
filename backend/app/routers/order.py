@@ -6,25 +6,35 @@ from app.database import get_db
 from app.models.inventories import Inventory
 from app.models.orders import Order
 from app.models.product import Product
+from app.models.user import User
 from app.schemas.orders import OrderCreate, OrderResponse
 
-router = APIRouter(
-    prefix="/orders",
-    tags=["orders"],
-    dependencies=[Depends(get_current_user)],
-)
+router = APIRouter(prefix="/orders", tags=["orders"])
 
 
 @router.post("/", response_model=OrderResponse)
-def create_order(order: OrderCreate, db: Session = Depends(get_db)):
+def create_order(
+    order: OrderCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    product = (
+        db.query(Product)
+        .filter(
+            Product.id == order.product_id,
+            Product.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
     db_inventory = (
         db.query(Inventory)
         .filter(Inventory.product_id == order.product_id)
         .first()
     )
-
-    if not db.query(Product).filter(Product.id == order.product_id).first():
-        raise HTTPException(status_code=404, detail="Product not found")
 
     if not db_inventory:
         raise HTTPException(
@@ -40,6 +50,7 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db)):
     db.refresh(db_inventory)
 
     db_order = Order(
+        user_id=current_user.id,
         product_id=order.product_id,
         quantity=order.quantity,
         source=order.source,
@@ -52,6 +63,14 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[OrderResponse])
-def get_orders(db: Session = Depends(get_db)):
-    orders = db.query(Order).all()
+def get_orders(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    orders = (
+        db.query(Order)
+        .filter(Order.user_id == current_user.id)
+        .all()
+    )
+
     return orders
