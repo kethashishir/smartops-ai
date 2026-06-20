@@ -843,3 +843,37 @@ html {
     box-sizing: border-box;
   }
 }
+
+.forecast-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.forecast-summary div {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.forecast-summary span {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.forecast-summary p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .forecast-summary {
+    grid-template-columns: 1fr;
+  }
+}
