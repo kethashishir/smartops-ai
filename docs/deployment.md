@@ -21,6 +21,7 @@ Required environment variables:
 ```env
 DATABASE_URL=postgresql://username:password@host:port/database_name
 ALLOWED_ORIGINS=https://your-frontend-domain.com
+SECRET_KEY=replace-with-a-secure-random-secret
 ```
 
 Local development command:
@@ -30,6 +31,29 @@ cd backend
 source .venv/bin/activate
 uvicorn app.main:app --reload
 ```
+
+
+## Authentication Notes
+
+SmartOps AI uses bearer token authentication for dashboard APIs.
+
+Protected backend route groups include:
+
+```text
+/products/*
+/inventory/*
+/orders/*
+/forecast/*
+/recommendations/*
+```
+
+The frontend must send the JWT access token returned from `/auth/login` in the `Authorization` header:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+The `SECRET_KEY` environment variable should be set to a secure random value in production. Do not reuse the local development secret for deployment.
 
 ## Frontend
 

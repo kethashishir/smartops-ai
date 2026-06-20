@@ -6,7 +6,7 @@ The long-term goal is to include machine learning demand forecasting and an AI o
 
 ## Current Status
 
-SmartOps AI currently includes a working FastAPI backend, PostgreSQL database integration, and a React + Vite frontend dashboard.
+SmartOps AI currently includes a working FastAPI backend, PostgreSQL database integration, React + Vite frontend dashboard, user authentication, and protected dashboard APIs.
 
 Implemented features include:
 
@@ -37,8 +37,13 @@ Implemented features include:
 - Forecast data display by product, date, model version, and predicted demand
 - Forecasts summary card in the dashboard overview
 - Sidebar navigation ordered by operations workflow
+- User registration and login from the frontend
+- Session restore from browser local storage
+- Logout flow from the dashboard header
+- Protected dashboard API routes using bearer token authentication
+- Authenticated frontend API helper for dashboard requests
 
-Machine learning forecasting and AI assistant features are planned but still in development.
+Baseline machine learning-style forecasting is implemented through a shared backend forecasting service. The AI assistant feature is planned but still in development.
 
 ---
 
@@ -107,11 +112,11 @@ The React frontend is organized into reusable components and API service files.
 
 - `src/components/` contains reusable UI components such as product cards, product controls, summary cards, product forms, and recommendation sections.
 - `src/api/` contains frontend service functions for calling the FastAPI backend.
-- `src/api/config.js` stores the backend API base URL used by the frontend.
+- `src/api/config.js` stores the backend API base URL and shared authenticated API request helper used by the frontend.
 - `App.jsx` manages top-level state, data loading, and page composition.
 - `App.css` contains the dashboard layout, card styling, status labels, form styling, and responsive behavior.
 
-The dashboard supports updating product inventory directly from product cards. Stock status labels and low-stock counts update after inventory changes.
+The dashboard supports authenticated access, session restore, logout, and updating product inventory directly from product cards. Stock status labels and low-stock counts update after inventory changes.
 
 The current UI has been improved with a dashboard-style layout, summary cards, grouped sections, status badges, and cleaner spacing. A more advanced SaaS-style redesign with sidebar navigation, tabs, charts, and wider dashboard modules is planned for a later phase.
 
@@ -128,6 +133,45 @@ The dashboard now includes Products, Orders, and Recommendations sections inside
 The dashboard includes a Forecasts section that displays backend forecast records used by the recommendation engine, including forecast date, model version, and predicted demand for each product.
 
 The sidebar navigation follows the operational workflow: Dashboard, Products, Orders, Forecasts, and Recommendations. The dashboard overview includes summary metrics for products, orders, forecasts, and low-stock products.
+
+---
+
+## Authentication and API Security
+
+SmartOps AI includes a working authentication flow for the dashboard.
+
+Current authentication features include:
+
+- User registration from the frontend
+- User login from the frontend
+- Password hashing on the backend
+- JWT access token generation on login
+- Session restore from browser local storage
+- Logout from the dashboard header
+- Protected dashboard APIs using bearer token authentication
+
+The frontend stores the access token in browser local storage and sends it with dashboard API requests through a shared `apiFetch` helper.
+
+Protected backend route groups include:
+
+```text
+/products/*
+/inventory/*
+/orders/*
+/forecast/*
+/recommendations/*
+```
+
+Public backend routes include:
+
+```text
+/health
+/
+/auth/register
+/auth/login
+```
+
+The `/auth/me` route requires a valid bearer token and is used by the frontend to restore the current logged-in user.
 
 ---
 
@@ -158,6 +202,8 @@ The sidebar navigation follows the operational workflow: Dashboard, Products, Or
 - Orders summary metric in the dashboard overview
 - Active sidebar navigation for dashboard sections
 - Read-only forecast dashboard powered by backend forecast data
+- User authentication with password hashing and JWT access tokens
+- Protected dashboard APIs for products, inventory, orders, forecasts, and recommendations
 
 ---
 
@@ -248,6 +294,8 @@ Latest forecast endpoint:
 ```http
 GET /forecast/latest
 ```
+
+These forecast endpoints are protected and require a valid bearer token from an authenticated dashboard user.
 
 Current baseline formula:
 
@@ -384,3 +432,14 @@ Planned future work includes:
 - Automated tests
 - Database migrations with Alembic
 - Screenshots and demo video for portfolio presentation
+---
+
+## Current Verification Status
+
+Latest verified project checks:
+
+```text
+Backend tests: 15 passed
+Frontend production build: passed
+Protected dashboard API browser sanity check: passed
+```
