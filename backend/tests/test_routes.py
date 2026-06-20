@@ -27,9 +27,9 @@ def test_forecast_endpoint_returns_success_or_not_found():
 
     response = client.get("/forecast/", headers=headers)
 
-    assert response.status_code in [200, 404]
+    assert response.status_code == 200
 
-def test_recommendations_endpoint_returns_success():
+def test_recommendations_endpoint_returns_success_or_not_found():
     headers = get_auth_headers(client)
 
     response = client.get("/recommendations/", headers=headers)
@@ -41,7 +41,7 @@ def test_get_latest_forecasts_returns_list_or_not_found():
 
     response = client.get("/forecast/latest", headers=headers)
 
-    assert response.status_code in [200, 404]
+    assert response.status_code == 200
 
 def test_generate_forecasts_returns_generation_summary():
     headers = get_auth_headers(client)

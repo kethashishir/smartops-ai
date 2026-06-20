@@ -25,9 +25,6 @@ def get_forecast(
         .all()
     )
 
-    if not forecasts:
-        raise HTTPException(status_code=404, detail="No forecast data found")
-
     return forecasts
 
 
@@ -41,9 +38,6 @@ def get_latest_forecasts(
         .filter(Forecast.user_id == current_user.id)
         .all()
     )
-
-    if not forecasts:
-        raise HTTPException(status_code=404, detail="No forecast data found")
 
     latest_by_product_id = {}
 
