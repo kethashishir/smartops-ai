@@ -12,17 +12,45 @@ function ProductCard({
   onStockInputChange,
   onUpdateStock,
 }) {
+  const stockDisplay = currentStock ?? "Loading...";
+  const recommendationText =
+    recommendation?.recommended_quantity > 0
+      ? `Restock ${recommendation.recommended_quantity} units`
+      : "No Restock Needed";
+
   return (
-    <div className={`card ${isLowStock ? "low-stock-card" : ""}`}>
-      <h2>{product.name}</h2>
+    <div className={`product-card ${isLowStock ? "low-stock-card" : ""}`}>
+      <div className="product-card-header">
+        <div>
+          <h3>{product.name}</h3>
+          <p>{product.category}</p>
+        </div>
 
-      <ProductStatusLabel isLowStock={isLowStock} />
+        <ProductStatusLabel isLowStock={isLowStock} />
+      </div>
 
-      <p>SKU: {product.sku}</p>
-      <p>Category: {product.category}</p>
-      <p>Price: ${product.unit_price.toFixed(2)}</p>
-      <p>Reorder Threshold: {product.reorder_threshold}</p>
-      <p>Current Stock: {currentStock ?? "Loading..."}</p>
+      <div className="product-meta-grid">
+        <div>
+          <span>SKU</span>
+          <p>{product.sku}</p>
+        </div>
+
+        <div>
+          <span>Price</span>
+          <p>${product.unit_price.toFixed(2)}</p>
+        </div>
+
+        <div>
+          <span>Current Stock</span>
+          <p>{stockDisplay}</p>
+        </div>
+
+        <div>
+          <span>Reorder Threshold</span>
+          <p>{product.reorder_threshold}</p>
+        </div>
+      </div>
+
       {recommendation && (
         <p
           className={
@@ -31,43 +59,43 @@ function ProductCard({
               : "inline-recommendation no-restock"
           }
         >
-          Recommendation:{" "}
-          {recommendation.recommended_quantity > 0
-            ? `Restock ${recommendation.recommended_quantity} units`
-            : "No Restock Needed"}
+          Recommendation: {recommendationText}
         </p>
       )}
-      <div className="stock-update">
-        <input
-          type="number"
-          min="0"
-          placeholder="New stock"
-          value={stockUpdateValue}
-          onChange={(event) =>
-            onStockInputChange(product.id, event.target.value)
-          }
-        />
+
+      <div className="product-card-actions">
+        <div className="stock-update">
+          <input
+            type="number"
+            min="0"
+            placeholder="New stock"
+            value={stockUpdateValue}
+            onChange={(event) =>
+              onStockInputChange(product.id, event.target.value)
+            }
+          />
+
+          <button
+            onClick={() => onUpdateStock(product.id)}
+            disabled={
+              updatingStockProductId === product.id || stockUpdateValue === ""
+            }
+          >
+            {updatingStockProductId === product.id
+              ? "Updating..."
+              : "Update Stock"}
+          </button>
+        </div>
 
         <button
-          onClick={() => onUpdateStock(product.id)}
-          disabled={
-            updatingStockProductId === product.id || stockUpdateValue === ""
-          }
+          onClick={() => onGenerateRecommendation(product.id)}
+          disabled={generatingProductId === product.id}
         >
-          {updatingStockProductId === product.id
+          {generatingProductId === product.id
             ? "Updating..."
-            : "Update Stock"}
+            : "Update Recommendation"}
         </button>
       </div>
-
-      <button
-        onClick={() => onGenerateRecommendation(product.id)}
-        disabled={generatingProductId === product.id}
-      >
-        {generatingProductId === product.id
-          ? "Updating..."
-          : "Update Recommendation"}
-      </button>
     </div>
   );
 }
