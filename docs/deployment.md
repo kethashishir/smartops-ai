@@ -22,6 +22,7 @@ Required environment variables:
 DATABASE_URL=postgresql://username:password@host:port/database_name
 ALLOWED_ORIGINS=https://your-frontend-domain.com
 SECRET_KEY=replace-with-a-secure-random-secret
+AUTO_CREATE_TABLES=false
 ```
 
 Local development command:
@@ -30,6 +31,37 @@ Local development command:
 cd backend
 source .venv/bin/activate
 uvicorn app.main:app --reload
+```
+
+## Database Migrations
+
+SmartOps AI uses Alembic for database migrations.
+
+Before starting the backend in a deployed environment, run:
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+The current local development database has been stamped at the baseline Alembic revision:
+
+```text
+992241333c37 (head)
+```
+
+Production deployments should use Alembic migrations instead of automatic SQLAlchemy table creation.
+
+`AUTO_CREATE_TABLES` should stay disabled in production:
+
+```env
+AUTO_CREATE_TABLES=false
+```
+
+For local development only, automatic table creation can be enabled temporarily:
+
+```env
+AUTO_CREATE_TABLES=true
 ```
 
 ## Authentication Notes
@@ -70,7 +102,7 @@ Recommendations
 
 Products are the ownership root for inventory. A user must own a product before they can view or update that product's inventory. Forecast and recommendation generation only uses the authenticated user's operational data.
 
-This project currently uses direct SQLAlchemy model creation and small local database update scripts during development. Before production deployment, this should be replaced with a proper migration workflow such as Alembic.
+Cross-user access is covered by backend regression tests for products, inventory, orders, forecasts, and recommendations.
 
 ## Frontend
 
