@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.inventories import Inventory
 from app.schemas.inventory import InventoryUpdate, InventoryResponse
+from app.auth.security import get_current_user
 
-router = APIRouter(prefix="/inventory", tags=["inventory"])
+router = APIRouter(
+    prefix="/inventory",
+    tags=["inventory"],
+    dependencies=[Depends(get_current_user)],
+)
 
 @router.get("/{product_id}", response_model=InventoryResponse)
 def get_inventory(product_id: int, db: Session = Depends(get_db)):
