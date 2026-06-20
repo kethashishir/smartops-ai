@@ -133,3 +133,55 @@ def test_inventory_rejects_product_owned_by_another_user():
     )
     assert update_response.status_code == 404
     assert update_response.json()["detail"] == "Product not found"
+
+def test_orders_are_scoped_to_authenticated_user():
+    owner_headers = get_auth_headers(client)
+    other_user_headers = get_auth_headers(client)
+
+    product = create_test_product(owner_headers)
+
+    seed_stock_response = client.patch(
+        f"/inventory/{product['id']}",
+        json={"current_stock": 5},
+        headers=owner_headers,
+    )
+    assert seed_stock_response.status_code == 200
+
+    order_response = client.post(
+        "/orders/",
+        json={
+            "product_id": product["id"],
+            "quantity": 1,
+            "source": "ownership-test",
+        },
+        headers=owner_headers,
+    )
+    assert order_response.status_code == 200
+
+    owner_orders_response = client.get("/orders/", headers=owner_headers)
+    assert owner_orders_response.status_code == 200
+
+    owner_order_ids = {
+        order["id"] for order in owner_orders_response.json()
+    }
+    assert order_response.json()["id"] in owner_order_ids
+
+    other_orders_response = client.get("/orders/", headers=other_user_headers)
+    assert other_orders_response.status_code == 200
+
+    other_order_ids = {
+        order["id"] for order in other_orders_response.json()
+    }
+    assert order_response.json()["id"] not in other_order_ids
+
+    unauthorized_order_response = client.post(
+        "/orders/",
+        json={
+            "product_id": product["id"],
+            "quantity": 1,
+            "source": "unauthorized-ownership-test",
+        },
+        headers=other_user_headers,
+    )
+    assert unauthorized_order_response.status_code == 404
+    assert unauthorized_order_response.json()["detail"] == "Product not found"
