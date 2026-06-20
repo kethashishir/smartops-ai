@@ -112,3 +112,24 @@ def test_create_valid_order_reduces_inventory_and_restores_stock():
         )
 
         assert restore_response.status_code == 200
+    
+def test_inventory_rejects_product_owned_by_another_user():
+    owner_headers = get_auth_headers(client)
+    other_user_headers = get_auth_headers(client)
+
+    product = create_test_product(owner_headers)
+
+    get_response = client.get(
+        f"/inventory/{product['id']}",
+        headers=other_user_headers,
+    )
+    assert get_response.status_code == 404
+    assert get_response.json()["detail"] == "Product not found"
+
+    update_response = client.patch(
+        f"/inventory/{product['id']}",
+        json={"current_stock": 10},
+        headers=other_user_headers,
+    )
+    assert update_response.status_code == 404
+    assert update_response.json()["detail"] == "Product not found"
