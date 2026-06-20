@@ -65,6 +65,7 @@ function App() {
   const [forecasts, setForecasts] = useState([]);
   const [loadingForecasts, setLoadingForecasts] = useState(false);
   const [forecastsError, setForecastsError] = useState("");
+  const [forecastSuccess, setForecastSuccess] = useState("");
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -204,6 +205,7 @@ function App() {
     try {
       setLoadingForecasts(true);
       setForecastsError("");
+      setForecastSuccess("");
 
       await generateForecasts();
       const data = await getForecasts();
@@ -215,7 +217,9 @@ function App() {
       setForecasts(sortedForecasts);
       await generateAllRecommendations();
       await fetchRecommendations();
+      setForecastSuccess("Forecasts and recommendations updated successfully.");
     } catch (error) {
+      setForecastSuccess("");
       console.error("Error refreshing forecasts:", error.message);
       setForecastsError(error.message || "Could not refresh forecasts.");
     } finally {
@@ -562,6 +566,7 @@ function App() {
             sectionId="forecasts-section"
             forecasts={forecasts}
             forecastsError={forecastsError}
+            forecastSuccess={forecastSuccess}
             loadingForecasts={loadingForecasts}
             onRefreshForecasts={handleRefreshForecasts}
             getProductName={getProductName}

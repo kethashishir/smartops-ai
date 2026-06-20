@@ -2,6 +2,7 @@ function ForecastsSection({
   sectionId,
   forecasts,
   forecastsError,
+  forecastSuccess,
   loadingForecasts,
   onRefreshForecasts,
   getProductName,
@@ -22,6 +23,7 @@ function ForecastsSection({
       </div>
 
       {forecastsError && <p className="error">{forecastsError}</p>}
+      {forecastSuccess && <p className="success">{forecastSuccess}</p>}
       {loadingForecasts && <p>Loading forecasts...</p>}
 
       {forecasts.length === 0 && !loadingForecasts && !forecastsError && (
