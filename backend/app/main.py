@@ -1,9 +1,11 @@
 import os
+
 from fastapi import FastAPI
-from app.database import Base, engine
-from app.models import product, inventories, forecast, recommendation, user, orders  # Ensure the Product and Category models are imported so they're registered with SQLAlchemy
-from app.routers import products, inventory, order, forecast, recommendation, auth
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.database import Base, engine
+from app.models import forecast, inventories, orders, product, recommendation, user
+from app.routers import auth, forecast as forecast_router, inventory, order, products, recommendation
 
 app = FastAPI()
 
@@ -20,20 +22,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
 
+
 app.include_router(products.router)
 app.include_router(order.router)
 app.include_router(inventory.router)
-app.include_router(forecast.router)
+app.include_router(forecast_router.router)
 app.include_router(recommendation.router)
 app.include_router(auth.router)
+
 
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Inventory Management API!"}
 
-# Create tables if they don't exist
-Base.metadata.create_all(bind=engine)
+
+if os.getenv("AUTO_CREATE_TABLES", "false").lower() == "true":
+    Base.metadata.create_all(bind=engine)
