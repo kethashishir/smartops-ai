@@ -24,6 +24,10 @@ function RecommendationsSection({
     0,
   );
 
+  const sortedRecommendations = [...latestRecommendations].sort(
+    (a, b) => b.recommended_quantity - a.recommended_quantity,
+  );
+
   return (
     <section id={sectionId} className="section">
       <h2>Recommendations</h2>
@@ -96,7 +100,7 @@ function RecommendationsSection({
 
       {recommendations.length > 0 && (
         <ul className="recommendation-list">
-          {latestRecommendations.map((recommendation) => (
+          {sortedRecommendations.map((recommendation) => (
             <li key={recommendation.id}>
               <div className="recommendation-card">
                 <div className="recommendation-card-header">
