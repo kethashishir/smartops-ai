@@ -591,7 +591,11 @@ function App() {
       <Sidebar activeSection={activeSection} onNavigate={scrollToSection} />
 
       <div className="main-shell">
-        <DashboardHeader backendStatus={backendStatus} />
+        <DashboardHeader
+          backendStatus={backendStatus}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
 
         <main className="dashboard-content">
           <section>

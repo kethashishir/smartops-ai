@@ -276,6 +276,51 @@ button:disabled {
   background: #ffe8ec;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+}
+
+.user-chip span {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 800;
+}
+
+.user-chip strong {
+  display: block;
+  color: #111827;
+  font-size: 0.85rem;
+}
+
+.user-chip p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.logout-button {
+  margin: 0;
+}
+
 /* -----------------------------
    5. Shared Messages / Utility
 ----------------------------- */

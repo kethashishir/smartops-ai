@@ -1,4 +1,4 @@
-function DashboardHeader({ backendStatus }) {
+function DashboardHeader({ backendStatus, currentUser, onLogout }) {
   return (
     <header id="dashboard-overview" className="app-header">
       <div>
@@ -9,14 +9,30 @@ function DashboardHeader({ backendStatus }) {
         </p>
       </div>
 
-      <p className={`backend-status ${backendStatus}`}>
-        Backend{" "}
-        {backendStatus === "checking"
-          ? "Checking..."
-          : backendStatus === "connected"
-            ? "Connected"
-            : "Offline"}
-      </p>
+      <div className="header-actions">
+        {currentUser && (
+          <div className="user-chip">
+            <span>{currentUser.name?.charAt(0).toUpperCase()}</span>
+            <div>
+              <strong>{currentUser.name}</strong>
+              <p>{currentUser.email}</p>
+            </div>
+          </div>
+        )}
+
+        <p className={`backend-status ${backendStatus}`}>
+          Backend{" "}
+          {backendStatus === "checking"
+            ? "Checking..."
+            : backendStatus === "connected"
+              ? "Connected"
+              : "Offline"}
+        </p>
+
+        <button className="logout-button" onClick={onLogout}>
+          Logout
+        </button>
+      </div>
     </header>
   );
 }
