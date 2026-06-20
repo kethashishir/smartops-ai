@@ -29,11 +29,23 @@ predicted_demand = baseline * 1.15
 
 This provides a simple first forecasting pipeline before adding more advanced machine learning models.
 
+## Shared Forecasting Logic
+
+The ML script reuses the backend forecasting service located at:
+
+```text
+backend/app/services/forecast_service.py
+```
+
+This keeps the baseline forecast formula in one place instead of duplicating it across the backend API and ML script.
+
+The script `ml/generate_forecasts.py` loads the project database configuration, creates a database session, and calls the shared `generate_baseline_forecasts` service.
+
 ## Data Flow
 
 ```text
 Products + Orders
-→ Baseline Forecast Generator
+→ Shared Forecasting Service
 → Forecasts Table
 → Recommendations Engine
 → Dashboard
