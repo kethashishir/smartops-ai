@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from tests.auth_helpers import get_auth_headers
 
 from app.main import app
 
@@ -21,7 +22,8 @@ def test_create_order_rejects_missing_product():
 
 
 def test_create_order_rejects_insufficient_stock():
-    products_response = client.get("/products/")
+    headers = get_auth_headers(client)
+    products_response = client.get("/products/", headers=headers)
     assert products_response.status_code == 200
 
     products = products_response.json()
@@ -48,7 +50,8 @@ def test_create_order_rejects_insufficient_stock():
 
 
 def test_create_valid_order_reduces_inventory_and_restores_stock():
-    products_response = client.get("/products/")
+    headers = get_auth_headers(client)
+    products_response = client.get("/products/", headers=headers)
     assert products_response.status_code == 200
 
     products = products_response.json()

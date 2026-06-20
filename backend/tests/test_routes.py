@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from tests.auth_helpers import get_auth_headers
 
 from app.main import app
 
@@ -7,7 +8,8 @@ client = TestClient(app)
 
 
 def test_products_endpoint_returns_success():
-    response = client.get("/products/")
+    headers = get_auth_headers(client)
+    response = client.get("/products/", headers=headers)
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
