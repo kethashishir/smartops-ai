@@ -84,6 +84,7 @@ function RecommendationsSection({
 
           <p className="filter-count">
             Showing {latestRecommendations.length} recommendation statuses
+            sorted by restock priority
           </p>
         </>
       )}
