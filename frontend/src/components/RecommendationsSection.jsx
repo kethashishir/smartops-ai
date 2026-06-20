@@ -95,26 +95,33 @@ function RecommendationsSection({
         )}
 
       {recommendations.length > 0 && (
-        <ul>
+        <ul className="recommendation-list">
           {latestRecommendations.map((recommendation) => (
             <li key={recommendation.id}>
-              <div className="card">
-                <h2>Product: {getProductName(recommendation.product_id)}</h2>
-                <p
-                  className={
-                    recommendation.recommended_quantity > 0
-                      ? "recommendation-label"
-                      : "no-restock-label"
-                  }
-                >
-                  {recommendation.recommended_quantity > 0
-                    ? "Restock Recommended"
-                    : "No Restock Needed"}
-                </p>
-                <p>
-                  Recommended Quantity: {recommendation.recommended_quantity}
-                </p>
-                <p>Reason: {recommendation.reason}</p>
+              <div className="recommendation-card">
+                <div className="recommendation-card-header">
+                  <div>
+                    <h3>{getProductName(recommendation.product_id)}</h3>
+                    <p
+                      className={
+                        recommendation.recommended_quantity > 0
+                          ? "recommendation-label"
+                          : "no-restock-label"
+                      }
+                    >
+                      {recommendation.recommended_quantity > 0
+                        ? "Restock Recommended"
+                        : "No Restock Needed"}
+                    </p>
+                  </div>
+
+                  <div className="recommendation-quantity">
+                    <span>{recommendation.recommended_quantity}</span>
+                    <p>units</p>
+                  </div>
+                </div>
+
+                <p className="recommendation-reason">{recommendation.reason}</p>
               </div>
             </li>
           ))}
