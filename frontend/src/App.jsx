@@ -120,6 +120,7 @@ function App() {
       });
 
       localStorage.setItem("smartops_token", data.access_token);
+      resetDashboardState();
       setCurrentUser(data.user);
 
       setAuthForm({
@@ -134,8 +135,37 @@ function App() {
     }
   }
 
+  function resetDashboardState() {
+    setProducts([]);
+    setInventoryByProductId({});
+    setRecommendations([]);
+    setOrders([]);
+    setForecasts([]);
+
+    setProductSuccess("");
+    setOrderSuccess("");
+    setForecastSuccess("");
+    setRecommendationSuccess("");
+
+    setProductsError("");
+    setOrdersError("");
+    setForecastsError("");
+    setRecommendationsError("");
+
+    setProductSearch("");
+    setProductFilter("all");
+    setSortOption("default");
+    setStockUpdates({});
+    setNewOrder({
+      product_id: "",
+      quantity: "",
+      source: "dashboard",
+    });
+  }
+
   function handleLogout() {
     localStorage.removeItem("smartops_token");
+    resetDashboardState();
     setCurrentUser(null);
   }
 
@@ -426,11 +456,20 @@ function App() {
 
   useEffect(() => {
     checkBackendHealth();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) {
+      resetDashboardState();
+      return;
+    }
+
+    resetDashboardState();
     fetchProducts();
     fetchRecommendations();
     fetchOrders();
     fetchForecasts();
-  }, []);
+  }, [currentUser?.id]);
 
   useEffect(() => {
     async function restoreAuthSession() {
