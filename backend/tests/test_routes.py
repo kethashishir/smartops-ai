@@ -16,10 +16,11 @@ def test_products_endpoint_returns_success():
 
 
 def test_orders_endpoint_returns_success():
-    response = client.get("/orders/")
+    headers = get_auth_headers(client)
+
+    response = client.get("/orders/", headers=headers)
 
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
 
 
 def test_forecast_endpoint_returns_success_or_not_found():

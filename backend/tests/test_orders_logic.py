@@ -6,8 +6,9 @@ from tests.auth_helpers import get_auth_headers
 
 client = TestClient(app)
 
-
 def test_create_order_rejects_missing_product():
+    headers = get_auth_headers(client)
+
     response = client.post(
         "/orders/",
         json={
@@ -15,6 +16,7 @@ def test_create_order_rejects_missing_product():
             "quantity": 1,
             "source": "test",
         },
+        headers=headers,
     )
 
     assert response.status_code == 404
