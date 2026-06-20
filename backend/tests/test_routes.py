@@ -106,3 +106,85 @@ def test_products_are_scoped_to_authenticated_user():
     )
     assert unauthorized_update_response.status_code == 404
     assert unauthorized_update_response.json()["detail"] == "Product not found"
+
+def test_forecasts_and_recommendations_are_scoped_to_authenticated_user():
+    owner_headers = get_auth_headers(client)
+    other_user_headers = get_auth_headers(client)
+
+    product = create_route_test_product(owner_headers)
+
+    seed_stock_response = client.patch(
+        f"/inventory/{product['id']}",
+        json={"current_stock": 2},
+        headers=owner_headers,
+    )
+    assert seed_stock_response.status_code == 200
+
+    order_response = client.post(
+        "/orders/",
+        json={
+            "product_id": product["id"],
+            "quantity": 1,
+            "source": "forecast-recommendation-ownership-test",
+        },
+        headers=owner_headers,
+    )
+    assert order_response.status_code == 200
+
+    forecast_response = client.post(
+        "/forecast/generate",
+        headers=owner_headers,
+    )
+    assert forecast_response.status_code == 200
+
+    recommendation_response = client.post(
+        "/recommendations/generate_all",
+        headers=owner_headers,
+    )
+    assert recommendation_response.status_code == 200
+
+    owner_forecasts_response = client.get(
+        "/forecast/latest",
+        headers=owner_headers,
+    )
+    assert owner_forecasts_response.status_code == 200
+
+    owner_forecast_product_ids = {
+        forecast["product_id"] for forecast in owner_forecasts_response.json()
+    }
+    assert product["id"] in owner_forecast_product_ids
+
+    owner_recommendations_response = client.get(
+        "/recommendations/",
+        headers=owner_headers,
+    )
+    assert owner_recommendations_response.status_code == 200
+
+    owner_recommendation_product_ids = {
+        recommendation["product_id"]
+        for recommendation in owner_recommendations_response.json()
+    }
+    assert product["id"] in owner_recommendation_product_ids
+
+    other_forecasts_response = client.get(
+        "/forecast/latest",
+        headers=other_user_headers,
+    )
+    assert other_forecasts_response.status_code == 200
+
+    other_forecast_product_ids = {
+        forecast["product_id"] for forecast in other_forecasts_response.json()
+    }
+    assert product["id"] not in other_forecast_product_ids
+
+    other_recommendations_response = client.get(
+        "/recommendations/",
+        headers=other_user_headers,
+    )
+    assert other_recommendations_response.status_code == 200
+
+    other_recommendation_product_ids = {
+        recommendation["product_id"]
+        for recommendation in other_recommendations_response.json()
+    }
+    assert product["id"] not in other_recommendation_product_ids
