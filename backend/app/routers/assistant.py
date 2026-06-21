@@ -120,8 +120,17 @@ def build_operations_summary(db: Session, user_id: int) -> AssistantResponse:
     else:
         suggested_actions.append("Review low-stock products and restock recommendations.")
 
+    highlights = []
+
+    if low_stock_products:
+        highlights.extend(low_stock_products[:5])
+
+    if restock_recommendations:
+        highlights.extend(restock_recommendations[:5])
+
     return AssistantResponse(
         answer=" ".join(answer_parts),
+        highlights=highlights,
         suggested_actions=suggested_actions,
     )
 
@@ -143,13 +152,13 @@ def answer_low_stock_question(db: Session, user_id: int) -> AssistantResponse:
     if not low_stock_products:
         return AssistantResponse(
             answer="No products are currently below their reorder threshold.",
+            highlights=[],
             suggested_actions=["Keep monitoring inventory as new orders come in."],
         )
 
     return AssistantResponse(
-        answer="These products are currently low stock: "
-        + "; ".join(low_stock_products)
-        + ".",
+        answer=f"{len(low_stock_products)} products are currently low stock.",
+        highlights=low_stock_products,
         suggested_actions=["Review these products and consider restocking soon."],
     )
 
@@ -165,18 +174,21 @@ def answer_restock_question(db: Session, user_id: int) -> AssistantResponse:
 
     if not latest_recommendations:
         return AssistantResponse(
-            answer="No recommendations are available yet. Generate forecasts first, then generate recommendations.",
+            answer="No recommendations are available yet.",
+            highlights=[],
             suggested_actions=["Generate forecasts.", "Generate recommendations."],
         )
 
     if not restock_recommendations:
         return AssistantResponse(
             answer="No products currently need restocking based on the latest recommendations.",
+            highlights=[],
             suggested_actions=["Review inventory again after more orders are created."],
         )
 
     return AssistantResponse(
-        answer="Recommended restocks: " + "; ".join(restock_recommendations) + ".",
+        answer=f"{len(restock_recommendations)} products have restock recommendations.",
+        highlights=restock_recommendations,
         suggested_actions=["Restock the highest-priority products first."],
     )
 
@@ -195,17 +207,18 @@ def answer_forecast_question(db: Session, user_id: int) -> AssistantResponse:
 
     if not latest_forecast:
         return AssistantResponse(
-            answer="No forecasts are available yet. Create orders, then generate forecasts.",
+            answer="No forecasts are available yet.",
+            highlights=[],
             suggested_actions=["Create orders.", "Generate forecasts."],
         )
 
     forecast, product_name = latest_forecast
 
     return AssistantResponse(
-        answer=(
-            f"{product_name} currently has the highest predicted demand at "
-            f"{format_quantity(forecast.predicted_demand)} units."
-        ),
+        answer=f"{product_name} currently has the highest predicted demand.",
+        highlights=[
+            f"{product_name}: {format_quantity(forecast.predicted_demand)} units forecasted"
+        ],
         suggested_actions=["Review this product's inventory and recommendation."],
     )
 
@@ -243,6 +256,11 @@ def ask_assistant(
             "I can help summarize operations, identify low-stock products, "
             "review restock recommendations, and explain forecasted demand."
         ),
+        highlights=[
+            "Inventory health",
+            "Restock recommendations",
+            "Forecasted demand",
+        ],
         suggested_actions=[
             "Ask: Which products are low stock?",
             "Ask: What should I restock?",

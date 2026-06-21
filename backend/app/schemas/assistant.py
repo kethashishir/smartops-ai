@@ -7,4 +7,5 @@ class AssistantQuestion(BaseModel):
 
 class AssistantResponse(BaseModel):
     answer: str
+    highlights: list[str] = []
     suggested_actions: list[str] = []

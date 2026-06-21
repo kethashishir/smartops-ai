@@ -43,8 +43,10 @@ def test_assistant_can_answer_low_stock_question():
 
     assert "answer" in data
     assert "suggested_actions" in data
+    assert "highlights" in data
     assert isinstance(data["answer"], str)
     assert isinstance(data["suggested_actions"], list)
+    assert isinstance(data["highlights"], list)
 
 
 def test_assistant_can_answer_unknown_question_with_suggestions():
@@ -62,3 +64,4 @@ def test_assistant_can_answer_unknown_question_with_suggestions():
 
     assert "I can help" in data["answer"]
     assert len(data["suggested_actions"]) > 0
+    assert len(data["highlights"]) > 0
