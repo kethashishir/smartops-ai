@@ -3,8 +3,8 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
+import ProductsPage from "./pages/ProductsPage.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
-import ProductsSection from "./components/ProductsSection.jsx";
 import OrdersSection from "./components/OrdersSection.jsx";
 import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
@@ -213,42 +213,6 @@ function App() {
     return <Navigate to="/" replace />;
   }
 
-  function renderProductsSection() {
-    return (
-      <ProductsSection
-        sectionId="products-section"
-        productSuccess={productState.productSuccess}
-        productsError={productState.productsError}
-        loadingProducts={productState.loadingProducts}
-        newProduct={productState.newProduct}
-        onInputChange={productState.handleProductInputChange}
-        onCreateProduct={productState.createProduct}
-        creatingProduct={productState.creatingProduct}
-        onRefreshProducts={productState.fetchProducts}
-        productSearch={productState.productSearch}
-        setProductSearch={productState.setProductSearch}
-        productFilter={productState.productFilter}
-        setProductFilter={productState.setProductFilter}
-        filteredProducts={productState.filteredProducts}
-        products={productState.products}
-        sortOption={productState.sortOption}
-        setSortOption={productState.setSortOption}
-        sortedProducts={productState.sortedProducts}
-        isLowStock={productState.isLowStock}
-        inventoryByProductId={productState.inventoryByProductId}
-        generatingProductId={recommendationState.generatingProductId}
-        latestRecommendations={recommendationState.latestRecommendations}
-        onGenerateRecommendation={
-          recommendationState.generateRecommendationForProduct
-        }
-        stockUpdates={productState.stockUpdates}
-        updatingStockProductId={productState.updatingStockProductId}
-        onStockInputChange={productState.handleStockInputChange}
-        onUpdateStock={productState.updateProductStock}
-      />
-    );
-  }
-
   function renderOrdersSection() {
     return (
       <OrdersSection
@@ -314,7 +278,12 @@ function App() {
     }
 
     if (activeSection === "products") {
-      return renderProductsSection();
+      return (
+        <ProductsPage
+          productState={productState}
+          recommendationState={recommendationState}
+        />
+      );
     }
 
     if (activeSection === "orders") {
