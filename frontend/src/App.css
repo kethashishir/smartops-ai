@@ -181,6 +181,7 @@ button:disabled {
   font-weight: 700;
   box-shadow: none;
   transform: none;
+  text-decoration: none;
 
   display: flex;
   align-items: center;
@@ -212,6 +213,15 @@ button:disabled {
   background: transparent;
   color: #6b7280;
   transform: none;
+}
+
+.sidebar-link,
+.sidebar-link:visited {
+  text-decoration: none;
+}
+
+.sidebar-link {
+  box-sizing: border-box;
 }
 
 .sidebar-badge {

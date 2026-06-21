@@ -1,31 +1,33 @@
+import { NavLink } from "react-router-dom";
+
 const navItems = [
   {
     label: "Dashboard",
-    section: "dashboard",
+    path: "/",
   },
   {
     label: "Assistant",
-    section: "assistant",
+    path: "/assistant",
   },
   {
     label: "Products",
-    section: "products",
+    path: "/products",
   },
   {
     label: "Orders",
-    section: "orders",
+    path: "/orders",
   },
   {
     label: "Forecasts",
-    section: "forecasts",
+    path: "/forecasts",
   },
   {
     label: "Recommendations",
-    section: "recommendations",
+    path: "/recommendations",
   },
 ];
 
-function Sidebar({ activeSection, onNavigate }) {
+function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -38,15 +40,16 @@ function Sidebar({ activeSection, onNavigate }) {
 
       <nav className="sidebar-nav">
         {navItems.map((item) => (
-          <button
-            className={`sidebar-link ${
-              activeSection === item.section ? "active" : ""
-            }`}
-            key={item.section}
-            onClick={() => onNavigate(item.section)}
+          <NavLink
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+            end={item.path === "/"}
+            key={item.path}
+            to={item.path}
           >
             {item.label}
-          </button>
+          </NavLink>
         ))}
       </nav>
     </aside>

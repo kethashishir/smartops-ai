@@ -22,26 +22,49 @@ const sectionRoutes = {
   dashboard: {
     path: "/",
     sectionId: "dashboard-section",
+    eyebrow: "Operations Dashboard",
+    title: "SmartOps AI",
+    description:
+      "Monitor inventory health, stock levels, and reorder recommendations.",
   },
   assistant: {
     path: "/assistant",
     sectionId: "assistant-section",
+    eyebrow: "SmartOps Copilot",
+    title: "Assistant",
+    description:
+      "Ask operational questions about products, inventory, orders, forecasts, and recommendations.",
   },
   products: {
     path: "/products",
     sectionId: "products-section",
+    eyebrow: "Inventory Control",
+    title: "Products",
+    description:
+      "Create products, update stock levels, and monitor inventory health.",
   },
   orders: {
     path: "/orders",
     sectionId: "orders-section",
+    eyebrow: "Order Activity",
+    title: "Orders",
+    description: "Create customer orders and track recent order history.",
   },
   forecasts: {
     path: "/forecasts",
     sectionId: "forecasts-section",
+    eyebrow: "Demand Planning",
+    title: "Forecasts",
+    description:
+      "Generate demand forecasts from order history and refresh planning data.",
   },
   recommendations: {
     path: "/recommendations",
     sectionId: "recommendations-section",
+    eyebrow: "Reorder Planning",
+    title: "Recommendations",
+    description:
+      "Review suggested reorder quantities based on demand forecasts and current stock.",
   },
 };
 
@@ -83,6 +106,8 @@ function App() {
   });
 
   const currentUser = auth.currentUser;
+
+  const currentRoute = sectionRoutes[activeSection] || sectionRoutes.dashboard;
 
   const orderState = useOrders({
     products: productState.products,
@@ -367,12 +392,15 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Sidebar activeSection={activeSection} onNavigate={scrollToSection} />
+      <Sidebar />
 
       <div className="main-shell">
         <DashboardHeader
           backendStatus={backendStatus}
           currentUser={currentUser}
+          eyebrow={currentRoute.eyebrow}
+          title={currentRoute.title}
+          description={currentRoute.description}
           onLogout={auth.handleLogout}
         />
 
