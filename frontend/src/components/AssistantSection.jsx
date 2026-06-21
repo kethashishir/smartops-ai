@@ -4,6 +4,7 @@ function AssistantSection({
   assistantAnswer,
   assistantHighlights,
   assistantActions,
+  assistantHistory,
   assistantStale,
   assistantError,
   loadingAssistant,
@@ -142,6 +143,21 @@ function AssistantSection({
           </div>
         )}
       </div>
+
+      {assistantHistory.length > 1 && (
+        <div className="assistant-history">
+          <h3>Recent assistant questions</h3>
+
+          <div className="assistant-history-list">
+            {assistantHistory.slice(1).map((item) => (
+              <article className="assistant-history-item" key={item.id}>
+                <p className="assistant-history-question">{item.question}</p>
+                <p>{item.answer}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

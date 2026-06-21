@@ -1612,3 +1612,36 @@ button:disabled {
   background: #f8fafc;
   color: #0f172a;
 }
+
+.assistant-history {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+
+.assistant-history h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.assistant-history-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.assistant-history-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 0.85rem;
+}
+
+.assistant-history-item p {
+  margin: 0;
+  color: #64748b;
+}
+
+.assistant-history-question {
+  color: #0f172a !important;
+  font-weight: 800;
+  margin-bottom: 0.35rem !important;
+}

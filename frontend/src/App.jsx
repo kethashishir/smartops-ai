@@ -89,6 +89,7 @@ function App() {
   const [loadingAssistant, setLoadingAssistant] = useState(false);
   const [assistantHighlights, setAssistantHighlights] = useState([]);
   const [assistantStale, setAssistantStale] = useState(false);
+  const [assistantHistory, setAssistantHistory] = useState([]);
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -181,6 +182,7 @@ function App() {
     setAssistantError("");
     setAssistantHighlights([]);
     setAssistantStale(false);
+    setAssistantHistory([]);
   }
 
   function handleLogout() {
@@ -205,6 +207,18 @@ function App() {
       setAssistantAnswer(data.answer);
       setAssistantActions(data.suggested_actions || []);
       setAssistantHighlights(data.highlights || []);
+      setAssistantHistory((currentHistory) =>
+        [
+          {
+            id: crypto.randomUUID(),
+            question: "Generate Summary",
+            answer: data.answer,
+            highlights: data.highlights || [],
+            suggestedActions: data.suggested_actions || [],
+          },
+          ...currentHistory,
+        ].slice(0, 5),
+      );
     } catch (error) {
       console.error("Error loading assistant summary:", error.message);
       setAssistantError(error.message || "Could not load assistant summary.");
@@ -220,6 +234,8 @@ function App() {
       setLoadingAssistant(true);
       setAssistantError("");
 
+      const cleanedQuestion = assistantQuestion.trim();
+
       const data = await askAssistant(assistantQuestion.trim());
 
       setAssistantQuestion(assistantQuestion.trim());
@@ -227,6 +243,19 @@ function App() {
       setAssistantActions(data.suggested_actions || []);
       setAssistantHighlights(data.highlights || []);
       setAssistantStale(false);
+
+      setAssistantHistory((currentHistory) =>
+        [
+          {
+            id: crypto.randomUUID(),
+            question: cleanedQuestion,
+            answer: data.answer,
+            highlights: data.highlights || [],
+            suggestedActions: data.suggested_actions || [],
+          },
+          ...currentHistory,
+        ].slice(0, 5),
+      );
     } catch (error) {
       console.error("Error asking assistant:", error.message);
       setAssistantError(error.message || "Could not ask assistant.");
@@ -248,6 +277,7 @@ function App() {
     setAssistantActions([]);
     setAssistantError("");
     setAssistantStale(false);
+    setAssistantHistory([]);
   }
 
   useEffect(() => {
@@ -790,6 +820,7 @@ function App() {
             assistantAnswer={assistantAnswer}
             assistantHighlights={assistantHighlights}
             assistantActions={assistantActions}
+            assistantHistory={assistantHistory}
             assistantStale={assistantStale}
             assistantError={assistantError}
             loadingAssistant={loadingAssistant}
