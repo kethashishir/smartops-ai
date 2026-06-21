@@ -179,7 +179,9 @@ function OrdersSection({
                 <li key={order.id}>
                   <div className="order-card">
                     <div>
-                      <strong>{getProductName(order.product_id)}</strong>
+                      <strong>
+                        {order.product_name || getProductName(order.product_id)}
+                      </strong>
                       <p>
                         {new Date(order.order_time).toLocaleString(undefined, {
                           dateStyle: "medium",

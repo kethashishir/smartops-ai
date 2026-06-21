@@ -95,6 +95,8 @@ def test_create_valid_order_reduces_inventory_and_restores_stock():
 
     try:
         assert order_response.status_code == 200
+        order_data = order_response.json()
+        assert order_data["product_name"] == product["name"]
 
         updated_inventory_response = client.get(
             f"/inventory/{product['id']}",
@@ -157,12 +159,21 @@ def test_orders_are_scoped_to_authenticated_user():
         headers=owner_headers,
     )
     assert order_response.status_code == 200
+    assert order_response.json()["product_name"] == product["name"]
 
     owner_orders_response = client.get("/orders/", headers=owner_headers)
     assert owner_orders_response.status_code == 200
 
+    owner_orders = owner_orders_response.json()
+    matching_order = next(
+        order
+        for order in owner_orders
+        if order["id"] == order_response.json()["id"]
+    )
+    assert matching_order["product_name"] == product["name"]
+
     owner_order_ids = {
-        order["id"] for order in owner_orders_response.json()
+        order["id"] for order in owner_orders
     }
     assert order_response.json()["id"] in owner_order_ids
 

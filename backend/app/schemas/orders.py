@@ -13,8 +13,7 @@ class OrderResponse(BaseModel):
     id: int
     user_id: int
     product_id: int
+    product_name: str
     quantity: int
     order_time: datetime
     source: str
-
-    model_config = {"from_attributes": True}
