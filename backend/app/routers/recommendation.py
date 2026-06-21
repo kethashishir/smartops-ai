@@ -40,6 +40,11 @@ def get_recommendations(
             Recommendation.user_id == current_user.id,
             Product.user_id == current_user.id,
         )
+        .order_by(
+            Recommendation.recommended_quantity.desc(),
+            Product.name.asc(),
+            Recommendation.id.desc(),
+        )
         .all()
     )
 
@@ -246,4 +251,12 @@ def generate_recommendations_for_all_products(
         db.refresh(recommendation)
         responses.append(build_recommendation_response(recommendation, product_name))
 
+    responses.sort(
+        key=lambda recommendation: (
+            -recommendation["recommended_quantity"],
+            recommendation["product_name"].lower(),
+            -recommendation["id"],
+        )
+    )
+    
     return responses

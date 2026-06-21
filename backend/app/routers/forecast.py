@@ -38,6 +38,7 @@ def get_forecast(
             Forecast.user_id == current_user.id,
             Product.user_id == current_user.id,
         )
+        .order_by(Product.name.asc(), Forecast.forecast_date.desc(), Forecast.id.desc())
         .all()
     )
 
@@ -45,7 +46,6 @@ def get_forecast(
         build_forecast_response(forecast, product_name)
         for forecast, product_name in forecast_rows
     ]
-
 
 @router.get("/latest", response_model=list[ForecastResponse])
 def get_latest_forecasts(
@@ -58,6 +58,11 @@ def get_latest_forecasts(
         .filter(
             Forecast.user_id == current_user.id,
             Product.user_id == current_user.id,
+        )
+        .order_by(
+            Product.name.asc(),
+            Forecast.forecast_date.desc(),
+            Forecast.id.desc(),
         )
         .all()
     )
@@ -101,11 +106,15 @@ def get_latest_forecasts(
                     product_name,
                 )
 
+    latest_rows = sorted(
+        latest_by_product_id.values(),
+        key=lambda row: row[1].lower(),
+    )
+
     return [
         build_forecast_response(forecast, product_name)
-        for forecast, product_name in latest_by_product_id.values()
+        for forecast, product_name in latest_rows
     ]
-
 
 @router.post("/generate")
 def generate_forecasts(
