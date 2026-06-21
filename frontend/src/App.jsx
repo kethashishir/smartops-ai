@@ -6,7 +6,7 @@ import AssistantPage from "./pages/AssistantPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
 import ForecastsPage from "./pages/ForecastsPage.jsx";
-import RecommendationsSection from "./components/RecommendationsSection.jsx";
+import RecommendationsPage from "./pages/RecommendationsPage.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import AuthPage from "./components/AuthPage.jsx";
@@ -213,29 +213,6 @@ function App() {
     return <Navigate to="/" replace />;
   }
 
-  function renderRecommendationsSection() {
-    return (
-      <RecommendationsSection
-        sectionId="recommendations-section"
-        productsCount={productState.products.length}
-        ordersCount={orderState.orders.length}
-        forecastsCount={forecastState.forecasts.length}
-        loadingRecommendations={recommendationState.loadingRecommendations}
-        recommendationsError={recommendationState.recommendationsError}
-        recommendationSuccess={recommendationState.recommendationSuccess}
-        recommendations={recommendationState.recommendations}
-        latestRecommendations={recommendationState.latestRecommendations}
-        hasGeneratedRecommendations={
-          recommendationState.hasGeneratedRecommendations
-        }
-        productsError={productState.productsError}
-        onGenerateRecommendations={recommendationState.generateRecommendations}
-        onRefreshRecommendations={recommendationState.fetchRecommendations}
-        getProductName={productState.getProductName}
-      />
-    );
-  }
-
   function renderActiveSection() {
     if (activeSection === "assistant") {
       return <AssistantPage assistant={assistant} />;
@@ -265,7 +242,14 @@ function App() {
     }
 
     if (activeSection === "recommendations") {
-      return renderRecommendationsSection();
+      return (
+        <RecommendationsPage
+          productState={productState}
+          orderState={orderState}
+          forecastState={forecastState}
+          recommendationState={recommendationState}
+        />
+      );
     }
 
     return (
