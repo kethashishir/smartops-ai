@@ -261,6 +261,21 @@ This gives the project a more polished SaaS-style dashboard experience while kee
 
 ---
 
+### SmartOps Assistant
+
+SmartOps AI now includes a rule-based assistant API and dashboard panel.
+
+The assistant can answer user-scoped operational questions such as:
+
+- Which products are low stock?
+- What should I restock?
+- Which product has the highest forecasted demand?
+- Give me an operations summary.
+
+The first version uses deterministic business logic over the authenticated user's products, inventory, orders, forecasts, and recommendations. It is designed so it can later be upgraded into an LLM-powered copilot.
+
+---
+
 ## 🔁 System Workflow
 
 Products → Inventory → Orders → Forecast → Recommendations
