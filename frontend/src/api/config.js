@@ -21,5 +21,17 @@ export async function apiFetch(path, options = {}) {
     headers,
   });
 
+  if (response.status === 401) {
+    localStorage.removeItem("smartops_token");
+
+    window.dispatchEvent(
+      new CustomEvent("smartops:session-expired", {
+        detail: {
+          message: "Session expired. Please log in again.",
+        },
+      }),
+    );
+  }
+
   return response;
 }

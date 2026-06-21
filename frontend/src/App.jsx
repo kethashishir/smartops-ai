@@ -121,6 +121,8 @@ function App() {
 
       localStorage.setItem("smartops_token", data.access_token);
       resetDashboardState();
+      setAuthError("");
+      setAuthSuccess("");
       setCurrentUser(data.user);
 
       setAuthForm({
@@ -168,6 +170,26 @@ function App() {
     resetDashboardState();
     setCurrentUser(null);
   }
+
+  useEffect(() => {
+    function handleSessionExpired(event) {
+      resetDashboardState();
+      setCurrentUser(null);
+      setAuthMode("login");
+      setAuthError(
+        event.detail?.message || "Session expired. Please log in again.",
+      );
+    }
+
+    window.addEventListener("smartops:session-expired", handleSessionExpired);
+
+    return () => {
+      window.removeEventListener(
+        "smartops:session-expired",
+        handleSessionExpired,
+      );
+    };
+  }, []);
 
   function handleProductInputChange(event) {
     setProductSuccess("");
