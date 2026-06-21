@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import SummaryCards from "./components/SummaryCards.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
@@ -198,6 +198,10 @@ function App() {
         onSubmitAuth={auth.handleSubmitAuth}
       />
     );
+  }
+
+  if (!pathToSection[location.pathname]) {
+    return <Navigate to="/" replace />;
   }
 
   return (
