@@ -28,9 +28,17 @@ function RecommendationsSection({
     (a, b) => b.recommended_quantity - a.recommended_quantity,
   );
 
+  const hasLatestRecommendations = latestRecommendations.length > 0;
+  const hasRecommendations = recommendations.length > 0;
+
   return (
     <section id={sectionId} className="section">
       <h2>Recommendations</h2>
+
+      <p className="section-description">
+        Generate restock recommendations from forecasted demand and current
+        inventory.
+      </p>
 
       <div className="recommendation-actions">
         <button
@@ -58,7 +66,7 @@ function RecommendationsSection({
         <p className="success">{recommendationSuccess}</p>
       )}
 
-      {latestRecommendations.length > 0 && (
+      {hasLatestRecommendations && (
         <>
           <div className="recommendation-summary">
             <div>
@@ -89,17 +97,18 @@ function RecommendationsSection({
         </>
       )}
 
-      {hasGeneratedRecommendations &&
-        recommendations.length === 0 &&
+      {!hasRecommendations &&
         !loadingRecommendations &&
         !recommendationsError &&
         !productsError && (
-          <p style={{ color: "#666", fontStyle: "italic" }}>
-            No recommendations generated yet.
+          <p className="empty-state">
+            {hasGeneratedRecommendations
+              ? "No recommendations were generated yet. Make sure products have forecasts and inventory records."
+              : "No recommendations yet. Generate forecasts first, then generate recommendations to see restock guidance."}
           </p>
         )}
 
-      {recommendations.length > 0 && (
+      {hasRecommendations && (
         <ul className="recommendation-list">
           {sortedRecommendations.map((recommendation) => (
             <li key={recommendation.id}>

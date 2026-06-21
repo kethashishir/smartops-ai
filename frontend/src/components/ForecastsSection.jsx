@@ -16,6 +16,8 @@ function ForecastsSection({
     ...new Set(forecasts.map((forecast) => forecast.model_version)),
   ];
 
+  const hasForecasts = forecasts.length > 0;
+
   return (
     <section id={sectionId} className="section">
       <div className="forecasts-header">
@@ -35,13 +37,14 @@ function ForecastsSection({
       {forecastSuccess && <p className="success">{forecastSuccess}</p>}
       {loadingForecasts && <p>Loading forecasts...</p>}
 
-      {forecasts.length === 0 && !loadingForecasts && !forecastsError && (
-        <p style={{ color: "#666", fontStyle: "italic" }}>
-          No forecast data available yet.
+      {!hasForecasts && !loadingForecasts && !forecastsError && (
+        <p className="empty-state">
+          No forecasts yet. Generate forecasts after creating products and
+          orders so SmartOps AI can estimate future demand.
         </p>
       )}
 
-      {forecasts.length > 0 && (
+      {hasForecasts && (
         <>
           <div className="forecast-summary">
             <div>

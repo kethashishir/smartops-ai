@@ -31,6 +31,9 @@ function ProductsSection({
   onStockInputChange,
   onUpdateStock,
 }) {
+  const hasProducts = products.length > 0;
+  const hasFilteredProducts = filteredProducts.length > 0;
+
   return (
     <section id={sectionId} className="section">
       {productSuccess && <p className="success">{productSuccess}</p>}
@@ -73,42 +76,48 @@ function ProductsSection({
             setSortOption={setSortOption}
           />
 
-          {filteredProducts.length === 0 &&
+          {!hasProducts && !loadingProducts && !productsError && (
+            <p className="empty-state">
+              No products yet. Add your first product to start tracking
+              inventory, orders, forecasts, and recommendations.
+            </p>
+          )}
+
+          {hasProducts &&
+            !hasFilteredProducts &&
             !loadingProducts &&
             !productsError && (
-              <p style={{ color: "#666", fontStyle: "italic" }}>
-                No products match this filter.
+              <p className="empty-state">
+                No products match this search or filter. Clear the search or
+                choose a different filter to see more products.
               </p>
             )}
 
-          {!loadingProducts &&
-            !productsError &&
-            filteredProducts.length > 0 && (
-              <ul>
-                {sortedProducts.map((product) => {
-                  const productRecommendation = latestRecommendations.find(
-                    (recommendation) =>
-                      recommendation.product_id === product.id,
-                  );
+          {!loadingProducts && !productsError && hasFilteredProducts && (
+            <ul>
+              {sortedProducts.map((product) => {
+                const productRecommendation = latestRecommendations.find(
+                  (recommendation) => recommendation.product_id === product.id,
+                );
 
-                  return (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      currentStock={inventoryByProductId[product.id]}
-                      isLowStock={isLowStock(product)}
-                      recommendation={productRecommendation}
-                      generatingProductId={generatingProductId}
-                      onGenerateRecommendation={onGenerateRecommendation}
-                      stockUpdateValue={stockUpdates[product.id] || ""}
-                      updatingStockProductId={updatingStockProductId}
-                      onStockInputChange={onStockInputChange}
-                      onUpdateStock={onUpdateStock}
-                    />
-                  );
-                })}
-              </ul>
-            )}
+                return (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    currentStock={inventoryByProductId[product.id]}
+                    isLowStock={isLowStock(product)}
+                    recommendation={productRecommendation}
+                    generatingProductId={generatingProductId}
+                    onGenerateRecommendation={onGenerateRecommendation}
+                    stockUpdateValue={stockUpdates[product.id] || ""}
+                    updatingStockProductId={updatingStockProductId}
+                    onStockInputChange={onStockInputChange}
+                    onUpdateStock={onUpdateStock}
+                  />
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
     </section>

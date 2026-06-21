@@ -17,6 +17,8 @@ function OrdersSection({
     (total, order) => total + Number(order.quantity),
     0,
   );
+  const hasProducts = products.length > 0;
+  const hasOrders = orders.length > 0;
 
   return (
     <section id={sectionId} className="section">
@@ -63,6 +65,12 @@ function OrdersSection({
             </p>
           </div>
 
+          {!hasProducts && (
+            <p className="empty-state">
+              Add a product first before creating customer orders.
+            </p>
+          )}
+
           <label>
             Product
             <select
@@ -70,6 +78,7 @@ function OrdersSection({
               value={newOrder.product_id}
               onChange={onOrderInputChange}
               required
+              disabled={!hasProducts}
             >
               <option value="">Select product</option>
               {products.map((product) => (
@@ -90,10 +99,11 @@ function OrdersSection({
               value={newOrder.quantity}
               onChange={onOrderInputChange}
               required
+              disabled={!hasProducts}
             />
           </label>
 
-          <button type="submit" disabled={creatingOrder}>
+          <button type="submit" disabled={creatingOrder || !hasProducts}>
             {creatingOrder ? "Creating..." : "Create Order"}
           </button>
         </form>
@@ -108,11 +118,14 @@ function OrdersSection({
             </div>
           </div>
 
-          {orders.length === 0 && !loadingOrders && (
-            <p style={{ color: "#666", fontStyle: "italic" }}>No orders yet.</p>
+          {!hasOrders && !loadingOrders && !ordersError && (
+            <p className="empty-state">
+              No orders yet. Create an order after adding products to start
+              generating demand history.
+            </p>
           )}
 
-          {orders.length > 0 && (
+          {hasOrders && (
             <ul className="order-list">
               {recentOrders.map((order) => (
                 <li key={order.id}>
