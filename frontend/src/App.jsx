@@ -246,17 +246,16 @@ function App() {
       await fetchOrders();
       await fetchProducts();
 
-      if (newOrder.product_id) {
-        await generateRecommendation(Number(newOrder.product_id));
-        await fetchRecommendations();
-      }
+      setForecastSuccess("");
+      setRecommendationSuccess("");
+      setRecommendationsError("");
 
       const product = products.find(
         (product) => product.id === Number(newOrder.product_id),
       );
 
       setOrderSuccess(
-        `Order created for ${product?.name || "selected product"}. Inventory and recommendation refreshed.`,
+        `Order created for ${product?.name || "selected product"}. Inventory updated. Generate forecasts next to refresh demand planning and recommendations.`,
       );
 
       setActiveSection("orders");
@@ -368,9 +367,7 @@ function App() {
     try {
       setLoadingProducts(true);
       setProductsError("");
-      console.log("Fetching products...");
       const data = await getProducts();
-      console.log("Products fetched:", data);
       setProducts(data);
       await fetchInventoryForProducts(data);
     } catch (error) {
@@ -498,9 +495,7 @@ function App() {
   async function fetchRecommendations() {
     try {
       setRecommendationsError("");
-      console.log("Fetching recommendations...");
       const data = await getRecommendations();
-      console.log("Recommendations fetched:", data);
       setRecommendations(data);
     } catch (error) {
       console.error("Error fetching recommendations:", error.message);
@@ -515,10 +510,8 @@ function App() {
       setRecommendationSuccess("");
       setRecommendationsError("");
       setLoadingRecommendations(true);
-      console.log("Generating recommendations...");
 
       const data = await generateAllRecommendations();
-      console.log("New recommendations generated:", data);
 
       await fetchRecommendations();
     } catch (error) {
