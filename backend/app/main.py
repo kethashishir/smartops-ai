@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 from app.models import forecast, inventories, orders, product, recommendation, user
-from app.routers import auth, forecast as forecast_router, inventory, order, products, recommendation
+from app.routers import assistant, auth, forecast as forecast_router, inventory, order, products, recommendation
 
 app = FastAPI()
 
@@ -34,6 +34,7 @@ app.include_router(inventory.router)
 app.include_router(forecast_router.router)
 app.include_router(recommendation.router)
 app.include_router(auth.router)
+app.include_router(assistant.router)
 
 
 @app.get("/")
