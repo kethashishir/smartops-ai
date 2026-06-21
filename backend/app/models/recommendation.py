@@ -24,7 +24,7 @@ class Recommendation(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     recommended_quantity = Column(Numeric(10, 2), nullable=False)
     reason = Column(String, nullable=False)
