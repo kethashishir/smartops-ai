@@ -18,11 +18,11 @@ import {
   updateInventoryForProduct,
 } from "./api/inventoryApi.js";
 import { getHealthStatus } from "./api/healthApi.js";
-import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 import useAssistant from "./hooks/useAssistant.js";
 import useRecommendations from "./hooks/useRecommendations.js";
 import useAuth from "./hooks/useAuth.js";
 import useOrders from "./hooks/useOrders.js";
+import useForecasts from "./hooks/useForecasts.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -45,14 +45,16 @@ function App() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [stockUpdates, setStockUpdates] = useState({});
   const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
-  const [forecasts, setForecasts] = useState([]);
-  const [loadingForecasts, setLoadingForecasts] = useState(false);
-  const [forecastsError, setForecastsError] = useState("");
-  const [forecastSuccess, setForecastSuccess] = useState("");
   const assistant = useAssistant();
   const recommendationState = useRecommendations({
     products,
     onDataChanged: assistant.markStale,
+  });
+  const forecastState = useForecasts({
+    getProductName,
+    refreshRecommendationsAfterForecasts:
+      recommendationState.refreshAfterForecasts,
+    markAssistantStale: assistant.markStale,
   });
   const auth = useAuth({
     onSessionReset: resetDashboardState,
@@ -63,7 +65,7 @@ function App() {
     fetchProducts,
     clearRecommendationFeedback: recommendationState.clearFeedback,
     markAssistantStale: assistant.markStale,
-    clearForecastSuccess: () => setForecastSuccess(""),
+    clearForecastSuccess: () => forecastState.clearSuccess(),
     onOrderCreated: () => {
       setActiveSection("orders");
 
@@ -79,19 +81,17 @@ function App() {
   function resetDashboardState() {
     setProducts([]);
     setInventoryByProductId({});
-    setForecasts([]);
 
     setProductSuccess("");
-    setForecastSuccess("");
 
     setProductsError("");
-    setForecastsError("");
 
     setProductSearch("");
     setProductFilter("all");
     setSortOption("default");
     setStockUpdates({});
 
+    forecastState.reset();
     orderState.reset();
     recommendationState.reset();
     assistant.reset();
@@ -124,54 +124,6 @@ function App() {
         behavior: "smooth",
         block: "start",
       });
-    }
-  }
-
-  async function fetchForecasts() {
-    try {
-      setLoadingForecasts(true);
-      setForecastsError("");
-
-      const data = await getForecasts();
-
-      const sortedForecasts = [...data].sort((a, b) =>
-        getProductName(a.product_id).localeCompare(
-          getProductName(b.product_id),
-        ),
-      );
-
-      setForecasts(sortedForecasts);
-    } catch (error) {
-      console.error("Error fetching forecasts:", error.message);
-      setForecastsError(error.message || "Could not load forecasts.");
-    } finally {
-      setLoadingForecasts(false);
-    }
-  }
-
-  async function handleRefreshForecasts() {
-    try {
-      setLoadingForecasts(true);
-      setForecastsError("");
-      setForecastSuccess("");
-
-      await generateForecasts();
-      const data = await getForecasts();
-
-      const sortedForecasts = [...data].sort(
-        (a, b) => new Date(b.forecast_date) - new Date(a.forecast_date),
-      );
-
-      setForecasts(sortedForecasts);
-      await recommendationState.refreshAfterForecasts();
-      setForecastSuccess("Forecasts and recommendations updated successfully.");
-      assistant.markStale();
-    } catch (error) {
-      setForecastSuccess("");
-      console.error("Error refreshing forecasts:", error.message);
-      setForecastsError(error.message || "Could not refresh forecasts.");
-    } finally {
-      setLoadingForecasts(false);
     }
   }
 
@@ -314,7 +266,7 @@ function App() {
     fetchProducts();
     recommendationState.fetchRecommendations();
     orderState.fetchOrders();
-    fetchForecasts();
+    forecastState.fetchForecasts();
   }, [currentUser?.id]);
 
   function getProductName(productId) {
@@ -425,7 +377,7 @@ function App() {
             <SummaryCards
               productsCount={products.length}
               ordersCount={orderState.orders.length}
-              forecastsCount={forecasts.length}
+              forecastsCount={forecastState.forecasts.length}
               lowStockProductsCount={lowStockProductsCount}
             />
           </section>
@@ -498,11 +450,11 @@ function App() {
             sectionId="forecasts-section"
             productsCount={products.length}
             ordersCount={orderState.orders.length}
-            forecasts={forecasts}
-            forecastsError={forecastsError}
-            forecastSuccess={forecastSuccess}
-            loadingForecasts={loadingForecasts}
-            onRefreshForecasts={handleRefreshForecasts}
+            forecasts={forecastState.forecasts}
+            forecastsError={forecastState.forecastsError}
+            forecastSuccess={forecastState.forecastSuccess}
+            loadingForecasts={forecastState.loadingForecasts}
+            onRefreshForecasts={forecastState.refreshForecasts}
             getProductName={getProductName}
           />
 
@@ -510,7 +462,7 @@ function App() {
             sectionId="recommendations-section"
             productsCount={products.length}
             ordersCount={orderState.orders.length}
-            forecastsCount={forecasts.length}
+            forecastsCount={forecastState.forecasts.length}
             loadingRecommendations={recommendationState.loadingRecommendations}
             recommendationsError={recommendationState.recommendationsError}
             recommendationSuccess={recommendationState.recommendationSuccess}
