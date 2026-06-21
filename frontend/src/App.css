@@ -1591,3 +1591,24 @@ button:disabled {
   color: #92400e;
   font-weight: 700;
 }
+
+.assistant-response-header > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.assistant-clear-button {
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.35rem 0.7rem;
+}
+
+.assistant-clear-button:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}

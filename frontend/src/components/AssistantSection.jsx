@@ -10,6 +10,7 @@ function AssistantSection({
   onQuestionChange,
   onAskAssistant,
   onRefreshSummary,
+  onClearAssistant,
 }) {
   const exampleQuestions = [
     "Which products are low stock?",
@@ -88,8 +89,18 @@ function AssistantSection({
         {assistantAnswer ? (
           <>
             <div className="assistant-response-header">
-              <span>Answer</span>
-              <small>Based on your current workspace data</small>
+              <div>
+                <span>Answer</span>
+                <small>Based on your current workspace data</small>
+              </div>
+
+              <button
+                className="assistant-clear-button"
+                type="button"
+                onClick={onClearAssistant}
+              >
+                Clear
+              </button>
             </div>
 
             <p className="assistant-answer-text">{assistantAnswer}</p>

@@ -240,6 +240,15 @@ function App() {
     }
   }
 
+  function clearAssistantResponse() {
+    setAssistantQuestion("");
+    setAssistantAnswer("");
+    setAssistantHighlights([]);
+    setAssistantActions([]);
+    setAssistantError("");
+    setAssistantStale(false);
+  }
+
   useEffect(() => {
     function handleSessionExpired(event) {
       resetDashboardState();
@@ -786,6 +795,7 @@ function App() {
             onQuestionChange={handleAssistantQuestionChange}
             onAskAssistant={submitAssistantQuestion}
             onRefreshSummary={refreshAssistantSummary}
+            onClearAssistant={clearAssistantResponse}
           />
 
           <ProductsSection
