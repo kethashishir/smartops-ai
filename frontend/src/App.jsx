@@ -80,7 +80,7 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [backendStatus, setBackendStatus] = useState("checking");
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const activeSection = pathToSection[location.pathname] || "dashboard";
   const assistant = useAssistant();
 
   const productState = useProducts({
@@ -116,7 +116,6 @@ function App() {
     markAssistantStale: assistant.markStale,
     clearForecastSuccess: forecastState.clearSuccess,
     onOrderCreated: () => {
-      setActiveSection("orders");
       navigate("/orders");
 
       window.scrollTo({
@@ -139,31 +138,7 @@ function App() {
     assistant.reset();
   }
 
-  function scrollToSection(sectionName) {
-    const route = sectionRoutes[sectionName] || sectionRoutes.dashboard;
-
-    setActiveSection(sectionName);
-
-    if (location.pathname !== route.path) {
-      navigate(route.path);
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-
-    document.querySelector(".main-shell")?.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-
   useEffect(() => {
-    const sectionName = pathToSection[location.pathname] || "dashboard";
-
-    setActiveSection(sectionName);
-
     if (!currentUser) {
       return;
     }
