@@ -18,6 +18,7 @@ function AssistantSection({
     "Which products are healthy?",
     "What should I restock?",
     "What changed recently?",
+    "Do I need to generate forecasts?",
     "Which product has the highest forecasted demand?",
     "Give me an operations summary.",
   ];

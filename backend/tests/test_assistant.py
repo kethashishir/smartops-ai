@@ -173,3 +173,23 @@ def test_assistant_can_answer_healthy_inventory_question():
     assert isinstance(data["answer"], str)
     assert isinstance(data["highlights"], list)
     assert isinstance(data["suggested_actions"], list)
+
+def test_assistant_can_answer_forecast_freshness_question():
+    headers = get_auth_headers(client)
+
+    response = client.post(
+        "/assistant/ask",
+        json={"question": "Do I need to generate forecasts?"},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "answer" in data
+    assert "highlights" in data
+    assert "suggested_actions" in data
+    assert isinstance(data["answer"], str)
+    assert isinstance(data["highlights"], list)
+    assert isinstance(data["suggested_actions"], list)

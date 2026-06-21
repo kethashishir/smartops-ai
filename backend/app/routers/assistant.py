@@ -234,6 +234,65 @@ def answer_forecast_question(db: Session, user_id: int) -> AssistantResponse:
         suggested_actions=["Review this product's inventory and recommendation."],
     )
 
+def answer_forecast_freshness_question(db: Session, user_id: int) -> AssistantResponse:
+    latest_order = (
+        db.query(Order)
+        .filter(Order.user_id == user_id)
+        .order_by(Order.order_time.desc(), Order.id.desc())
+        .first()
+    )
+
+    latest_forecast = (
+        db.query(Forecast)
+        .filter(Forecast.user_id == user_id)
+        .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
+        .first()
+    )
+
+    if not latest_order and not latest_forecast:
+        return AssistantResponse(
+            answer="Forecasts are not available yet because there is no order history.",
+            highlights=[
+                "No orders found",
+                "No forecasts found",
+            ],
+            suggested_actions=["Create orders first, then generate forecasts."],
+        )
+
+    if latest_order and not latest_forecast:
+        return AssistantResponse(
+            answer="You should generate forecasts.",
+            highlights=[
+                "Orders exist",
+                "No forecasts are available yet",
+            ],
+            suggested_actions=["Generate forecasts from your order history."],
+        )
+
+    if latest_order and latest_forecast:
+        latest_order_date = latest_order.order_time.date()
+
+        if latest_order_date > latest_forecast.forecast_date:
+            return AssistantResponse(
+                answer="You should regenerate forecasts because newer order activity exists.",
+                highlights=[
+                    f"Latest order date: {latest_order_date.isoformat()}",
+                    f"Latest forecast date: {latest_forecast.forecast_date.isoformat()}",
+                ],
+                suggested_actions=[
+                    "Generate updated forecasts.",
+                    "Then refresh recommendations.",
+                ],
+            )
+
+    return AssistantResponse(
+        answer="Your forecasts appear to be up to date with current order activity.",
+        highlights=[
+            f"Latest forecast date: {latest_forecast.forecast_date.isoformat()}",
+        ],
+        suggested_actions=["Review recommendations or continue monitoring orders."],
+    )
+
 def answer_recent_activity_question(db: Session, user_id: int) -> AssistantResponse:
     recent_orders = (
         db.query(Order, Product.name)
@@ -308,6 +367,22 @@ def ask_assistant(
 
     if any(keyword in normalized_question for keyword in ["restock", "reorder", "recommend"]):
         return answer_restock_question(db, current_user.id)
+    
+    if any(
+        keyword in normalized_question
+        for keyword in [
+            "generate forecast",
+            "generate forecasts",
+            "regenerate forecast",
+            "regenerate forecasts",
+            "refresh forecast",
+            "refresh forecasts",
+            "forecasts up to date",
+            "forecast up to date",
+            "demand planning",
+        ]
+    ):
+        return answer_forecast_freshness_question(db, current_user.id)
 
     if any(keyword in normalized_question for keyword in ["forecast", "demand", "predicted"]):
         return answer_forecast_question(db, current_user.id)
