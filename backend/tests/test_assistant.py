@@ -26,6 +26,7 @@ def test_assistant_summary_returns_answer_and_actions():
     assert "suggested_actions" in data
     assert isinstance(data["answer"], str)
     assert isinstance(data["suggested_actions"], list)
+    assert data["answer"] == "Here is your current operations summary."
 
 
 def test_assistant_can_answer_low_stock_question():
@@ -47,7 +48,7 @@ def test_assistant_can_answer_low_stock_question():
     assert isinstance(data["answer"], str)
     assert isinstance(data["suggested_actions"], list)
     assert isinstance(data["highlights"], list)
-
+    assert data["answer"] == "Here is your current operations summary."
 
 def test_assistant_can_answer_unknown_question_with_suggestions():
     headers = get_auth_headers(client)
