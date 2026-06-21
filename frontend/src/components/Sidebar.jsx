@@ -1,3 +1,30 @@
+const navItems = [
+  {
+    label: "Dashboard",
+    section: "dashboard",
+  },
+  {
+    label: "Assistant",
+    section: "assistant",
+  },
+  {
+    label: "Products",
+    section: "products",
+  },
+  {
+    label: "Orders",
+    section: "orders",
+  },
+  {
+    label: "Forecasts",
+    section: "forecasts",
+  },
+  {
+    label: "Recommendations",
+    section: "recommendations",
+  },
+];
+
 function Sidebar({ activeSection, onNavigate }) {
   return (
     <aside className="sidebar">
@@ -10,61 +37,17 @@ function Sidebar({ activeSection, onNavigate }) {
       </div>
 
       <nav className="sidebar-nav">
-        <button
-          className={`sidebar-link ${
-            activeSection === "dashboard" ? "active" : ""
-          }`}
-          onClick={() => onNavigate("dashboard-overview", "dashboard")}
-        >
-          Dashboard
-        </button>
-
-        <button
-          className={`sidebar-link ${
-            activeSection === "assistant" ? "active" : ""
-          }`}
-          onClick={() => onNavigate("assistant-section", "assistant")}
-        >
-          Assistant
-        </button>
-
-        <button
-          className={`sidebar-link ${
-            activeSection === "products" ? "active" : ""
-          }`}
-          onClick={() => onNavigate("products-section", "products")}
-        >
-          Products
-        </button>
-
-        <button
-          className={`sidebar-link ${
-            activeSection === "orders" ? "active" : ""
-          }`}
-          onClick={() => onNavigate("orders-section", "orders")}
-        >
-          Orders
-        </button>
-
-        <button
-          className={`sidebar-link ${
-            activeSection === "forecasts" ? "active" : ""
-          }`}
-          onClick={() => onNavigate("forecasts-section", "forecasts")}
-        >
-          Forecasts
-        </button>
-
-        <button
-          className={`sidebar-link ${
-            activeSection === "recommendations" ? "active" : ""
-          }`}
-          onClick={() =>
-            onNavigate("recommendations-section", "recommendations")
-          }
-        >
-          Recommendations
-        </button>
+        {navItems.map((item) => (
+          <button
+            className={`sidebar-link ${
+              activeSection === item.section ? "active" : ""
+            }`}
+            key={item.section}
+            onClick={() => onNavigate(item.section)}
+          >
+            {item.label}
+          </button>
+        ))}
       </nav>
     </aside>
   );

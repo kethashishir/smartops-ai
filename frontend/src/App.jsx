@@ -110,23 +110,21 @@ function App() {
     assistant.reset();
   }
 
-  function scrollToSection(sectionId, activeName) {
-    setActiveSection(activeName);
+  function scrollToSection(sectionName) {
+    const route = sectionRoutes[sectionName] || sectionRoutes.dashboard;
 
-    const route = sectionRoutes[activeName];
+    setActiveSection(sectionName);
 
-    if (route && location.pathname !== route.path) {
+    if (location.pathname !== route.path) {
       navigate(route.path);
     }
 
-    const section = document.getElementById(sectionId);
-
-    if (section) {
-      section.scrollIntoView({
+    setTimeout(() => {
+      document.getElementById(route.sectionId)?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-    }
+    }, 0);
   }
 
   useEffect(() => {
