@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.auth.security import get_current_user
@@ -14,6 +13,8 @@ from app.schemas.assistant import AssistantQuestion, AssistantResponse
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
 
+def format_quantity(value) -> str:
+    return f"{float(value):.2f}"
 
 def get_user_products_with_inventory(db: Session, user_id: int):
     return (
@@ -76,12 +77,12 @@ def build_operations_summary(db: Session, user_id: int) -> AssistantResponse:
 
         if inventory.current_stock <= product.reorder_threshold:
             low_stock_products.append(
-                f"{product.name} ({inventory.current_stock} in stock, threshold {product.reorder_threshold})"
+                f"{product.name} ({format_quantity(inventory.current_stock)} in stock, threshold {format_quantity(product.reorder_threshold)})"
             )
 
     latest_recommendations = get_latest_recommendations(db, user_id)
     restock_recommendations = [
-        f"{product_name}: {recommendation.recommended_quantity} units"
+        f"{product_name}: {format_quantity(recommendation.recommended_quantity)} units"
         for recommendation, product_name in latest_recommendations
         if recommendation.recommended_quantity > 0
     ]
@@ -136,7 +137,7 @@ def answer_low_stock_question(db: Session, user_id: int) -> AssistantResponse:
 
         if inventory.current_stock <= product.reorder_threshold:
             low_stock_products.append(
-                f"{product.name}: {inventory.current_stock} in stock, threshold {product.reorder_threshold}"
+                f"{product.name}: {format_quantity(inventory.current_stock)} in stock, threshold {format_quantity(product.reorder_threshold)}"
             )
 
     if not low_stock_products:
@@ -157,7 +158,7 @@ def answer_restock_question(db: Session, user_id: int) -> AssistantResponse:
     latest_recommendations = get_latest_recommendations(db, user_id)
 
     restock_recommendations = [
-        f"{product_name}: restock {recommendation.recommended_quantity} units"
+        f"{product_name}: restock {format_quantity(recommendation.recommended_quantity)} units"
         for recommendation, product_name in latest_recommendations
         if recommendation.recommended_quantity > 0
     ]
@@ -203,7 +204,7 @@ def answer_forecast_question(db: Session, user_id: int) -> AssistantResponse:
     return AssistantResponse(
         answer=(
             f"{product_name} currently has the highest predicted demand at "
-            f"{forecast.predicted_demand} units."
+            f"{format_quantity(forecast.predicted_demand)} units."
         ),
         suggested_actions=["Review this product's inventory and recommendation."],
     )
