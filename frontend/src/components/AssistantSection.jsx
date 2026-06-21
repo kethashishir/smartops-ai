@@ -9,75 +9,102 @@ function AssistantSection({
   onAskAssistant,
   onRefreshSummary,
 }) {
+  const exampleQuestions = [
+    "Which products are low stock?",
+    "What should I restock?",
+    "Which product has the highest forecasted demand?",
+    "Give me an operations summary.",
+  ];
+
+  function handleExampleClick(question) {
+    onQuestionChange({
+      target: {
+        value: question,
+      },
+    });
+  }
+
   return (
-    <section id={sectionId} className="section">
-      <div className="assistant-header">
+    <section id={sectionId} className="section assistant-section">
+      <div className="assistant-top">
         <div>
-          <h2>SmartOps Assistant</h2>
+          <p className="eyebrow">SmartOps Copilot</p>
+          <h2>Ask your operations assistant</h2>
           <p className="section-description">
-            Ask operational questions based on your products, inventory, orders,
-            forecasts, and recommendations.
+            Get quick answers from your products, inventory, orders, forecasts,
+            and recommendations.
           </p>
         </div>
 
-        <button onClick={onRefreshSummary} disabled={loadingAssistant}>
-          {loadingAssistant ? "Refreshing..." : "Refresh Summary"}
+        <button
+          className="secondary-action"
+          onClick={onRefreshSummary}
+          disabled={loadingAssistant}
+        >
+          {loadingAssistant ? "Loading..." : "Generate Summary"}
         </button>
       </div>
 
       {assistantError && <p className="error">{assistantError}</p>}
-      {loadingAssistant && <p>Assistant is thinking...</p>}
 
-      <form className="assistant-form" onSubmit={onAskAssistant}>
-        <label>
-          Ask a question
-          <input
-            type="text"
-            placeholder="Example: What should I restock?"
-            value={assistantQuestion}
-            onChange={onQuestionChange}
-          />
-        </label>
+      <form className="assistant-prompt" onSubmit={onAskAssistant}>
+        <input
+          type="text"
+          placeholder="Ask something like: What should I restock?"
+          value={assistantQuestion}
+          onChange={onQuestionChange}
+        />
 
         <button
           type="submit"
           disabled={loadingAssistant || !assistantQuestion.trim()}
         >
-          Ask Assistant
+          {loadingAssistant ? "Thinking..." : "Ask"}
         </button>
       </form>
 
-      <div className="assistant-card">
-        <h3>Assistant Answer</h3>
-
-        {assistantAnswer ? (
-          <p>{assistantAnswer}</p>
-        ) : (
-          <p className="empty-state">
-            Ask a question or refresh the summary to get operational guidance.
-          </p>
-        )}
-
-        {assistantActions.length > 0 && (
-          <div className="assistant-actions">
-            <h4>Suggested actions</h4>
-            <ul>
-              {assistantActions.map((action) => (
-                <li key={action}>{action}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+      <div className="assistant-examples">
+        {exampleQuestions.map((question) => (
+          <button
+            key={question}
+            type="button"
+            onClick={() => handleExampleClick(question)}
+          >
+            {question}
+          </button>
+        ))}
       </div>
 
-      <div className="assistant-examples">
-        <h4>Try asking</h4>
-        <ul>
-          <li>Which products are low stock?</li>
-          <li>What should I restock?</li>
-          <li>Which product has the highest forecasted demand?</li>
-          <li>Give me an operations summary.</li>
-        </ul>
+      <div className="assistant-response-card">
+        {assistantAnswer ? (
+          <>
+            <div className="assistant-response-header">
+              <span>Answer</span>
+              <small>Based on your current workspace data</small>
+            </div>
+
+            <p>{assistantAnswer}</p>
+
+            {assistantActions.length > 0 && (
+              <div className="assistant-actions">
+                <h4>Suggested next steps</h4>
+
+                <ul>
+                  {assistantActions.map((action) => (
+                    <li key={action}>{action}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="assistant-empty">
+            <h3>Ready when you are.</h3>
+            <p>
+              Ask a question or generate a summary to get operational guidance.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

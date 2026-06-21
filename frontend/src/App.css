@@ -1399,3 +1399,154 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+.assistant-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.assistant-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.assistant-top h2 {
+  margin: 0.25rem 0 0.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.secondary-action {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.assistant-prompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #f8fafc;
+}
+
+.assistant-prompt input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  outline: none;
+}
+
+.assistant-prompt button {
+  min-width: 96px;
+}
+
+.assistant-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.assistant-examples button {
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.55rem 0.8rem;
+}
+
+.assistant-examples button:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+}
+
+.assistant-response-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  padding: 1.25rem;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.assistant-response-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.assistant-response-header span {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.assistant-response-header small {
+  color: #64748b;
+}
+
+.assistant-response-card p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.65;
+}
+
+.assistant-empty {
+  text-align: left;
+}
+
+.assistant-empty h3 {
+  margin: 0 0 0.35rem;
+}
+
+.assistant-empty p {
+  color: #64748b;
+}
+
+.assistant-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.assistant-actions h4 {
+  margin: 0 0 0.6rem;
+}
+
+.assistant-actions ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #475569;
+}
+
+.assistant-actions li {
+  margin: 0.35rem 0;
+}
+
+@media (max-width: 760px) {
+  .assistant-top {
+    flex-direction: column;
+  }
+
+  .assistant-prompt {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-response-header {
+    flex-direction: column;
+  }
+}

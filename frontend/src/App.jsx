@@ -543,7 +543,6 @@ function App() {
     fetchRecommendations();
     fetchOrders();
     fetchForecasts();
-    refreshAssistantSummary();
   }, [currentUser?.id]);
 
   useEffect(() => {
