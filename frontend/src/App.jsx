@@ -21,7 +21,6 @@ import useProducts from "./hooks/useProducts.js";
 const sectionRoutes = {
   dashboard: {
     path: "/",
-    sectionId: "dashboard-section",
     eyebrow: "Operations Dashboard",
     title: "SmartOps AI",
     description:
@@ -29,7 +28,6 @@ const sectionRoutes = {
   },
   assistant: {
     path: "/assistant",
-    sectionId: "assistant-section",
     eyebrow: "SmartOps Copilot",
     title: "Assistant",
     description:
@@ -37,7 +35,6 @@ const sectionRoutes = {
   },
   products: {
     path: "/products",
-    sectionId: "products-section",
     eyebrow: "Inventory Control",
     title: "Products",
     description:
@@ -45,14 +42,12 @@ const sectionRoutes = {
   },
   orders: {
     path: "/orders",
-    sectionId: "orders-section",
     eyebrow: "Order Activity",
     title: "Orders",
     description: "Create customer orders and track recent order history.",
   },
   forecasts: {
     path: "/forecasts",
-    sectionId: "forecasts-section",
     eyebrow: "Demand Planning",
     title: "Forecasts",
     description:
@@ -60,7 +55,6 @@ const sectionRoutes = {
   },
   recommendations: {
     path: "/recommendations",
-    sectionId: "recommendations-section",
     eyebrow: "Reorder Planning",
     title: "Recommendations",
     description:
@@ -277,9 +271,7 @@ function App() {
           onLogout={auth.handleLogout}
         />
 
-        <main className="dashboard-content" id="dashboard-section">
-          {renderActiveSection()}
-        </main>
+        <main className="dashboard-content">{renderActiveSection()}</main>
       </div>
     </div>
   );
