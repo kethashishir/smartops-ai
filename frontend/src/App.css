@@ -377,6 +377,12 @@ button:disabled {
   line-height: 1.5;
 }
 
+.form-helper {
+  margin: -0.25rem 0 0.75rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 /* -----------------------------
    6. Dashboard Summary Cards
 ----------------------------- */

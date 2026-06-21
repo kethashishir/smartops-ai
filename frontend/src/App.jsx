@@ -715,6 +715,7 @@ function App() {
           <OrdersSection
             sectionId="orders-section"
             products={products}
+            inventoryByProductId={inventoryByProductId}
             orders={orders}
             newOrder={newOrder}
             ordersError={ordersError}
