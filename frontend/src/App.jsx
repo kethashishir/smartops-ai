@@ -17,26 +17,17 @@ import {
   getInventoryForProduct,
   updateInventoryForProduct,
 } from "./api/inventoryApi.js";
-import {
-  getRecommendations,
-  generateAllRecommendations,
-  generateRecommendation,
-} from "./api/recommendationsApi.js";
 import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 import { getCurrentUser, loginUser, registerUser } from "./api/authApi.js";
 import { resetSessionExpiredDispatch } from "./api/config.js";
 import useAssistant from "./hooks/useAssistant.js";
+import useRecommendations from "./hooks/useRecommendations.js";
 
 function App() {
   const [products, setProducts] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
-  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
-  const [hasGeneratedRecommendations, setHasGeneratedRecommendations] =
-    useState(false);
   const [productsError, setProductsError] = useState("");
-  const [recommendationsError, setRecommendationsError] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -51,8 +42,6 @@ function App() {
   const [productFilter, setProductFilter] = useState("all");
   const [sortOption, setSortOption] = useState("default");
   const [productSearch, setProductSearch] = useState("");
-  const [recommendationSuccess, setRecommendationSuccess] = useState("");
-  const [generatingProductId, setGeneratingProductId] = useState(null);
   const [backendStatus, setBackendStatus] = useState("checking");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [stockUpdates, setStockUpdates] = useState({});
@@ -83,6 +72,10 @@ function App() {
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const assistant = useAssistant();
+  const recommendationState = useRecommendations({
+    products,
+    onDataChanged: assistant.markStale,
+  });
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -145,19 +138,16 @@ function App() {
   function resetDashboardState() {
     setProducts([]);
     setInventoryByProductId({});
-    setRecommendations([]);
     setOrders([]);
     setForecasts([]);
 
     setProductSuccess("");
     setOrderSuccess("");
     setForecastSuccess("");
-    setRecommendationSuccess("");
 
     setProductsError("");
     setOrdersError("");
     setForecastsError("");
-    setRecommendationsError("");
 
     setProductSearch("");
     setProductFilter("all");
@@ -169,6 +159,7 @@ function App() {
       source: "dashboard",
     });
 
+    recommendationState.reset();
     assistant.reset();
   }
 
@@ -268,7 +259,7 @@ function App() {
       setOrdersError("");
       setOrderSuccess("");
       setProductsError("");
-      setRecommendationsError("");
+      recommendationState.clearFeedback();
 
       await createOrderApi(newOrder);
 
@@ -276,8 +267,7 @@ function App() {
       await fetchProducts();
 
       setForecastSuccess("");
-      setRecommendationSuccess("");
-      setRecommendationsError("");
+      recommendationState.clearFeedback();
 
       const product = products.find(
         (product) => product.id === Number(newOrder.product_id),
@@ -347,8 +337,7 @@ function App() {
       );
 
       setForecasts(sortedForecasts);
-      await generateAllRecommendations();
-      await fetchRecommendations();
+      await recommendationState.refreshAfterForecasts();
       setForecastSuccess("Forecasts and recommendations updated successfully.");
       assistant.markStale();
     } catch (error) {
@@ -445,8 +434,7 @@ function App() {
   async function updateProductStock(productId) {
     try {
       setProductsError("");
-      setRecommendationSuccess("");
-      setRecommendationsError("");
+      recommendationState.clearFeedback();
       setUpdatingStockProductId(productId);
 
       const updatedInventory = await updateInventoryForProduct(
@@ -460,7 +448,7 @@ function App() {
       });
 
       await generateRecommendation(productId);
-      await fetchRecommendations();
+      await recommendationState.fetchRecommendations();
 
       const product = products.find((product) => product.id === productId);
 
@@ -498,7 +486,7 @@ function App() {
 
     resetDashboardState();
     fetchProducts();
-    fetchRecommendations();
+    recommendationState.fetchRecommendations();
     fetchOrders();
     fetchForecasts();
   }, [currentUser?.id]);
@@ -526,78 +514,6 @@ function App() {
 
     restoreAuthSession();
   }, []);
-
-  async function fetchRecommendations() {
-    try {
-      setRecommendationsError("");
-      const data = await getRecommendations();
-      setRecommendations(data);
-    } catch (error) {
-      console.error("Error fetching recommendations:", error.message);
-      setRecommendationsError(
-        "Could not load recommendations. Please check the backend.",
-      );
-    }
-  }
-
-  async function generateRecommendations() {
-    try {
-      setRecommendationSuccess("");
-      setRecommendationsError("");
-      setLoadingRecommendations(true);
-
-      const data = await generateAllRecommendations();
-
-      await fetchRecommendations();
-      assistant.markStale();
-    } catch (error) {
-      console.error("Error generating recommendations:", error.message);
-      setRecommendationsError(
-        "Could not generate recommendations. Some products may be missing forecast or inventory data.",
-      );
-    } finally {
-      setLoadingRecommendations(false);
-      setHasGeneratedRecommendations(true);
-    }
-  }
-
-  async function generateRecommendationForProduct(productId) {
-    try {
-      setGeneratingProductId(productId);
-      setRecommendationSuccess("");
-      setRecommendationsError("");
-      setLoadingRecommendations(true);
-
-      await generateRecommendation(productId);
-
-      await fetchRecommendations();
-      const product = products.find((product) => product.id === productId);
-
-      setRecommendationSuccess(
-        `Updated recommendation for ${product?.name || "selected product"}.`,
-      );
-      assistant.markStale();
-    } catch (error) {
-      console.error(
-        "Error generating recommendation for product:",
-        error.message,
-      );
-      setRecommendationsError(
-        "Could not generate recommendation. This product may be missing forecast or inventory data.",
-      );
-    } finally {
-      setGeneratingProductId(null);
-      setLoadingRecommendations(false);
-      setHasGeneratedRecommendations(true);
-    }
-  }
-
-  const latestRecommendations = Object.values(
-    recommendations.reduce((acc, recommendation) => {
-      acc[recommendation.product_id] = recommendation;
-      return acc;
-    }, {}),
-  );
 
   function getProductName(productId) {
     const product = products.find((product) => product.id === productId);
@@ -749,9 +665,11 @@ function App() {
             sortedProducts={sortedProducts}
             isLowStock={isLowStock}
             inventoryByProductId={inventoryByProductId}
-            generatingProductId={generatingProductId}
-            latestRecommendations={latestRecommendations}
-            onGenerateRecommendation={generateRecommendationForProduct}
+            generatingProductId={recommendationState.generatingProductId}
+            latestRecommendations={recommendationState.latestRecommendations}
+            onGenerateRecommendation={
+              recommendationState.generateRecommendationForProduct
+            }
             stockUpdates={stockUpdates}
             updatingStockProductId={updatingStockProductId}
             onStockInputChange={handleStockInputChange}
@@ -791,15 +709,19 @@ function App() {
             productsCount={products.length}
             ordersCount={orders.length}
             forecastsCount={forecasts.length}
-            loadingRecommendations={loadingRecommendations}
-            recommendationsError={recommendationsError}
-            recommendationSuccess={recommendationSuccess}
-            recommendations={recommendations}
-            latestRecommendations={latestRecommendations}
-            hasGeneratedRecommendations={hasGeneratedRecommendations}
+            loadingRecommendations={recommendationState.loadingRecommendations}
+            recommendationsError={recommendationState.recommendationsError}
+            recommendationSuccess={recommendationState.recommendationSuccess}
+            recommendations={recommendationState.recommendations}
+            latestRecommendations={recommendationState.latestRecommendations}
+            hasGeneratedRecommendations={
+              recommendationState.hasGeneratedRecommendations
+            }
             productsError={productsError}
-            onGenerateRecommendations={generateRecommendations}
-            onRefreshRecommendations={fetchRecommendations}
+            onGenerateRecommendations={
+              recommendationState.generateRecommendations
+            }
+            onRefreshRecommendations={recommendationState.fetchRecommendations}
             getProductName={getProductName}
           />
         </main>
