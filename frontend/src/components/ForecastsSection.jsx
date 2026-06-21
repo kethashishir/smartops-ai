@@ -86,7 +86,10 @@ function ForecastsSection({
             {forecasts.map((forecast) => (
               <div key={forecast.id} className="forecast-card">
                 <div>
-                  <h3>{getProductName(forecast.product_id)}</h3>
+                  <h3>
+                    {forecast.product_name ||
+                      getProductName(forecast.product_id)}
+                  </h3>
                   <p>Forecast Date: {forecast.forecast_date}</p>
                   <p>Model: {forecast.model_version}</p>
                 </div>

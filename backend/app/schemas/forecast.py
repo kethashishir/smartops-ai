@@ -7,11 +7,10 @@ class ForecastResponse(BaseModel):
     id: int
     user_id: int
     product_id: int
+    product_name: str
     forecast_date: date
     predicted_demand: float
     model_version: str
-
-    model_config = {"from_attributes": True}
 
 
 class ForecastCreate(BaseModel):

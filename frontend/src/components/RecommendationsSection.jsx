@@ -138,7 +138,10 @@ function RecommendationsSection({
               <div className="recommendation-card">
                 <div className="recommendation-card-header">
                   <div>
-                    <h3>{getProductName(recommendation.product_id)}</h3>
+                    <h3>
+                      {recommendation.product_name ||
+                        getProductName(recommendation.product_id)}
+                    </h3>
                     <p
                       className={
                         recommendation.recommended_quantity > 0

@@ -14,18 +14,37 @@ router = APIRouter(prefix="/forecast", tags=["forecast"])
 BASELINE_MODEL_VERSION = "baseline-v1"
 
 
+def build_forecast_response(forecast: Forecast, product_name: str) -> dict:
+    return {
+        "id": forecast.id,
+        "user_id": forecast.user_id,
+        "product_id": forecast.product_id,
+        "product_name": product_name,
+        "forecast_date": forecast.forecast_date,
+        "predicted_demand": forecast.predicted_demand,
+        "model_version": forecast.model_version,
+    }
+
+
 @router.get("/", response_model=list[ForecastResponse])
 def get_forecast(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    forecasts = (
-        db.query(Forecast)
-        .filter(Forecast.user_id == current_user.id)
+    forecast_rows = (
+        db.query(Forecast, Product.name)
+        .join(Product, Product.id == Forecast.product_id)
+        .filter(
+            Forecast.user_id == current_user.id,
+            Product.user_id == current_user.id,
+        )
         .all()
     )
 
-    return forecasts
+    return [
+        build_forecast_response(forecast, product_name)
+        for forecast, product_name in forecast_rows
+    ]
 
 
 @router.get("/latest", response_model=list[ForecastResponse])
@@ -33,20 +52,29 @@ def get_latest_forecasts(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    forecasts = (
-        db.query(Forecast)
-        .filter(Forecast.user_id == current_user.id)
+    forecast_rows = (
+        db.query(Forecast, Product.name)
+        .join(Product, Product.id == Forecast.product_id)
+        .filter(
+            Forecast.user_id == current_user.id,
+            Product.user_id == current_user.id,
+        )
         .all()
     )
 
     latest_by_product_id = {}
 
-    for forecast in forecasts:
-        existing_forecast = latest_by_product_id.get(forecast.product_id)
+    for forecast, product_name in forecast_rows:
+        existing_row = latest_by_product_id.get(forecast.product_id)
 
-        if not existing_forecast:
-            latest_by_product_id[forecast.product_id] = forecast
+        if not existing_row:
+            latest_by_product_id[forecast.product_id] = (
+                forecast,
+                product_name,
+            )
             continue
+
+        existing_forecast, _ = existing_row
 
         forecast_is_baseline = forecast.model_version == BASELINE_MODEL_VERSION
         existing_is_baseline = (
@@ -54,7 +82,10 @@ def get_latest_forecasts(
         )
 
         if forecast_is_baseline and not existing_is_baseline:
-            latest_by_product_id[forecast.product_id] = forecast
+            latest_by_product_id[forecast.product_id] = (
+                forecast,
+                product_name,
+            )
             continue
 
         if forecast_is_baseline == existing_is_baseline:
@@ -65,9 +96,15 @@ def get_latest_forecasts(
                     and forecast.id > existing_forecast.id
                 )
             ):
-                latest_by_product_id[forecast.product_id] = forecast
+                latest_by_product_id[forecast.product_id] = (
+                    forecast,
+                    product_name,
+                )
 
-    return list(latest_by_product_id.values())
+    return [
+        build_forecast_response(forecast, product_name)
+        for forecast, product_name in latest_by_product_id.values()
+    ]
 
 
 @router.post("/generate")
@@ -109,4 +146,4 @@ def create_forecast(
     db.commit()
     db.refresh(db_forecast)
 
-    return db_forecast
+    return build_forecast_response(db_forecast, product.name)
