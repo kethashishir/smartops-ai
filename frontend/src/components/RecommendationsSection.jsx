@@ -1,5 +1,8 @@
 function RecommendationsSection({
   sectionId,
+  productsCount,
+  ordersCount,
+  forecastsCount,
   loadingRecommendations,
   recommendationsError,
   recommendationSuccess,
@@ -28,8 +31,12 @@ function RecommendationsSection({
     (a, b) => b.recommended_quantity - a.recommended_quantity,
   );
 
+  const hasProducts = productsCount > 0;
+  const hasOrders = ordersCount > 0;
+  const hasForecasts = forecastsCount > 0;
   const hasLatestRecommendations = latestRecommendations.length > 0;
   const hasRecommendations = recommendations.length > 0;
+  const canGenerateRecommendations = hasForecasts && !loadingRecommendations;
 
   return (
     <section id={sectionId} className="section">
@@ -43,7 +50,7 @@ function RecommendationsSection({
       <div className="recommendation-actions">
         <button
           onClick={onGenerateRecommendations}
-          disabled={loadingRecommendations}
+          disabled={!canGenerateRecommendations}
         >
           {loadingRecommendations
             ? "Generating..."
@@ -102,9 +109,25 @@ function RecommendationsSection({
         !recommendationsError &&
         !productsError && (
           <p className="empty-state">
-            {hasGeneratedRecommendations
-              ? "No recommendations were generated yet. Make sure products have forecasts and inventory records."
-              : "No recommendations yet. Generate forecasts first, then generate recommendations to see restock guidance."}
+            {!hasProducts &&
+              "Add products first. Recommendations are generated after products, orders, and forecasts exist."}
+            {hasProducts &&
+              !hasOrders &&
+              "Create orders next so SmartOps AI has demand history to forecast from."}
+            {hasProducts &&
+              hasOrders &&
+              !hasForecasts &&
+              "Generate forecasts first, then generate recommendations to see restock guidance."}
+            {hasProducts &&
+              hasOrders &&
+              hasForecasts &&
+              hasGeneratedRecommendations &&
+              "No recommendations were generated yet. Make sure products have forecasts and inventory records."}
+            {hasProducts &&
+              hasOrders &&
+              hasForecasts &&
+              !hasGeneratedRecommendations &&
+              "Forecasts are ready. Generate recommendations to see restock guidance."}
           </p>
         )}
 

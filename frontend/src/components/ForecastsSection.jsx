@@ -1,5 +1,7 @@
 function ForecastsSection({
   sectionId,
+  productsCount,
+  ordersCount,
   forecasts,
   forecastsError,
   forecastSuccess,
@@ -16,7 +18,10 @@ function ForecastsSection({
     ...new Set(forecasts.map((forecast) => forecast.model_version)),
   ];
 
+  const hasProducts = productsCount > 0;
+  const hasOrders = ordersCount > 0;
   const hasForecasts = forecasts.length > 0;
+  const canGenerateForecasts = hasProducts && !loadingForecasts;
 
   return (
     <section id={sectionId} className="section">
@@ -28,7 +33,7 @@ function ForecastsSection({
           </p>
         </div>
 
-        <button onClick={onRefreshForecasts} disabled={loadingForecasts}>
+        <button onClick={onRefreshForecasts} disabled={!canGenerateForecasts}>
           {loadingForecasts ? "Generating..." : "Generate Forecasts"}
         </button>
       </div>
@@ -37,10 +42,24 @@ function ForecastsSection({
       {forecastSuccess && <p className="success">{forecastSuccess}</p>}
       {loadingForecasts && <p>Loading forecasts...</p>}
 
-      {!hasForecasts && !loadingForecasts && !forecastsError && (
+      {!hasProducts && !loadingForecasts && !forecastsError && (
         <p className="empty-state">
-          No forecasts yet. Generate forecasts after creating products and
-          orders so SmartOps AI can estimate future demand.
+          Add products first before generating forecasts. Forecasts are created
+          for your product catalog.
+        </p>
+      )}
+
+      {hasProducts && !hasOrders && !hasForecasts && !loadingForecasts && (
+        <p className="empty-state">
+          Products are ready. Create orders next to build demand history, then
+          generate forecasts for stronger demand estimates.
+        </p>
+      )}
+
+      {hasProducts && hasOrders && !hasForecasts && !loadingForecasts && (
+        <p className="empty-state">
+          No forecasts yet. Generate forecasts now to estimate future demand
+          from your products and order history.
         </p>
       )}
 

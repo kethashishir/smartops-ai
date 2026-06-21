@@ -730,6 +730,8 @@ function App() {
 
           <ForecastsSection
             sectionId="forecasts-section"
+            productsCount={products.length}
+            ordersCount={orders.length}
             forecasts={forecasts}
             forecastsError={forecastsError}
             forecastSuccess={forecastSuccess}
@@ -740,6 +742,9 @@ function App() {
 
           <RecommendationsSection
             sectionId="recommendations-section"
+            productsCount={products.length}
+            ordersCount={orders.length}
+            forecastsCount={forecasts.length}
             loadingRecommendations={loadingRecommendations}
             recommendationsError={recommendationsError}
             recommendationSuccess={recommendationSuccess}
