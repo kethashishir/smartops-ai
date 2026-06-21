@@ -120,6 +120,20 @@ function App() {
     }
 
     setTimeout(() => {
+      if (sectionName === "dashboard") {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+
+        document.querySelector(".main-shell")?.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+
+        return;
+      }
+
       document.getElementById(route.sectionId)?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -138,6 +152,20 @@ function App() {
     }
 
     setTimeout(() => {
+      if (sectionName === "dashboard") {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+
+        document.querySelector(".main-shell")?.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+
+        return;
+      }
+
       document.getElementById(section.sectionId)?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -213,8 +241,8 @@ function App() {
           onLogout={auth.handleLogout}
         />
 
-        <main className="dashboard-content">
-          <section id="dashboard-section">
+        <main className="dashboard-content" id="dashboard-section">
+          <section>
             <SummaryCards
               productsCount={productState.products.length}
               ordersCount={orderState.orders.length}
