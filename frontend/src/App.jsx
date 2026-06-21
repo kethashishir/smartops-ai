@@ -25,6 +25,7 @@ import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 import { getCurrentUser, loginUser, registerUser } from "./api/authApi.js";
+import { resetSessionExpiredDispatch } from "./api/config.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -120,6 +121,7 @@ function App() {
       });
 
       localStorage.setItem("smartops_token", data.access_token);
+      resetSessionExpiredDispatch();
       resetDashboardState();
       setAuthError("");
       setAuthSuccess("");

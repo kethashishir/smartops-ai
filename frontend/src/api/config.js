@@ -1,8 +1,14 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
+let hasDispatchedSessionExpired = false;
+
 export function getAuthToken() {
   return localStorage.getItem("smartops_token");
+}
+
+export function resetSessionExpiredDispatch() {
+  hasDispatchedSessionExpired = false;
 }
 
 export async function apiFetch(path, options = {}) {
@@ -21,7 +27,8 @@ export async function apiFetch(path, options = {}) {
     headers,
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 && !hasDispatchedSessionExpired) {
+    hasDispatchedSessionExpired = true;
     localStorage.removeItem("smartops_token");
 
     window.dispatchEvent(
