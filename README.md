@@ -1,187 +1,187 @@
-# SmartOps AI (In Development)
+# SmartOps AI
 
-SmartOps AI is a full-stack software engineering project that simulates a real retail or warehouse operations platform. The system manages products, inventory, orders, demand forecasts, and reorder recommendations through a FastAPI backend, PostgreSQL database, and React + Vite frontend dashboard.
+SmartOps AI is a full-stack operations management platform that simulates a real retail, warehouse, or inventory-driven business workflow. It lets authenticated users manage products, track inventory, create orders, generate demand forecasts, receive reorder recommendations, and ask an operations assistant questions about their workspace data.
 
-The long-term goal is to include machine learning demand forecasting and an AI operations assistant built with LangChain and a Hugging Face model.
+The project is built as a realistic software engineering portfolio project using a FastAPI backend, PostgreSQL database, React + Vite frontend, JWT authentication, user-scoped data isolation, and a routed SaaS-style dashboard.
+
+---
 
 ## Current Status
 
-SmartOps AI currently includes a working FastAPI backend, PostgreSQL database integration, React + Vite frontend dashboard, user authentication, and protected dashboard APIs.
+SmartOps AI currently includes:
 
-Implemented features include:
+- FastAPI backend
+- PostgreSQL database integration
+- SQLAlchemy ORM models
+- Alembic database migrations
+- JWT-based authentication
+- Protected backend API routes
+- Multi-user data isolation
+- React + Vite frontend
+- React Router routed dashboard
+- Products, orders, forecasts, recommendations, and assistant pages
+- SmartOps Assistant v1 with structured operational answers
+- Frontend hooks and page-based architecture
+- Backend regression tests
+- Passing frontend production build
 
-- Product creation and listing
-- Inventory display per product
-- Inventory stock updates directly from product cards
-- Real-time stock status updates after inventory changes
-- Low-stock and healthy-stock status labels
-- Product search, filtering, and sorting
-- Recommendation generation and display
-- Per-product recommendation generation
-- Automatic recommendation loading on page load
-- Frontend loading, error, and success states
-- Backend health check status in the frontend dashboard
-- Organized React components and frontend API service files
-- Recommendation status displayed directly on product cards
-- SaaS-style dashboard layout with sidebar navigation
-- Sidebar navigation with active section tracking
-- Coming-soon indicators for planned Inventory and Forecasts views
-- Automatic recommendation refresh after inventory stock updates
-- Order creation from the React dashboard
-- Recent orders display in the frontend
-- Inventory and recommendation refresh after order creation
-- Frontend Orders section for creating and viewing orders
-- Orders summary card in the dashboard overview
-- Sidebar navigation for dashboard sections
-- Forecasts dashboard section for viewing predicted demand
-- Forecast data display by product, date, model version, and predicted demand
-- Forecasts summary card in the dashboard overview
-- Sidebar navigation ordered by operations workflow
-- User registration and login from the frontend
-- Session restore from browser local storage
-- Logout flow from the dashboard header
-- Protected dashboard API routes using bearer token authentication
-- Authenticated frontend API helper for dashboard requests
-- Multi-user data isolation for operational data
-- User-owned products
-- Ownership-protected inventory access
-- User-scoped orders, forecasts, and recommendations
-- Clean empty dashboard states for users with no data yet
-- Regression tests for cross-user data isolation
-
-Baseline machine learning-style forecasting is implemented through a shared backend forecasting service. The AI assistant feature is planned but still in development.
-
----
-
-## 🎯 Objective
-
-Build a realistic operations platform where a user can:
-
-- log in
-- manage products
-- track inventory
-- update stock levels
-- simulate incoming orders
-- monitor low-stock products
-- run demand forecasts
-- get reorder suggestions
-- ask an AI assistant operational questions in natural language
-
-Example AI questions:
-
-- Which items are most likely to go out of stock this week?
-- What should I reorder right now?
-- Why is Product A more risky than Product B?
-- Which products have the highest forecasted demand?
-
----
-
-## 🏗 Project Structure
+Current verification:
 
 ```text
-smartops-ai/
-├── backend/            # FastAPI server & API logic
-│   └── app/
-├── frontend/           # React + Vite user interface
-│   └── src/
-│       ├── api/        # Frontend API service functions
-│       ├── components/ # Reusable React components
-│       ├── App.jsx
-│       └── App.css
-├── ml/                 # Machine learning models & training scripts
-├── ai/                 # AI agents & prompt engineering
-├── simulator/          # Environment simulation logic
-├── docs/               # System architecture & design docs
-│   └── design.md
-├── .github/            # CI/CD workflows & GitHub actions
-│   └── workflows/
-├── .env.example        # Template for environment variables
-└── README.md           # Project documentation
+Frontend production build: passed
+Backend tests: 28 passed
 ```
 
 ---
 
-## 🚀 Tech Stack
+## Objective
 
-- Backend: FastAPI
-- Frontend: React + Vite
-- Database: PostgreSQL
-- ORM: SQLAlchemy
-- Validation: Pydantic
-- Language: Python / JavaScript
+SmartOps AI is designed to model a real operations workflow where a user can:
 
----
+- Register and log in
+- Create and manage products
+- Track product inventory
+- Update stock levels
+- Simulate customer orders
+- Automatically reduce inventory after orders
+- Monitor low-stock and healthy-stock products
+- Generate demand forecasts from order history
+- Generate reorder recommendations from forecasts and inventory
+- Ask an assistant operational questions about the workspace
 
-## Frontend Architecture
+Example assistant questions:
 
-The React frontend is organized into reusable components and API service files.
-
-- `src/components/` contains reusable UI components such as product cards, product controls, summary cards, product forms, and recommendation sections.
-- `src/api/` contains frontend service functions for calling the FastAPI backend.
-- `src/api/config.js` stores the backend API base URL and shared authenticated API request helper used by the frontend.
-- `App.jsx` manages top-level state, data loading, and page composition.
-- `App.css` contains the dashboard layout, card styling, status labels, form styling, and responsive behavior.
-
-The dashboard supports authenticated access, session restore, logout, and updating product inventory directly from product cards. Stock status labels and low-stock counts update after inventory changes.
-
-The current UI has been improved with a dashboard-style layout, summary cards, grouped sections, status badges, and cleaner spacing. A more advanced SaaS-style redesign with sidebar navigation, tabs, charts, and wider dashboard modules is planned for a later phase.
-
-Product cards display current inventory status and recommendation status so users can quickly see whether each product needs restocking.
-
-The frontend now uses a SaaS-style dashboard shell with a fixed sidebar, dashboard header, summary cards, product management section, and recommendation section. Sidebar navigation scrolls to active dashboard sections while planned future views are marked as coming soon.
-
-When product stock is updated from the dashboard, the frontend refreshes the related product recommendation so stock and recommendation status stay aligned.
-
-The dashboard includes an Orders section where users can simulate customer orders. Creating an order reduces product inventory through the backend and refreshes the affected product recommendation so dashboard data stays aligned.
-
-The dashboard now includes Products, Orders, and Recommendations sections inside a SaaS-style layout. Sidebar navigation tracks the active section and scrolls users to the selected dashboard area.
-
-The dashboard includes a Forecasts section that displays backend forecast records used by the recommendation engine, including forecast date, model version, and predicted demand for each product.
-
-The sidebar navigation follows the operational workflow: Dashboard, Products, Orders, Forecasts, and Recommendations. The dashboard overview includes summary metrics for products, orders, forecasts, and low-stock products.
+```text
+Which products are low stock?
+Which products are healthy?
+What should I restock?
+What changed recently?
+Do I need to generate forecasts?
+Which product has the highest forecasted demand?
+Give me an operations summary.
+```
 
 ---
 
-## Authentication and API Security
+## Tech Stack
 
-SmartOps AI includes a working authentication flow for the dashboard.
+### Backend
+
+- Python
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Pydantic
+- Alembic
+- JWT authentication
+- Pytest
+
+### Frontend
+
+- React
+- Vite
+- React Router
+- JavaScript
+- CSS
+- Fetch API
+
+### Development / Tooling
+
+- Git / GitHub
+- Python virtual environment
+- npm
+- Alembic migrations
+- Frontend production build checks
+- Backend regression tests
+
+---
+
+## Project Structure
+
+```text
+smartops-ai/
+├── backend/
+│   ├── app/
+│   │   ├── auth/
+│   │   ├── models/
+│   │   ├── routers/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── database.py
+│   │   └── main.py
+│   ├── alembic/
+│   ├── tests/
+│   └── alembic.ini
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   ├── main.jsx
+│   │   └── routes.js
+│   ├── package.json
+│   └── package-lock.json
+│
+├── docs/
+├── ml/
+├── ai/
+├── simulator/
+├── .env.example
+└── README.md
+```
+
+---
+
+## Core Features
+
+### Authentication
+
+SmartOps AI includes a working authentication system.
 
 Current authentication features include:
 
-- User registration from the frontend
-- User login from the frontend
-- Password hashing on the backend
-- JWT access token generation on login
+- User registration
+- User login
+- Password hashing
+- JWT access token generation
 - Session restore from browser local storage
 - Logout from the dashboard header
-- Protected dashboard APIs using bearer token authentication
+- Protected backend dashboard routes
+- Shared frontend authenticated API helper
+- Expired-session handling in the frontend
 
-The frontend stores the access token in browser local storage and sends it with dashboard API requests through a shared `apiFetch` helper.
+Public backend routes include:
+
+```text
+/
+/health
+/auth/register
+/auth/login
+```
 
 Protected backend route groups include:
 
 ```text
+/auth/me
 /products/*
 /inventory/*
 /orders/*
 /forecast/*
 /recommendations/*
+/assistant/*
 ```
 
-Public backend routes include:
+---
 
-```text
-/health
-/
-/auth/register
-/auth/login
-```
+## Multi-User Data Isolation
 
-The `/auth/me` route requires a valid bearer token and is used by the frontend to restore the current logged-in user.
+SmartOps AI supports user-scoped operational workspaces.
 
-### Multi-User Data Isolation
-
-SmartOps AI now supports user-scoped operational data. After login, each user only sees and manages their own workspace data.
+Each authenticated user only sees and manages their own data.
 
 Current ownership rules include:
 
@@ -191,286 +191,343 @@ Current ownership rules include:
 - Forecast generation only uses the authenticated user's products and orders.
 - Forecast results are scoped to the authenticated user.
 - Recommendations are scoped to the authenticated user.
-- Empty forecast and recommendation lists return clean empty dashboard states instead of leaking another user's data.
+- Assistant answers are scoped to the authenticated user's workspace data.
+- Empty states are returned cleanly instead of exposing another user's data.
 
-Regression tests verify that one user cannot see or mutate another user's products, inventory, orders, forecasts, or recommendations.
-
----
-
-## 🏗️ Core Features
-
-- Product management with reorder thresholds
-- Inventory tracking per product
-- Inventory stock updates from the React dashboard
-- Real-time stock status updates after inventory changes
-- Order processing with stock validation
-- Demand forecasting storage
-- Automated recommendation engine for restocking
-- Frontend dashboard with product search, filtering, and sorting
-- Low-stock and healthy-stock visual labels
-- Product creation from the React interface
-- Recommendation generation and display from the frontend
-- Product stock filtering by low-stock and healthy-stock status
-- Product search by name, SKU, and category
-- Product sorting by price and stock level
-- Per-product recommendation generation from the dashboard
-- Automatic recommendation loading on page load
-- Backend health status indicator in the frontend
-- Product-level recommendation status displayed in the dashboard
-- Recommendation status refresh after inventory changes
-- Frontend order creation that reduces inventory
-- Recent order history display
-- Dashboard order creation with inventory reduction
-- Orders summary metric in the dashboard overview
-- Active sidebar navigation for dashboard sections
-- Read-only forecast dashboard powered by backend forecast data
-- User authentication with password hashing and JWT access tokens
-- Protected dashboard APIs for products, inventory, orders, forecasts, and recommendations
-- Multi-user SaaS-style data isolation across products, inventory, orders, forecasts, and recommendations
+Regression tests verify that one user cannot access or mutate another user's products, inventory, orders, forecasts, recommendations, or assistant-related operational data.
 
 ---
 
-### Recent Improvements
+## Products and Inventory
 
-- Added Alembic database migrations with a stamped baseline revision
-- Added a real schema migration requiring ownership user IDs
-- Disabled automatic table creation by default for production safety
-- Improved dashboard empty states for new users
-- Added stock-aware order form guidance
-- Added guided forecast and recommendation workflow states
-- Updated order responses to include product names
+The Products page supports:
+
+- Product creation
+- Product listing
+- Product search
+- Product filtering
+- Product sorting
+- Low-stock detection
+- Healthy-stock detection
+- Inventory display per product
+- Stock updates from product cards
+- Inline recommendation labels
+- Per-product recommendation generation
+
+Inventory is connected directly to product ownership, so users can only update stock for products they own.
+
+---
+
+## Orders
+
+The Orders page supports:
+
+- Creating customer orders
+- Viewing recent order history
+- Product-aware order creation
+- Stock validation before order creation
+- Automatic inventory reduction after an order
+- Order success and error feedback
+- Product names displayed with order records
+
+Order creation connects to the broader workflow by reducing inventory and signaling that forecasts should be regenerated.
+
+---
+
+## Forecasts
+
+The Forecasts page supports:
+
+- Viewing forecast records
+- Generating forecasts from order history
+- Forecast summary metrics
+- Forecasted demand by product
+- Forecast model version display
+- Forecast date display
+- Automatic recommendation refresh after forecast generation
+
+The current forecasting approach is a baseline forecasting service rather than a trained ML model. It uses backend business logic to estimate demand from product/order data and supports the restock recommendation workflow.
+
+Future work may replace or extend this with a trained ML forecasting model.
+
+---
+
+## Recommendations
+
+The Recommendations page supports:
+
+- Generating recommendations for all eligible products
+- Generating recommendations for individual products
+- Viewing recommended reorder quantities
+- Viewing recommendation reasons
+- Priority-sorted recommendations
+- Recommendation summary metrics
+- No-restock and restock-needed states
+- Automatic refresh after inventory updates and forecast generation
+
+Recommendations are based on current inventory levels, reorder thresholds, and forecasted demand.
+
+---
+
+## SmartOps Assistant v1
+
+SmartOps Assistant v1 is a rule-based operational assistant that answers natural language questions using the authenticated user's current workspace data.
+
+The assistant currently supports:
+
+- Operations summary
+- Low-stock inventory questions
+- Healthy inventory questions
+- Restock recommendation questions
+- Recent order activity questions
+- Highest forecasted demand questions
+- Forecast freshness questions
+- Fallback guidance for unsupported questions
+
+Assistant response features include:
+
+- Structured answer text
+- Key highlight cards
+- Suggested next steps
+- Recent question history
+- Clear response control
+- Stale-answer warning after operational data changes
+- Data-isolated backend responses
+- Protected assistant API routes
+
+Example questions:
+
+```text
+Which products are low stock?
+Which products are healthy?
+What should I restock?
+What changed recently?
+Do I need to generate forecasts?
+Which product has the highest forecasted demand?
+Give me an operations summary.
+```
+
+The assistant is currently rule-based. Future work may add a true LLM/RAG assistant using LangChain or another AI orchestration layer.
+
+---
+
+## Frontend Architecture
+
+The frontend uses a routed SaaS-style dashboard architecture.
+
+Current frontend organization:
+
+```text
+frontend/src/
+├── api/
+├── components/
+├── hooks/
+├── pages/
+├── App.jsx
+├── App.css
+├── main.jsx
+└── routes.js
+```
+
+### API Layer
+
+`src/api/` contains service files for backend API calls:
+
+- Auth API
+- Products API
+- Inventory API
+- Orders API
+- Forecasts API
+- Recommendations API
+- Assistant API
+- Health API
+- Shared API config and authenticated fetch helper
+
+### Hooks
+
+`src/hooks/` contains state and workflow logic:
+
+```text
+useAssistant.js
+useAuth.js
+useForecasts.js
+useOrders.js
+useProducts.js
+useRecommendations.js
+```
+
+These hooks keep `App.jsx` focused on application shell, routing, authentication gating, and page composition.
+
+### Pages
+
+`src/pages/` contains route-level page components:
+
+```text
+DashboardPage.jsx
+AssistantPage.jsx
+ProductsPage.jsx
+OrdersPage.jsx
+ForecastsPage.jsx
+RecommendationsPage.jsx
+```
+
+### Components
+
+`src/components/` contains reusable UI sections and layout components such as:
+
+- Sidebar
+- Dashboard header
+- Auth page
+- Summary cards
+- Products section
+- Orders section
+- Forecasts section
+- Recommendations section
+- Assistant section
+
+---
+
+## Routing
+
+The frontend uses React Router.
+
+Current routes:
+
+```text
+/                    Dashboard summary + assistant
+/assistant           SmartOps Assistant
+/products            Products and inventory
+/orders              Orders
+/forecasts           Forecasts
+/recommendations     Recommendations
+```
+
+Unknown routes redirect to:
+
+```text
+/
+```
+
+The sidebar uses router links and route-specific active states.
+
+The dashboard header updates per route with contextual titles and descriptions.
 
 ---
 
 ## Dashboard UI
 
-The SmartOps AI frontend uses a dashboard-style layout designed for an operations workflow.
+The SmartOps AI frontend uses a SaaS-style dashboard layout.
 
-Current dashboard UI features include:
+Current UI features include:
 
-- Sidebar navigation for Dashboard, Products, Orders, Forecasts, and Recommendations.
-- Summary metrics for products, orders, forecasts, and low-stock products.
-- Product search, filtering, sorting, inventory updates, and inline recommendation labels.
-- Forecast summary metrics showing forecasted products, total predicted demand, and active model version.
-- Dashboard-triggered forecast generation through the backend API.
-- Recommendation summary metrics showing total recommendations, restock-needed items, no-restock items, and total units recommended.
-- Priority-sorted recommendations so the highest restock quantities appear first.
-- Success and error feedback for forecast generation, product creation, order creation, and recommendation updates.
+- Fixed sidebar navigation
+- Route-specific dashboard header
+- Backend connection status indicator
+- User badge and logout button
+- Dashboard summary cards
+- Products page with inventory controls
+- Orders page with order form and order history
+- Forecasts page with forecast summaries and forecast cards
+- Recommendations page with priority restock recommendations
+- Assistant page with structured operational answers
+- Success, error, loading, and empty states
+- Responsive layout styling
 
-This gives the project a more polished SaaS-style dashboard experience while keeping the workflow connected to the backend, database, and forecasting logic.
+The UI has been improved from a single long page into a routed dashboard with separate page-level views.
 
----
-
-### SmartOps Assistant
-
-SmartOps AI now includes a rule-based assistant API and dashboard panel.
-
-The assistant can answer user-scoped operational questions such as:
-
-- Which products are low stock?
-- What should I restock?
-- Which product has the highest forecasted demand?
-- Give me an operations summary.
-
-The first version uses deterministic business logic over the authenticated user's products, inventory, orders, forecasts, and recommendations. It is designed so it can later be upgraded into an LLM-powered copilot.
+A more advanced visual redesign with charts, richer cards, and a more polished enterprise SaaS layout may be added later.
 
 ---
 
-## 🔁 System Workflow
+## Backend Architecture
 
-Products → Inventory → Orders → Forecast → Recommendations
+The backend is organized around FastAPI routers, SQLAlchemy models, Pydantic schemas, and service functions.
 
-Each workflow is scoped to the authenticated user. Products act as the ownership root, inventory access is checked through product ownership, and downstream orders, forecasts, and recommendations are filtered by the logged-in user.
+Current backend responsibilities include:
 
----
+- Authentication
+- User management
+- Product CRUD behavior
+- Inventory access and stock updates
+- Order creation and stock validation
+- Forecast generation
+- Recommendation generation
+- Assistant responses
+- Health checks
+- Protected route enforcement
+- Data isolation
 
-## 📘 Flow Explanation
+Database schema changes are managed through Alembic migrations.
 
-### 1. Products
-
-- Each product has product details such as name, SKU, category, unit price, and reorder threshold.
-- Products can be created from the frontend dashboard.
-- Products are owned by the authenticated user who created them.
-- Products are used as the base entity for inventory, orders, forecasts, and recommendations.
-
-### 2. Inventory
-
-- Tracks current stock per product.
-- Inventory stock can be viewed from the frontend dashboard.
-- Inventory stock can be updated directly from product cards.
-- Inventory access is restricted through product ownership.
-- Stock updates immediately affect low-stock and healthy-stock labels.
-
-### 3. Orders
-
-- Orders reduce inventory when purchases occur.
-- Orders are validated to prevent purchases when stock is insufficient.
-- Orders are scoped to the authenticated user.
-- Users cannot create orders for another user's products.
-
-### 4. Forecast
-
-- Stores predicted future demand for each product.
-- Forecast records are used by the recommendation engine.
-- Forecast generation only uses the authenticated user's products and orders.
-- Forecast records are scoped to the authenticated user.
-
-### 5. Recommendations
-
-- Suggests reorder quantity based on:
-  - current inventory
-  - reorder threshold
-  - predicted demand
-
-- Recommendations can be generated for all qualifying products owned by the authenticated user.
-- Recommendations can also be generated for a single owned product from the product card.
-- Existing recommendation records are updated instead of creating duplicate recommendation rows.
-- Recommendation records are scoped to the authenticated user.
+Automatic table creation is disabled by default for production safety.
 
 ---
 
-## Forecasting and Recommendations Workflow
+## Database and Migrations
 
-SmartOps AI includes a baseline forecasting workflow that connects the ML pipeline, backend API, PostgreSQL database, and React dashboard.
+SmartOps AI uses Alembic for database migrations.
 
-The current workflow is:
+Important migration notes:
 
-1. Products and historical orders are stored in PostgreSQL.
-2. The backend baseline forecasting service calculates predicted demand using product reorder thresholds and total order quantity.
-3. Forecasts are stored in the database with model version `baseline-v1`.
-4. The dashboard can generate forecasts from the Forecasts section.
-5. The backend returns one latest forecast per product through `/forecast/latest`.
-6. Recommendations are regenerated after forecast generation so restock advice stays synchronized with the latest forecast data.
+- Alembic is configured for schema migrations.
+- A baseline revision was stamped.
+- Ownership-related schema changes are handled through migrations.
+- Production startup should run migrations before launching the app.
+- Automatic table creation is disabled by default.
 
-Current forecast generation endpoint:
-
-```http
-POST /forecast/generate
-```
-
-Latest forecast endpoint:
-
-```http
-GET /forecast/latest
-```
-
-These forecast endpoints are protected and require a valid bearer token from an authenticated dashboard user.
-
-Current baseline formula:
-
-```text
-baseline = max(total_order_quantity, reorder_threshold)
-predicted_demand = baseline * 1.15
-```
-
-This gives the app a complete end-to-end flow from operational data to demand forecasting to restock recommendations.
-
-## 🧮 Recommendation Logic
-
-For each product:
-
-```text
-If current_stock <= reorder_threshold:
-
-recommended_quantity = predicted_demand - current_stock
-
-If recommended_quantity is negative, set it to 0.
-```
-
-Each recommendation includes an explanation for transparency.
-
----
-
-## 📌 Example
-
-| Metric            | Value |
-| ----------------- | ----- |
-| Current Stock     | 20    |
-| Reorder Threshold | 30    |
-| Forecast Demand   | 120   |
-
-Recommended Quantity = 100
-
----
-
-## 📡 API Endpoints
-
-### Health
-
-- GET /health
-
-### Products
-
-- POST /products/
-- GET /products/
-- PATCH /products/{product_id}
-
-### Inventory
-
-- GET /inventory/{product_id}
-- PATCH /inventory/{product_id}
-
-### Orders
-
-- POST /orders/
-- GET /orders/
-
-### Forecast
-
-- POST /forecast/
-- GET /forecast/
-
-### Recommendations
-
-- POST /recommendations/
-- GET /recommendations/
-- POST /recommendations/generate/{product_id}
-- POST /recommendations/generate_all
-
----
-
-## ⚙️ How to Run Locally
-
-### 1. Clone the repository
+Recommended production startup pattern:
 
 ```bash
-git clone https://github.com/kethashishir/smartops-ai
-cd smartops-ai
+alembic upgrade head
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
-### 2. Run the backend
+---
+
+## Environment Variables
+
+The backend expects environment variables such as:
+
+```text
+DATABASE_URL=postgresql://...
+SECRET_KEY=change-me
+ALLOWED_ORIGINS=http://localhost:5173
+AUTO_CREATE_TABLES=false
+```
+
+For local development, use a `.env` file based on `.env.example`.
+
+---
+
+## Running Locally
+
+### Backend
+
+From the backend directory:
 
 ```bash
 cd backend
-python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Open backend API docs:
+Backend runs at:
 
 ```text
-http://127.0.0.1:8000/docs
+http://127.0.0.1:8000
 ```
 
-Check backend health:
+### Frontend
 
-```text
-http://127.0.0.1:8000/health
-```
-
-### 3. Run the frontend
-
-Open a second terminal:
+From the frontend directory:
 
 ```bash
-cd smartops-ai/frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-Open frontend app:
+Frontend runs at:
 
 ```text
 http://localhost:5173
@@ -478,29 +535,130 @@ http://localhost:5173
 
 ---
 
-## Planned Improvements
+## Verification Commands
 
-Planned future work includes:
+### Backend tests
 
-- Authentication and login flow
-- Machine learning model for demand forecasting
-- AI operations assistant using LangChain and a Hugging Face model
-- Charts for stock levels, demand forecasts, and recommendation trends
-- More professional SaaS-style dashboard redesign with sidebar navigation and tabs
-- Deployment setup
-- Automated tests
-- Database migrations with Alembic
-- Screenshots and demo video for portfolio presentation
+```bash
+cd backend
+pytest
+```
+
+Expected current result:
+
+```text
+28 passed
+```
+
+### Frontend production build
+
+```bash
+cd frontend
+npm run build
+```
+
+Expected current result:
+
+```text
+build passed
+```
+
+### Full local verification
+
+```bash
+cd frontend
+npm run build
+
+cd ../backend
+pytest
+```
 
 ---
 
-## Current Verification Status
+## Current Test Coverage
 
-Latest verified project checks:
+Backend tests currently cover:
 
-```text
-Backend tests: 19 passed
-Frontend production build: passed
-Protected dashboard API browser sanity check: passed
-Multi-user data isolation browser sanity check: passed
-```
+- Health route
+- Product routes
+- Authentication
+- Protected routes
+- Order logic
+- Forecast service logic
+- Assistant routes
+- Cross-user data isolation
+- User-owned products
+- Ownership-protected inventory
+- User-scoped orders
+- User-scoped forecasts
+- User-scoped recommendations
+- Assistant data isolation
+
+---
+
+## Recent Major Improvements
+
+Recent completed milestones include:
+
+- Added frontend authentication flow
+- Added JWT-protected backend APIs
+- Added multi-user data isolation
+- Added user-owned products
+- Added ownership-protected inventory access
+- Added user-scoped orders, forecasts, and recommendations
+- Added Alembic migrations
+- Disabled automatic table creation by default
+- Added clean empty states for new users
+- Added stock-aware order creation
+- Added forecast and recommendation workflow guidance
+- Added product names to orders, forecasts, and recommendations
+- Added SmartOps Assistant v1
+- Added assistant structured highlights and suggested actions
+- Added assistant stale-answer warning
+- Added assistant recent question history
+- Added assistant intents for recent activity, healthy inventory, and forecast freshness
+- Extracted frontend workflow logic into custom hooks
+- Added React Router
+- Converted the dashboard from one long page into routed pages
+- Added route-specific dashboard headers
+- Added reusable page components
+
+---
+
+## Future Work
+
+Potential future improvements include:
+
+- True LLM-powered assistant
+- LangChain or RAG integration
+- ML-based demand forecasting model
+- Charts and analytics visualizations
+- More advanced dashboard redesign
+- Separate admin/settings pages
+- Better role-based access control
+- Dockerized local development
+- Cloud deployment
+- CI/CD pipeline
+- More frontend tests
+- More advanced recommendation logic
+- Multi-warehouse support
+
+---
+
+## Project Purpose
+
+SmartOps AI is built to demonstrate practical full-stack engineering skills:
+
+- Backend API design
+- Frontend application architecture
+- Authentication
+- Database modeling
+- Multi-user data isolation
+- Business workflow modeling
+- Forecasting and recommendation logic
+- Assistant-style operational UX
+- Testing and regression coverage
+- Production-minded migration setup
+- React routing and component architecture
+
+The project is intentionally built like a realistic SaaS operations tool rather than a simple CRUD demo.
