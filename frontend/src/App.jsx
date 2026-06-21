@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import SummaryCards from "./components/SummaryCards.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
@@ -17,7 +18,44 @@ import useOrders from "./hooks/useOrders.js";
 import useForecasts from "./hooks/useForecasts.js";
 import useProducts from "./hooks/useProducts.js";
 
+const sectionRoutes = {
+  dashboard: {
+    path: "/",
+    sectionId: "dashboard-section",
+  },
+  assistant: {
+    path: "/assistant",
+    sectionId: "assistant-section",
+  },
+  products: {
+    path: "/products",
+    sectionId: "products-section",
+  },
+  orders: {
+    path: "/orders",
+    sectionId: "orders-section",
+  },
+  forecasts: {
+    path: "/forecasts",
+    sectionId: "forecasts-section",
+  },
+  recommendations: {
+    path: "/recommendations",
+    sectionId: "recommendations-section",
+  },
+};
+
+const pathToSection = Object.entries(sectionRoutes).reduce(
+  (acc, [sectionName, route]) => ({
+    ...acc,
+    [route.path]: sectionName,
+  }),
+  {},
+);
+
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [backendStatus, setBackendStatus] = useState("checking");
   const [activeSection, setActiveSection] = useState("dashboard");
   const assistant = useAssistant();
@@ -75,6 +113,12 @@ function App() {
   function scrollToSection(sectionId, activeName) {
     setActiveSection(activeName);
 
+    const route = sectionRoutes[activeName];
+
+    if (route && location.pathname !== route.path) {
+      navigate(route.path);
+    }
+
     const section = document.getElementById(sectionId);
 
     if (section) {
@@ -84,6 +128,24 @@ function App() {
       });
     }
   }
+
+  useEffect(() => {
+    const sectionName = pathToSection[location.pathname] || "dashboard";
+    const section = sectionRoutes[sectionName];
+
+    setActiveSection(sectionName);
+
+    if (!currentUser) {
+      return;
+    }
+
+    setTimeout(() => {
+      document.getElementById(section.sectionId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  }, [location.pathname, currentUser]);
 
   async function checkBackendHealth() {
     try {
@@ -150,7 +212,7 @@ function App() {
         />
 
         <main className="dashboard-content">
-          <section>
+          <section id="dashboard-section">
             <SummaryCards
               productsCount={productState.products.length}
               ordersCount={orderState.orders.length}
