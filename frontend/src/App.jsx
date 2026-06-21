@@ -20,10 +20,9 @@ import {
 import { getHealthStatus } from "./api/healthApi.js";
 import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
-import { getCurrentUser, loginUser, registerUser } from "./api/authApi.js";
-import { resetSessionExpiredDispatch } from "./api/config.js";
 import useAssistant from "./hooks/useAssistant.js";
 import useRecommendations from "./hooks/useRecommendations.js";
+import useAuth from "./hooks/useAuth.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -60,80 +59,15 @@ function App() {
   const [loadingForecasts, setLoadingForecasts] = useState(false);
   const [forecastsError, setForecastsError] = useState("");
   const [forecastSuccess, setForecastSuccess] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authMode, setAuthMode] = useState("login");
-  const [authForm, setAuthForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [authError, setAuthError] = useState("");
-  const [authSuccess, setAuthSuccess] = useState("");
-  const [loadingAuth, setLoadingAuth] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true);
   const assistant = useAssistant();
   const recommendationState = useRecommendations({
     products,
     onDataChanged: assistant.markStale,
   });
-
-  function handleAuthInputChange(event) {
-    setAuthError("");
-    setAuthSuccess("");
-
-    const { name, value } = event.target;
-
-    setAuthForm({
-      ...authForm,
-      [name]: value,
-    });
-  }
-
-  async function handleSubmitAuth(event) {
-    event.preventDefault();
-
-    try {
-      setLoadingAuth(true);
-      setAuthError("");
-      setAuthSuccess("");
-
-      if (authMode === "register") {
-        await registerUser(authForm);
-
-        setAuthSuccess("Account created successfully. You can now log in.");
-        setAuthMode("login");
-        setAuthForm({
-          name: "",
-          email: authForm.email,
-          password: "",
-        });
-
-        return;
-      }
-
-      const data = await loginUser({
-        email: authForm.email,
-        password: authForm.password,
-      });
-
-      localStorage.setItem("smartops_token", data.access_token);
-      resetSessionExpiredDispatch();
-      resetDashboardState();
-      setAuthError("");
-      setAuthSuccess("");
-      setCurrentUser(data.user);
-
-      setAuthForm({
-        name: "",
-        email: "",
-        password: "",
-      });
-    } catch (error) {
-      setAuthError(error.message || "Authentication failed.");
-    } finally {
-      setLoadingAuth(false);
-    }
-  }
+  const auth = useAuth({
+    onSessionReset: resetDashboardState,
+  });
+  const currentUser = auth.currentUser;
 
   function resetDashboardState() {
     setProducts([]);
@@ -162,32 +96,6 @@ function App() {
     recommendationState.reset();
     assistant.reset();
   }
-
-  function handleLogout() {
-    localStorage.removeItem("smartops_token");
-    resetDashboardState();
-    setCurrentUser(null);
-  }
-
-  useEffect(() => {
-    function handleSessionExpired(event) {
-      resetDashboardState();
-      setCurrentUser(null);
-      setAuthMode("login");
-      setAuthError(
-        event.detail?.message || "Session expired. Please log in again.",
-      );
-    }
-
-    window.addEventListener("smartops:session-expired", handleSessionExpired);
-
-    return () => {
-      window.removeEventListener(
-        "smartops:session-expired",
-        handleSessionExpired,
-      );
-    };
-  }, []);
 
   function handleProductInputChange(event) {
     setProductSuccess("");
@@ -491,30 +399,6 @@ function App() {
     fetchForecasts();
   }, [currentUser?.id]);
 
-  useEffect(() => {
-    async function restoreAuthSession() {
-      const token = localStorage.getItem("smartops_token");
-
-      if (!token) {
-        setCheckingAuth(false);
-        return;
-      }
-
-      try {
-        const user = await getCurrentUser(token);
-        setCurrentUser(user);
-      } catch (error) {
-        console.error("Error restoring auth session:", error.message);
-        localStorage.removeItem("smartops_token");
-        setCurrentUser(null);
-      } finally {
-        setCheckingAuth(false);
-      }
-    }
-
-    restoreAuthSession();
-  }, []);
-
   function getProductName(productId) {
     const product = products.find((product) => product.id === productId);
     return product ? product.name : `Product ${productId}`;
@@ -581,7 +465,7 @@ function App() {
     return 0;
   });
 
-  if (checkingAuth) {
+  if (auth.checkingAuth) {
     return (
       <div className="auth-page">
         <div className="auth-card">
@@ -595,14 +479,14 @@ function App() {
   if (!currentUser) {
     return (
       <AuthPage
-        authMode={authMode}
-        setAuthMode={setAuthMode}
-        authForm={authForm}
-        authError={authError}
-        authSuccess={authSuccess}
-        loadingAuth={loadingAuth}
-        onAuthInputChange={handleAuthInputChange}
-        onSubmitAuth={handleSubmitAuth}
+        authMode={auth.authMode}
+        setAuthMode={auth.setAuthMode}
+        authForm={auth.authForm}
+        authError={auth.authError}
+        authSuccess={auth.authSuccess}
+        loadingAuth={auth.loadingAuth}
+        onAuthInputChange={auth.handleAuthInputChange}
+        onSubmitAuth={auth.handleSubmitAuth}
       />
     );
   }
@@ -615,7 +499,7 @@ function App() {
         <DashboardHeader
           backendStatus={backendStatus}
           currentUser={currentUser}
-          onLogout={handleLogout}
+          onLogout={auth.handleLogout}
         />
 
         <main className="dashboard-content">
