@@ -1,11 +1,9 @@
-import { apiFetch } from "./config.js";
+import { apiFetch, ensureOk } from "./config.js";
 
 export async function getProducts() {
   const response = await apiFetch("/products/");
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to fetch products");
 
   return response.json();
 }
@@ -19,9 +17,7 @@ export async function createProduct(product) {
     body: JSON.stringify(product),
   });
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to create product");
 
   return response.json();
 }

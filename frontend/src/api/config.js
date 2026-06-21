@@ -11,6 +11,33 @@ export function resetSessionExpiredDispatch() {
   hasDispatchedSessionExpired = false;
 }
 
+export async function getApiErrorMessage(response, fallbackMessage) {
+  try {
+    const errorData = await response.json();
+
+    if (errorData.detail === "Not enough stock") {
+      return "Not enough stock available for this order.";
+    }
+
+    if (typeof errorData.detail === "string") {
+      return errorData.detail;
+    }
+
+    return fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+}
+
+export async function ensureOk(response, fallbackMessage) {
+  if (!response.ok) {
+    const message = await getApiErrorMessage(response, fallbackMessage);
+    throw new Error(message);
+  }
+
+  return response;
+}
+
 export async function apiFetch(path, options = {}) {
   const token = getAuthToken();
 

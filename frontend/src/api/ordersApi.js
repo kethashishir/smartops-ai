@@ -1,11 +1,9 @@
-import { apiFetch } from "./config.js";
+import { apiFetch, ensureOk } from "./config.js";
 
 export async function getOrders() {
   const response = await apiFetch("/orders/");
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch orders");
-  }
+  await ensureOk(response, "Failed to fetch orders");
 
   return response.json();
 }
@@ -23,15 +21,7 @@ export async function createOrder(order) {
     }),
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    const message =
-      errorData.detail === "Not enough stock"
-        ? "Not enough stock available for this order."
-        : errorData.detail || "Failed to create order";
-
-    throw new Error(message);
-  }
+  await ensureOk(response, "Failed to create order");
 
   return response.json();
 }

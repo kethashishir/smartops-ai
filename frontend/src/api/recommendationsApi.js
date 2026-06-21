@@ -1,11 +1,9 @@
-import { apiFetch } from "./config.js";
+import { apiFetch, ensureOk } from "./config.js";
 
 export async function getRecommendations() {
   const response = await apiFetch("/recommendations/");
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to fetch recommendations");
 
   return response.json();
 }
@@ -15,9 +13,7 @@ export async function generateAllRecommendations() {
     method: "POST",
   });
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to generate recommendations");
 
   return response.json();
 }
@@ -27,9 +23,7 @@ export async function generateRecommendation(productId) {
     method: "POST",
   });
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to generate recommendation");
 
   return response.json();
 }

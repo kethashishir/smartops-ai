@@ -1,11 +1,9 @@
-import { apiFetch } from "./config.js";
+import { apiFetch, ensureOk } from "./config.js";
 
 export async function getInventoryForProduct(productId) {
   const response = await apiFetch(`/inventory/${productId}`);
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to fetch inventory");
 
   return response.json();
 }
@@ -21,9 +19,7 @@ export async function updateInventoryForProduct(productId, currentStock) {
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.status}`);
-  }
+  await ensureOk(response, "Failed to update inventory");
 
   return response.json();
 }

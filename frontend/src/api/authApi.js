@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./config.js";
+import { API_BASE_URL, ensureOk } from "./config.js";
 
 export async function registerUser(userData) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -9,10 +9,7 @@ export async function registerUser(userData) {
     body: JSON.stringify(userData),
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || "Failed to register user");
-  }
+  await ensureOk(response, "Failed to register user");
 
   return response.json();
 }
@@ -26,10 +23,7 @@ export async function loginUser(credentials) {
     body: JSON.stringify(credentials),
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || "Failed to login");
-  }
+  await ensureOk(response, "Failed to login");
 
   return response.json();
 }
@@ -41,10 +35,7 @@ export async function getCurrentUser(token) {
     },
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || "Failed to load current user");
-  }
+  await ensureOk(response, "Failed to load current user");
 
   return response.json();
 }
