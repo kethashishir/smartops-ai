@@ -88,6 +88,7 @@ function App() {
   const [assistantError, setAssistantError] = useState("");
   const [loadingAssistant, setLoadingAssistant] = useState(false);
   const [assistantHighlights, setAssistantHighlights] = useState([]);
+  const [assistantStale, setAssistantStale] = useState(false);
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -179,6 +180,7 @@ function App() {
     setAssistantActions([]);
     setAssistantError("");
     setAssistantHighlights([]);
+    setAssistantStale(false);
   }
 
   function handleLogout() {
@@ -196,6 +198,7 @@ function App() {
     try {
       setLoadingAssistant(true);
       setAssistantError("");
+      setAssistantStale(false);
 
       const data = await getAssistantSummary();
 
@@ -216,6 +219,7 @@ function App() {
     try {
       setLoadingAssistant(true);
       setAssistantError("");
+      setAssistantStale(false);
 
       const data = await askAssistant(assistantQuestion);
 
@@ -227,6 +231,12 @@ function App() {
       setAssistantError(error.message || "Could not ask assistant.");
     } finally {
       setLoadingAssistant(false);
+    }
+  }
+
+  function markAssistantStale() {
+    if (assistantAnswer) {
+      setAssistantStale(true);
     }
   }
 
@@ -339,6 +349,8 @@ function App() {
         `Order created for ${product?.name || "selected product"}. Inventory updated. Generate forecasts next to refresh demand planning and recommendations.`,
       );
 
+      markAssistantStale();
+
       setActiveSection("orders");
 
       setTimeout(() => {
@@ -400,6 +412,7 @@ function App() {
       await generateAllRecommendations();
       await fetchRecommendations();
       setForecastSuccess("Forecasts and recommendations updated successfully.");
+      markAssistantStale();
     } catch (error) {
       setForecastSuccess("");
       console.error("Error refreshing forecasts:", error.message);
@@ -434,6 +447,7 @@ function App() {
 
       await fetchProducts();
       setProductSuccess("Product created successfully.");
+      markAssistantStale();
     } catch (error) {
       console.error("Error creating product:", error.message);
       setProductsError(
@@ -518,6 +532,8 @@ function App() {
         }.`,
       );
 
+      markAssistantStale();
+
       setStockUpdates({
         ...stockUpdates,
         [productId]: "",
@@ -595,6 +611,7 @@ function App() {
       const data = await generateAllRecommendations();
 
       await fetchRecommendations();
+      markAssistantStale();
     } catch (error) {
       console.error("Error generating recommendations:", error.message);
       setRecommendationsError(
@@ -621,6 +638,7 @@ function App() {
       setRecommendationSuccess(
         `Updated recommendation for ${product?.name || "selected product"}.`,
       );
+      markAssistantStale();
     } catch (error) {
       console.error(
         "Error generating recommendation for product:",
@@ -762,6 +780,7 @@ function App() {
             assistantAnswer={assistantAnswer}
             assistantHighlights={assistantHighlights}
             assistantActions={assistantActions}
+            assistantStale={assistantStale}
             assistantError={assistantError}
             loadingAssistant={loadingAssistant}
             onQuestionChange={handleAssistantQuestionChange}

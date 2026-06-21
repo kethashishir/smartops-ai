@@ -4,6 +4,7 @@ function AssistantSection({
   assistantAnswer,
   assistantHighlights,
   assistantActions,
+  assistantStale,
   assistantError,
   loadingAssistant,
   onQuestionChange,
@@ -47,6 +48,13 @@ function AssistantSection({
       </div>
 
       {assistantError && <p className="error">{assistantError}</p>}
+
+      {assistantStale && (
+        <p className="assistant-stale-note">
+          Operational data changed. Ask again or generate a new summary for
+          updated guidance.
+        </p>
+      )}
 
       <form className="assistant-prompt" onSubmit={onAskAssistant}>
         <input
