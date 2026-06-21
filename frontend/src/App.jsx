@@ -5,8 +5,8 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
+import ForecastsPage from "./pages/ForecastsPage.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
-import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import AuthPage from "./components/AuthPage.jsx";
@@ -213,22 +213,6 @@ function App() {
     return <Navigate to="/" replace />;
   }
 
-  function renderForecastsSection() {
-    return (
-      <ForecastsSection
-        sectionId="forecasts-section"
-        productsCount={productState.products.length}
-        ordersCount={orderState.orders.length}
-        forecasts={forecastState.forecasts}
-        forecastsError={forecastState.forecastsError}
-        forecastSuccess={forecastState.forecastSuccess}
-        loadingForecasts={forecastState.loadingForecasts}
-        onRefreshForecasts={forecastState.refreshForecasts}
-        getProductName={productState.getProductName}
-      />
-    );
-  }
-
   function renderRecommendationsSection() {
     return (
       <RecommendationsSection
@@ -271,7 +255,13 @@ function App() {
     }
 
     if (activeSection === "forecasts") {
-      return renderForecastsSection();
+      return (
+        <ForecastsPage
+          productState={productState}
+          orderState={orderState}
+          forecastState={forecastState}
+        />
+      );
     }
 
     if (activeSection === "recommendations") {
