@@ -208,6 +208,38 @@ def answer_forecast_question(db: Session, user_id: int) -> AssistantResponse:
         suggested_actions=["Review this product's inventory and recommendation."],
     )
 
+def answer_recent_activity_question(db: Session, user_id: int) -> AssistantResponse:
+    recent_orders = (
+        db.query(Order, Product.name)
+        .join(Product, Product.id == Order.product_id)
+        .filter(
+            Order.user_id == user_id,
+            Product.user_id == user_id,
+        )
+        .order_by(Order.order_time.desc(), Order.id.desc())
+        .limit(5)
+        .all()
+    )
+
+    if not recent_orders:
+        return AssistantResponse(
+            answer="No recent order activity is available yet.",
+            highlights=[],
+            suggested_actions=["Create orders to start building activity history."],
+        )
+
+    highlights = [
+        f"{product_name}: {format_quantity(order.quantity)} units ordered"
+        for order, product_name in recent_orders
+    ]
+
+    return AssistantResponse(
+        answer=f"Here are your latest {len(recent_orders)} order activities.",
+        highlights=highlights,
+        suggested_actions=[
+            "Review recent orders before generating updated forecasts.",
+        ],
+    )
 
 @router.get("/summary", response_model=AssistantResponse)
 def get_assistant_summary(
@@ -224,6 +256,20 @@ def ask_assistant(
     current_user: User = Depends(get_current_user),
 ):
     normalized_question = question.question.lower().strip()
+    
+    if any(
+        keyword in normalized_question
+        for keyword in [
+            "recent",
+            "activity",
+            "changed",
+            "change",
+            "happened",
+            "latest order",
+            "recent order",
+        ]
+    ):
+        return answer_recent_activity_question(db, current_user.id)
 
     if any(keyword in normalized_question for keyword in ["low stock", "low-stock", "threshold"]):
         return answer_low_stock_question(db, current_user.id)

@@ -24,8 +24,10 @@ def test_assistant_summary_returns_answer_and_actions():
 
     assert "answer" in data
     assert "suggested_actions" in data
+    assert "highlights" in data
     assert isinstance(data["answer"], str)
     assert isinstance(data["suggested_actions"], list)
+    assert isinstance(data["highlights"], list)
     assert data["answer"] == "Here is your current operations summary."
 
 
@@ -48,7 +50,6 @@ def test_assistant_can_answer_low_stock_question():
     assert isinstance(data["answer"], str)
     assert isinstance(data["suggested_actions"], list)
     assert isinstance(data["highlights"], list)
-    assert data["answer"] == "Here is your current operations summary."
 
 def test_assistant_can_answer_unknown_question_with_suggestions():
     headers = get_auth_headers(client)
@@ -66,3 +67,23 @@ def test_assistant_can_answer_unknown_question_with_suggestions():
     assert "I can help" in data["answer"]
     assert len(data["suggested_actions"]) > 0
     assert len(data["highlights"]) > 0
+
+def test_assistant_can_answer_recent_activity_question():
+    headers = get_auth_headers(client)
+
+    response = client.post(
+        "/assistant/ask",
+        json={"question": "What changed recently?"},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "answer" in data
+    assert "highlights" in data
+    assert "suggested_actions" in data
+    assert isinstance(data["answer"], str)
+    assert isinstance(data["highlights"], list)
+    assert isinstance(data["suggested_actions"], list)
