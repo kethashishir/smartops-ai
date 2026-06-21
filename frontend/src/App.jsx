@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import AssistantPage from "./pages/AssistantPage.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import OrdersSection from "./components/OrdersSection.jsx";
@@ -9,7 +10,6 @@ import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import AuthPage from "./components/AuthPage.jsx";
-import AssistantSection from "./components/AssistantSection.jsx";
 import { getHealthStatus } from "./api/healthApi.js";
 import useAssistant from "./hooks/useAssistant.js";
 import useRecommendations from "./hooks/useRecommendations.js";
@@ -213,26 +213,6 @@ function App() {
     return <Navigate to="/" replace />;
   }
 
-  function renderAssistantSection() {
-    return (
-      <AssistantSection
-        sectionId="assistant-section"
-        assistantQuestion={assistant.question}
-        assistantAnswer={assistant.answer}
-        assistantHighlights={assistant.highlights}
-        assistantActions={assistant.actions}
-        assistantHistory={assistant.history}
-        assistantStale={assistant.stale}
-        assistantError={assistant.error}
-        loadingAssistant={assistant.loading}
-        onQuestionChange={assistant.handleQuestionChange}
-        onAskAssistant={assistant.submitQuestion}
-        onRefreshSummary={assistant.refreshSummary}
-        onClearAssistant={assistant.clear}
-      />
-    );
-  }
-
   function renderProductsSection() {
     return (
       <ProductsSection
@@ -330,7 +310,7 @@ function App() {
 
   function renderActiveSection() {
     if (activeSection === "assistant") {
-      return renderAssistantSection();
+      return <AssistantPage assistant={assistant} />;
     }
 
     if (activeSection === "products") {
