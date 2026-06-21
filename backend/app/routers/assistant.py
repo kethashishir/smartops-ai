@@ -148,6 +148,32 @@ def answer_low_stock_question(db: Session, user_id: int) -> AssistantResponse:
         suggested_actions=["Review these products and consider restocking soon."],
     )
 
+def answer_healthy_inventory_question(db: Session, user_id: int) -> AssistantResponse:
+    product_rows = get_user_products_with_inventory(db, user_id)
+
+    healthy_products = []
+
+    for product, inventory in product_rows:
+        if not inventory:
+            continue
+
+        if inventory.current_stock > product.reorder_threshold:
+            healthy_products.append(
+                f"{product.name}: {format_quantity(inventory.current_stock)} in stock, threshold {format_quantity(product.reorder_threshold)}"
+            )
+
+    if not healthy_products:
+        return AssistantResponse(
+            answer="No products are currently above their reorder threshold.",
+            highlights=[],
+            suggested_actions=["Review low-stock products and restock recommendations."],
+        )
+
+    return AssistantResponse(
+        answer=f"{len(healthy_products)} products are currently above their reorder threshold.",
+        highlights=healthy_products,
+        suggested_actions=["Keep monitoring these products as new orders come in."],
+    )
 
 def answer_restock_question(db: Session, user_id: int) -> AssistantResponse:
     latest_recommendations = get_latest_recommendations(db, user_id)
@@ -273,6 +299,12 @@ def ask_assistant(
 
     if any(keyword in normalized_question for keyword in ["low stock", "low-stock", "threshold"]):
         return answer_low_stock_question(db, current_user.id)
+    
+    if any(
+        keyword in normalized_question
+        for keyword in ["healthy", "safe", "okay", "ok", "above threshold"]
+    ):
+        return answer_healthy_inventory_question(db, current_user.id)
 
     if any(keyword in normalized_question for keyword in ["restock", "reorder", "recommend"]):
         return answer_restock_question(db, current_user.id)

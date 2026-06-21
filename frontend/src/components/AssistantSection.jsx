@@ -14,6 +14,7 @@ function AssistantSection({
 }) {
   const exampleQuestions = [
     "Which products are low stock?",
+    "Which products are healthy?",
     "What should I restock?",
     "What changed recently?",
     "Which product has the highest forecasted demand?",
