@@ -87,6 +87,7 @@ function App() {
   const [assistantActions, setAssistantActions] = useState([]);
   const [assistantError, setAssistantError] = useState("");
   const [loadingAssistant, setLoadingAssistant] = useState(false);
+  const [assistantHighlights, setAssistantHighlights] = useState([]);
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -177,6 +178,7 @@ function App() {
     setAssistantAnswer("");
     setAssistantActions([]);
     setAssistantError("");
+    setAssistantHighlights([]);
   }
 
   function handleLogout() {
@@ -199,6 +201,7 @@ function App() {
 
       setAssistantAnswer(data.answer);
       setAssistantActions(data.suggested_actions || []);
+      setAssistantHighlights(data.highlights || []);
     } catch (error) {
       console.error("Error loading assistant summary:", error.message);
       setAssistantError(error.message || "Could not load assistant summary.");
@@ -218,6 +221,7 @@ function App() {
 
       setAssistantAnswer(data.answer);
       setAssistantActions(data.suggested_actions || []);
+      setAssistantHighlights(data.highlights || []);
     } catch (error) {
       console.error("Error asking assistant:", error.message);
       setAssistantError(error.message || "Could not ask assistant.");
@@ -756,6 +760,7 @@ function App() {
             sectionId="assistant-section"
             assistantQuestion={assistantQuestion}
             assistantAnswer={assistantAnswer}
+            assistantHighlights={assistantHighlights}
             assistantActions={assistantActions}
             assistantError={assistantError}
             loadingAssistant={loadingAssistant}

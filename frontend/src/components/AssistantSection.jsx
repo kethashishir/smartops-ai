@@ -2,6 +2,7 @@ function AssistantSection({
   sectionId,
   assistantQuestion,
   assistantAnswer,
+  assistantHighlights,
   assistantActions,
   assistantError,
   loadingAssistant,
@@ -83,7 +84,21 @@ function AssistantSection({
               <small>Based on your current workspace data</small>
             </div>
 
-            <p>{assistantAnswer}</p>
+            <p className="assistant-answer-text">{assistantAnswer}</p>
+
+            {assistantHighlights.length > 0 && (
+              <div className="assistant-highlights">
+                <h4>Key details</h4>
+
+                <div className="assistant-highlight-grid">
+                  {assistantHighlights.map((highlight) => (
+                    <div className="assistant-highlight-card" key={highlight}>
+                      {highlight}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {assistantActions.length > 0 && (
               <div className="assistant-actions">
