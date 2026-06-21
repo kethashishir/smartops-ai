@@ -27,7 +27,7 @@ import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 import { getCurrentUser, loginUser, registerUser } from "./api/authApi.js";
 import { resetSessionExpiredDispatch } from "./api/config.js";
-import { askAssistant, getAssistantSummary } from "./api/assistantApi.js";
+import useAssistant from "./hooks/useAssistant.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -82,14 +82,7 @@ function App() {
   const [authSuccess, setAuthSuccess] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [assistantQuestion, setAssistantQuestion] = useState("");
-  const [assistantAnswer, setAssistantAnswer] = useState("");
-  const [assistantActions, setAssistantActions] = useState([]);
-  const [assistantError, setAssistantError] = useState("");
-  const [loadingAssistant, setLoadingAssistant] = useState(false);
-  const [assistantHighlights, setAssistantHighlights] = useState([]);
-  const [assistantStale, setAssistantStale] = useState(false);
-  const [assistantHistory, setAssistantHistory] = useState([]);
+  const assistant = useAssistant();
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -176,108 +169,13 @@ function App() {
       source: "dashboard",
     });
 
-    setAssistantQuestion("");
-    setAssistantAnswer("");
-    setAssistantActions([]);
-    setAssistantError("");
-    setAssistantHighlights([]);
-    setAssistantStale(false);
-    setAssistantHistory([]);
+    assistant.reset();
   }
 
   function handleLogout() {
     localStorage.removeItem("smartops_token");
     resetDashboardState();
     setCurrentUser(null);
-  }
-
-  function handleAssistantQuestionChange(event) {
-    setAssistantQuestion(event.target.value);
-    setAssistantError("");
-  }
-
-  async function refreshAssistantSummary() {
-    try {
-      setLoadingAssistant(true);
-      setAssistantError("");
-      setAssistantStale(false);
-
-      const data = await getAssistantSummary();
-
-      setAssistantAnswer(data.answer);
-      setAssistantActions(data.suggested_actions || []);
-      setAssistantHighlights(data.highlights || []);
-      setAssistantHistory((currentHistory) =>
-        [
-          {
-            id: crypto.randomUUID(),
-            question: "Generate Summary",
-            answer: data.answer,
-            highlights: data.highlights || [],
-            suggestedActions: data.suggested_actions || [],
-          },
-          ...currentHistory,
-        ].slice(0, 5),
-      );
-    } catch (error) {
-      console.error("Error loading assistant summary:", error.message);
-      setAssistantError(error.message || "Could not load assistant summary.");
-    } finally {
-      setLoadingAssistant(false);
-    }
-  }
-
-  async function submitAssistantQuestion(event) {
-    event.preventDefault();
-
-    try {
-      setLoadingAssistant(true);
-      setAssistantError("");
-
-      const cleanedQuestion = assistantQuestion.trim();
-
-      const data = await askAssistant(assistantQuestion.trim());
-
-      setAssistantQuestion(assistantQuestion.trim());
-      setAssistantAnswer(data.answer);
-      setAssistantActions(data.suggested_actions || []);
-      setAssistantHighlights(data.highlights || []);
-      setAssistantStale(false);
-
-      setAssistantHistory((currentHistory) =>
-        [
-          {
-            id: crypto.randomUUID(),
-            question: cleanedQuestion,
-            answer: data.answer,
-            highlights: data.highlights || [],
-            suggestedActions: data.suggested_actions || [],
-          },
-          ...currentHistory,
-        ].slice(0, 5),
-      );
-    } catch (error) {
-      console.error("Error asking assistant:", error.message);
-      setAssistantError(error.message || "Could not ask assistant.");
-    } finally {
-      setLoadingAssistant(false);
-    }
-  }
-
-  function markAssistantStale() {
-    if (assistantAnswer) {
-      setAssistantStale(true);
-    }
-  }
-
-  function clearAssistantResponse() {
-    setAssistantQuestion("");
-    setAssistantAnswer("");
-    setAssistantHighlights([]);
-    setAssistantActions([]);
-    setAssistantError("");
-    setAssistantStale(false);
-    setAssistantHistory([]);
   }
 
   useEffect(() => {
@@ -389,7 +287,7 @@ function App() {
         `Order created for ${product?.name || "selected product"}. Inventory updated. Generate forecasts next to refresh demand planning and recommendations.`,
       );
 
-      markAssistantStale();
+      assistant.markStale();
 
       setActiveSection("orders");
 
@@ -452,7 +350,7 @@ function App() {
       await generateAllRecommendations();
       await fetchRecommendations();
       setForecastSuccess("Forecasts and recommendations updated successfully.");
-      markAssistantStale();
+      assistant.markStale();
     } catch (error) {
       setForecastSuccess("");
       console.error("Error refreshing forecasts:", error.message);
@@ -487,7 +385,7 @@ function App() {
 
       await fetchProducts();
       setProductSuccess("Product created successfully.");
-      markAssistantStale();
+      assistant.markStale();
     } catch (error) {
       console.error("Error creating product:", error.message);
       setProductsError(
@@ -572,7 +470,7 @@ function App() {
         }.`,
       );
 
-      markAssistantStale();
+      assistant.markStale();
 
       setStockUpdates({
         ...stockUpdates,
@@ -651,7 +549,7 @@ function App() {
       const data = await generateAllRecommendations();
 
       await fetchRecommendations();
-      markAssistantStale();
+      assistant.markStale();
     } catch (error) {
       console.error("Error generating recommendations:", error.message);
       setRecommendationsError(
@@ -678,7 +576,7 @@ function App() {
       setRecommendationSuccess(
         `Updated recommendation for ${product?.name || "selected product"}.`,
       );
-      markAssistantStale();
+      assistant.markStale();
     } catch (error) {
       console.error(
         "Error generating recommendation for product:",
@@ -816,18 +714,18 @@ function App() {
 
           <AssistantSection
             sectionId="assistant-section"
-            assistantQuestion={assistantQuestion}
-            assistantAnswer={assistantAnswer}
-            assistantHighlights={assistantHighlights}
-            assistantActions={assistantActions}
-            assistantHistory={assistantHistory}
-            assistantStale={assistantStale}
-            assistantError={assistantError}
-            loadingAssistant={loadingAssistant}
-            onQuestionChange={handleAssistantQuestionChange}
-            onAskAssistant={submitAssistantQuestion}
-            onRefreshSummary={refreshAssistantSummary}
-            onClearAssistant={clearAssistantResponse}
+            assistantQuestion={assistant.question}
+            assistantAnswer={assistant.answer}
+            assistantHighlights={assistant.highlights}
+            assistantActions={assistant.actions}
+            assistantHistory={assistant.history}
+            assistantStale={assistant.stale}
+            assistantError={assistant.error}
+            loadingAssistant={assistant.loading}
+            onQuestionChange={assistant.handleQuestionChange}
+            onAskAssistant={assistant.submitQuestion}
+            onRefreshSummary={assistant.refreshSummary}
+            onClearAssistant={assistant.clear}
           />
 
           <ProductsSection
