@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
-import SummaryCards from "./components/SummaryCards.jsx";
+import DashboardPage from "./pages/DashboardPage.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import OrdersSection from "./components/OrdersSection.jsx";
@@ -350,18 +350,13 @@ function App() {
     }
 
     return (
-      <>
-        <section id="dashboard-section">
-          <SummaryCards
-            productsCount={productState.products.length}
-            ordersCount={orderState.orders.length}
-            forecastsCount={forecastState.forecasts.length}
-            lowStockProductsCount={productState.lowStockProductsCount}
-          />
-        </section>
-
-        {renderAssistantSection()}
-      </>
+      <DashboardPage
+        productsCount={productState.products.length}
+        ordersCount={orderState.orders.length}
+        forecastsCount={forecastState.forecasts.length}
+        lowStockProductsCount={productState.lowStockProductsCount}
+        assistant={assistant}
+      />
     );
   }
 
