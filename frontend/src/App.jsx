@@ -4,8 +4,8 @@ import "./App.css";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
+import OrdersPage from "./pages/OrdersPage.jsx";
 import RecommendationsSection from "./components/RecommendationsSection.jsx";
-import OrdersSection from "./components/OrdersSection.jsx";
 import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
@@ -213,26 +213,6 @@ function App() {
     return <Navigate to="/" replace />;
   }
 
-  function renderOrdersSection() {
-    return (
-      <OrdersSection
-        sectionId="orders-section"
-        products={productState.products}
-        inventoryByProductId={productState.inventoryByProductId}
-        orders={orderState.orders}
-        newOrder={orderState.newOrder}
-        ordersError={orderState.ordersError}
-        orderSuccess={orderState.orderSuccess}
-        loadingOrders={orderState.loadingOrders}
-        creatingOrder={orderState.creatingOrder}
-        onOrderInputChange={orderState.handleOrderInputChange}
-        onCreateOrder={orderState.createOrder}
-        onRefreshOrders={orderState.fetchOrders}
-        getProductName={productState.getProductName}
-      />
-    );
-  }
-
   function renderForecastsSection() {
     return (
       <ForecastsSection
@@ -287,7 +267,7 @@ function App() {
     }
 
     if (activeSection === "orders") {
-      return renderOrdersSection();
+      return <OrdersPage productState={productState} orderState={orderState} />;
     }
 
     if (activeSection === "forecasts") {
