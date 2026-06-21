@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import "./App.css";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import AssistantPage from "./pages/AssistantPage.jsx";
@@ -203,49 +209,7 @@ function App() {
     );
   }
 
-  if (!pathToSection[location.pathname]) {
-    return <Navigate to="/" replace />;
-  }
-
-  function renderActiveSection() {
-    if (activeSection === "assistant") {
-      return <AssistantPage assistant={assistant} />;
-    }
-
-    if (activeSection === "products") {
-      return (
-        <ProductsPage
-          productState={productState}
-          recommendationState={recommendationState}
-        />
-      );
-    }
-
-    if (activeSection === "orders") {
-      return <OrdersPage productState={productState} orderState={orderState} />;
-    }
-
-    if (activeSection === "forecasts") {
-      return (
-        <ForecastsPage
-          productState={productState}
-          orderState={orderState}
-          forecastState={forecastState}
-        />
-      );
-    }
-
-    if (activeSection === "recommendations") {
-      return (
-        <RecommendationsPage
-          productState={productState}
-          orderState={orderState}
-          forecastState={forecastState}
-          recommendationState={recommendationState}
-        />
-      );
-    }
-
+  function renderDashboardPage() {
     return (
       <DashboardPage
         productsCount={productState.products.length}
@@ -271,7 +235,55 @@ function App() {
           onLogout={auth.handleLogout}
         />
 
-        <main className="dashboard-content">{renderActiveSection()}</main>
+        <main className="dashboard-content">
+          <Routes>
+            <Route path="/" element={renderDashboardPage()} />
+            <Route
+              path="/assistant"
+              element={<AssistantPage assistant={assistant} />}
+            />
+            <Route
+              path="/products"
+              element={
+                <ProductsPage
+                  productState={productState}
+                  recommendationState={recommendationState}
+                />
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <OrdersPage
+                  productState={productState}
+                  orderState={orderState}
+                />
+              }
+            />
+            <Route
+              path="/forecasts"
+              element={
+                <ForecastsPage
+                  productState={productState}
+                  orderState={orderState}
+                  forecastState={forecastState}
+                />
+              }
+            />
+            <Route
+              path="/recommendations"
+              element={
+                <RecommendationsPage
+                  productState={productState}
+                  orderState={orderState}
+                  forecastState={forecastState}
+                  recommendationState={recommendationState}
+                />
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
       </div>
     </div>
   );
