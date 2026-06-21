@@ -230,6 +230,18 @@ Regression tests verify that one user cannot see or mutate another user's produc
 
 ---
 
+### Recent Improvements
+
+- Added Alembic database migrations with a stamped baseline revision
+- Added a real schema migration requiring ownership user IDs
+- Disabled automatic table creation by default for production safety
+- Improved dashboard empty states for new users
+- Added stock-aware order form guidance
+- Added guided forecast and recommendation workflow states
+- Updated order responses to include product names
+
+---
+
 ## Dashboard UI
 
 The SmartOps AI frontend uses a dashboard-style layout designed for an operations workflow.
