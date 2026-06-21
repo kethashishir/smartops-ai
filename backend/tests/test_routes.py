@@ -149,10 +149,18 @@ def test_forecasts_and_recommendations_are_scoped_to_authenticated_user():
     )
     assert owner_forecasts_response.status_code == 200
 
+    owner_forecasts = owner_forecasts_response.json()
     owner_forecast_product_ids = {
-        forecast["product_id"] for forecast in owner_forecasts_response.json()
+        forecast["product_id"] for forecast in owner_forecasts
     }
     assert product["id"] in owner_forecast_product_ids
+
+    matching_forecast = next(
+        forecast
+        for forecast in owner_forecasts
+        if forecast["product_id"] == product["id"]
+    )
+    assert matching_forecast["product_name"] == product["name"]
 
     owner_recommendations_response = client.get(
         "/recommendations/",
@@ -160,11 +168,19 @@ def test_forecasts_and_recommendations_are_scoped_to_authenticated_user():
     )
     assert owner_recommendations_response.status_code == 200
 
+    owner_recommendations = owner_recommendations_response.json()
     owner_recommendation_product_ids = {
         recommendation["product_id"]
-        for recommendation in owner_recommendations_response.json()
+        for recommendation in owner_recommendations
     }
     assert product["id"] in owner_recommendation_product_ids
+
+    matching_recommendation = next(
+        recommendation
+        for recommendation in owner_recommendations
+        if recommendation["product_id"] == product["id"]
+    )
+    assert matching_recommendation["product_name"] == product["name"]
 
     other_forecasts_response = client.get(
         "/forecast/latest",
