@@ -92,13 +92,17 @@ function App() {
     clearForecastSuccess: forecastState.clearSuccess,
     onOrderCreated: () => {
       setActiveSection("orders");
+      navigate("/orders");
 
-      setTimeout(() => {
-        document.getElementById("orders-section")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      document.querySelector(".main-shell")?.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     },
   });
 
@@ -119,31 +123,19 @@ function App() {
       navigate(route.path);
     }
 
-    setTimeout(() => {
-      if (sectionName === "dashboard") {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
-        document.querySelector(".main-shell")?.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-
-        return;
-      }
-
-      document.getElementById(route.sectionId)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 0);
+    document.querySelector(".main-shell")?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   useEffect(() => {
     const sectionName = pathToSection[location.pathname] || "dashboard";
-    const section = sectionRoutes[sectionName];
 
     setActiveSection(sectionName);
 
@@ -152,23 +144,14 @@ function App() {
     }
 
     setTimeout(() => {
-      if (sectionName === "dashboard") {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-
-        document.querySelector(".main-shell")?.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-
-        return;
-      }
-
-      document.getElementById(section.sectionId)?.scrollIntoView({
+      window.scrollTo({
+        top: 0,
         behavior: "smooth",
-        block: "start",
+      });
+
+      document.querySelector(".main-shell")?.scrollTo({
+        top: 0,
+        behavior: "smooth",
       });
     }, 100);
   }, [location.pathname, currentUser]);
@@ -230,6 +213,158 @@ function App() {
     return <Navigate to="/" replace />;
   }
 
+  function renderAssistantSection() {
+    return (
+      <AssistantSection
+        sectionId="assistant-section"
+        assistantQuestion={assistant.question}
+        assistantAnswer={assistant.answer}
+        assistantHighlights={assistant.highlights}
+        assistantActions={assistant.actions}
+        assistantHistory={assistant.history}
+        assistantStale={assistant.stale}
+        assistantError={assistant.error}
+        loadingAssistant={assistant.loading}
+        onQuestionChange={assistant.handleQuestionChange}
+        onAskAssistant={assistant.submitQuestion}
+        onRefreshSummary={assistant.refreshSummary}
+        onClearAssistant={assistant.clear}
+      />
+    );
+  }
+
+  function renderProductsSection() {
+    return (
+      <ProductsSection
+        sectionId="products-section"
+        productSuccess={productState.productSuccess}
+        productsError={productState.productsError}
+        loadingProducts={productState.loadingProducts}
+        newProduct={productState.newProduct}
+        onInputChange={productState.handleProductInputChange}
+        onCreateProduct={productState.createProduct}
+        creatingProduct={productState.creatingProduct}
+        onRefreshProducts={productState.fetchProducts}
+        productSearch={productState.productSearch}
+        setProductSearch={productState.setProductSearch}
+        productFilter={productState.productFilter}
+        setProductFilter={productState.setProductFilter}
+        filteredProducts={productState.filteredProducts}
+        products={productState.products}
+        sortOption={productState.sortOption}
+        setSortOption={productState.setSortOption}
+        sortedProducts={productState.sortedProducts}
+        isLowStock={productState.isLowStock}
+        inventoryByProductId={productState.inventoryByProductId}
+        generatingProductId={recommendationState.generatingProductId}
+        latestRecommendations={recommendationState.latestRecommendations}
+        onGenerateRecommendation={
+          recommendationState.generateRecommendationForProduct
+        }
+        stockUpdates={productState.stockUpdates}
+        updatingStockProductId={productState.updatingStockProductId}
+        onStockInputChange={productState.handleStockInputChange}
+        onUpdateStock={productState.updateProductStock}
+      />
+    );
+  }
+
+  function renderOrdersSection() {
+    return (
+      <OrdersSection
+        sectionId="orders-section"
+        products={productState.products}
+        inventoryByProductId={productState.inventoryByProductId}
+        orders={orderState.orders}
+        newOrder={orderState.newOrder}
+        ordersError={orderState.ordersError}
+        orderSuccess={orderState.orderSuccess}
+        loadingOrders={orderState.loadingOrders}
+        creatingOrder={orderState.creatingOrder}
+        onOrderInputChange={orderState.handleOrderInputChange}
+        onCreateOrder={orderState.createOrder}
+        onRefreshOrders={orderState.fetchOrders}
+        getProductName={productState.getProductName}
+      />
+    );
+  }
+
+  function renderForecastsSection() {
+    return (
+      <ForecastsSection
+        sectionId="forecasts-section"
+        productsCount={productState.products.length}
+        ordersCount={orderState.orders.length}
+        forecasts={forecastState.forecasts}
+        forecastsError={forecastState.forecastsError}
+        forecastSuccess={forecastState.forecastSuccess}
+        loadingForecasts={forecastState.loadingForecasts}
+        onRefreshForecasts={forecastState.refreshForecasts}
+        getProductName={productState.getProductName}
+      />
+    );
+  }
+
+  function renderRecommendationsSection() {
+    return (
+      <RecommendationsSection
+        sectionId="recommendations-section"
+        productsCount={productState.products.length}
+        ordersCount={orderState.orders.length}
+        forecastsCount={forecastState.forecasts.length}
+        loadingRecommendations={recommendationState.loadingRecommendations}
+        recommendationsError={recommendationState.recommendationsError}
+        recommendationSuccess={recommendationState.recommendationSuccess}
+        recommendations={recommendationState.recommendations}
+        latestRecommendations={recommendationState.latestRecommendations}
+        hasGeneratedRecommendations={
+          recommendationState.hasGeneratedRecommendations
+        }
+        productsError={productState.productsError}
+        onGenerateRecommendations={recommendationState.generateRecommendations}
+        onRefreshRecommendations={recommendationState.fetchRecommendations}
+        getProductName={productState.getProductName}
+      />
+    );
+  }
+
+  function renderActiveSection() {
+    if (activeSection === "assistant") {
+      return renderAssistantSection();
+    }
+
+    if (activeSection === "products") {
+      return renderProductsSection();
+    }
+
+    if (activeSection === "orders") {
+      return renderOrdersSection();
+    }
+
+    if (activeSection === "forecasts") {
+      return renderForecastsSection();
+    }
+
+    if (activeSection === "recommendations") {
+      return renderRecommendationsSection();
+    }
+
+    return (
+      <>
+        <section id="dashboard-section">
+          <SummaryCards
+            productsCount={productState.products.length}
+            ordersCount={orderState.orders.length}
+            forecastsCount={forecastState.forecasts.length}
+            lowStockProductsCount={productState.lowStockProductsCount}
+          />
+        </section>
+
+        {renderAssistantSection()}
+      </>
+    );
+  }
+
   return (
     <div className="app-shell">
       <Sidebar activeSection={activeSection} onNavigate={scrollToSection} />
@@ -242,111 +377,7 @@ function App() {
         />
 
         <main className="dashboard-content" id="dashboard-section">
-          <section>
-            <SummaryCards
-              productsCount={productState.products.length}
-              ordersCount={orderState.orders.length}
-              forecastsCount={forecastState.forecasts.length}
-              lowStockProductsCount={productState.lowStockProductsCount}
-            />
-          </section>
-
-          <AssistantSection
-            sectionId="assistant-section"
-            assistantQuestion={assistant.question}
-            assistantAnswer={assistant.answer}
-            assistantHighlights={assistant.highlights}
-            assistantActions={assistant.actions}
-            assistantHistory={assistant.history}
-            assistantStale={assistant.stale}
-            assistantError={assistant.error}
-            loadingAssistant={assistant.loading}
-            onQuestionChange={assistant.handleQuestionChange}
-            onAskAssistant={assistant.submitQuestion}
-            onRefreshSummary={assistant.refreshSummary}
-            onClearAssistant={assistant.clear}
-          />
-
-          <ProductsSection
-            sectionId="products-section"
-            productSuccess={productState.productSuccess}
-            productsError={productState.productsError}
-            loadingProducts={productState.loadingProducts}
-            newProduct={productState.newProduct}
-            onInputChange={productState.handleProductInputChange}
-            onCreateProduct={productState.createProduct}
-            creatingProduct={productState.creatingProduct}
-            onRefreshProducts={productState.fetchProducts}
-            productSearch={productState.productSearch}
-            setProductSearch={productState.setProductSearch}
-            productFilter={productState.productFilter}
-            setProductFilter={productState.setProductFilter}
-            filteredProducts={productState.filteredProducts}
-            products={productState.products}
-            sortOption={productState.sortOption}
-            setSortOption={productState.setSortOption}
-            sortedProducts={productState.sortedProducts}
-            isLowStock={productState.isLowStock}
-            inventoryByProductId={productState.inventoryByProductId}
-            generatingProductId={recommendationState.generatingProductId}
-            latestRecommendations={recommendationState.latestRecommendations}
-            onGenerateRecommendation={
-              recommendationState.generateRecommendationForProduct
-            }
-            stockUpdates={productState.stockUpdates}
-            updatingStockProductId={productState.updatingStockProductId}
-            onStockInputChange={productState.handleStockInputChange}
-            onUpdateStock={productState.updateProductStock}
-          />
-
-          <OrdersSection
-            sectionId="orders-section"
-            products={productState.products}
-            inventoryByProductId={productState.inventoryByProductId}
-            orders={orderState.orders}
-            newOrder={orderState.newOrder}
-            ordersError={orderState.ordersError}
-            orderSuccess={orderState.orderSuccess}
-            loadingOrders={orderState.loadingOrders}
-            creatingOrder={orderState.creatingOrder}
-            onOrderInputChange={orderState.handleOrderInputChange}
-            onCreateOrder={orderState.createOrder}
-            onRefreshOrders={orderState.fetchOrders}
-            getProductName={productState.getProductName}
-          />
-
-          <ForecastsSection
-            sectionId="forecasts-section"
-            productsCount={productState.products.length}
-            ordersCount={orderState.orders.length}
-            forecasts={forecastState.forecasts}
-            forecastsError={forecastState.forecastsError}
-            forecastSuccess={forecastState.forecastSuccess}
-            loadingForecasts={forecastState.loadingForecasts}
-            onRefreshForecasts={forecastState.refreshForecasts}
-            getProductName={productState.getProductName}
-          />
-
-          <RecommendationsSection
-            sectionId="recommendations-section"
-            productsCount={productState.products.length}
-            ordersCount={orderState.orders.length}
-            forecastsCount={forecastState.forecasts.length}
-            loadingRecommendations={recommendationState.loadingRecommendations}
-            recommendationsError={recommendationState.recommendationsError}
-            recommendationSuccess={recommendationState.recommendationSuccess}
-            recommendations={recommendationState.recommendations}
-            latestRecommendations={recommendationState.latestRecommendations}
-            hasGeneratedRecommendations={
-              recommendationState.hasGeneratedRecommendations
-            }
-            productsError={productState.productsError}
-            onGenerateRecommendations={
-              recommendationState.generateRecommendations
-            }
-            onRefreshRecommendations={recommendationState.fetchRecommendations}
-            getProductName={productState.getProductName}
-          />
+          {renderActiveSection()}
         </main>
       </div>
     </div>
