@@ -18,6 +18,8 @@ def test_dashboard_routes_require_authentication():
         ("POST", "/forecast/generate"),
         ("GET", "/recommendations/"),
         ("POST", "/recommendations/generate_all"),
+        ("GET", "/assistant/summary"),
+        ("POST", "/assistant/ask"),
     ]
 
     for method, path in protected_requests:
