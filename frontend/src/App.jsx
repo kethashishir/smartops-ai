@@ -219,13 +219,14 @@ function App() {
     try {
       setLoadingAssistant(true);
       setAssistantError("");
-      setAssistantStale(false);
 
-      const data = await askAssistant(assistantQuestion);
+      const data = await askAssistant(assistantQuestion.trim());
 
+      setAssistantQuestion(assistantQuestion.trim());
       setAssistantAnswer(data.answer);
       setAssistantActions(data.suggested_actions || []);
       setAssistantHighlights(data.highlights || []);
+      setAssistantStale(false);
     } catch (error) {
       console.error("Error asking assistant:", error.message);
       setAssistantError(error.message || "Could not ask assistant.");

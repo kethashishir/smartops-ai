@@ -14,7 +14,7 @@ export async function askAssistant(question) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question: question.trim() }),
   });
 
   await ensureOk(response, "Failed to ask assistant");
