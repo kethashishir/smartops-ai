@@ -87,25 +87,19 @@ def build_operations_summary(db: Session, user_id: int) -> AssistantResponse:
         if recommendation.recommended_quantity > 0
     ]
 
-    answer_parts = [
-        f"You currently have {product_count} products, {order_count} orders, and {forecast_count} forecasts in your workspace."
+    low_stock_count = len(low_stock_products)
+
+    highlights = [
+        f"{product_count} products tracked",
+        f"{order_count} orders processed",
+        f"{forecast_count} forecasts available",
+        f"{low_stock_count} low-stock products",
     ]
 
-    if low_stock_products:
-        answer_parts.append(
-            "Low-stock products: " + "; ".join(low_stock_products[:5]) + "."
-        )
-    else:
-        answer_parts.append("No products are currently below their reorder threshold.")
-
     if restock_recommendations:
-        answer_parts.append(
-            "Top restock recommendations: "
-            + "; ".join(restock_recommendations[:5])
-            + "."
-        )
+        highlights.append(f"Top restock recommendation: {restock_recommendations[0]}")
     else:
-        answer_parts.append("No active restock recommendations are currently available.")
+        highlights.append("No active restock recommendations")
 
     suggested_actions = []
 
@@ -120,16 +114,8 @@ def build_operations_summary(db: Session, user_id: int) -> AssistantResponse:
     else:
         suggested_actions.append("Review low-stock products and restock recommendations.")
 
-    highlights = []
-
-    if low_stock_products:
-        highlights.extend(low_stock_products[:5])
-
-    if restock_recommendations:
-        highlights.extend(restock_recommendations[:5])
-
     return AssistantResponse(
-        answer=" ".join(answer_parts),
+        answer="Here is your current operations summary.",
         highlights=highlights,
         suggested_actions=suggested_actions,
     )
