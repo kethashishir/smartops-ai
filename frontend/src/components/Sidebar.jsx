@@ -21,6 +21,15 @@ function Sidebar({ activeSection, onNavigate }) {
 
         <button
           className={`sidebar-link ${
+            activeSection === "assistant" ? "active" : ""
+          }`}
+          onClick={() => onNavigate("assistant-section", "assistant")}
+        >
+          Assistant
+        </button>
+
+        <button
+          className={`sidebar-link ${
             activeSection === "products" ? "active" : ""
           }`}
           onClick={() => onNavigate("products-section", "products")}

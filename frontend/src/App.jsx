@@ -8,6 +8,7 @@ import ForecastsSection from "./components/ForecastsSection.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import DashboardHeader from "./components/DashboardHeader.jsx";
 import AuthPage from "./components/AuthPage.jsx";
+import AssistantSection from "./components/AssistantSection.jsx";
 import {
   getProducts,
   createProduct as createProductApi,
@@ -26,6 +27,7 @@ import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 import { getCurrentUser, loginUser, registerUser } from "./api/authApi.js";
 import { resetSessionExpiredDispatch } from "./api/config.js";
+import { askAssistant, getAssistantSummary } from "./api/assistantApi.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -80,6 +82,11 @@ function App() {
   const [authSuccess, setAuthSuccess] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [assistantQuestion, setAssistantQuestion] = useState("");
+  const [assistantAnswer, setAssistantAnswer] = useState("");
+  const [assistantActions, setAssistantActions] = useState([]);
+  const [assistantError, setAssistantError] = useState("");
+  const [loadingAssistant, setLoadingAssistant] = useState(false);
 
   function handleAuthInputChange(event) {
     setAuthError("");
@@ -165,12 +172,58 @@ function App() {
       quantity: "",
       source: "dashboard",
     });
+
+    setAssistantQuestion("");
+    setAssistantAnswer("");
+    setAssistantActions([]);
+    setAssistantError("");
   }
 
   function handleLogout() {
     localStorage.removeItem("smartops_token");
     resetDashboardState();
     setCurrentUser(null);
+  }
+
+  function handleAssistantQuestionChange(event) {
+    setAssistantQuestion(event.target.value);
+    setAssistantError("");
+  }
+
+  async function refreshAssistantSummary() {
+    try {
+      setLoadingAssistant(true);
+      setAssistantError("");
+
+      const data = await getAssistantSummary();
+
+      setAssistantAnswer(data.answer);
+      setAssistantActions(data.suggested_actions || []);
+    } catch (error) {
+      console.error("Error loading assistant summary:", error.message);
+      setAssistantError(error.message || "Could not load assistant summary.");
+    } finally {
+      setLoadingAssistant(false);
+    }
+  }
+
+  async function submitAssistantQuestion(event) {
+    event.preventDefault();
+
+    try {
+      setLoadingAssistant(true);
+      setAssistantError("");
+
+      const data = await askAssistant(assistantQuestion);
+
+      setAssistantAnswer(data.answer);
+      setAssistantActions(data.suggested_actions || []);
+    } catch (error) {
+      console.error("Error asking assistant:", error.message);
+      setAssistantError(error.message || "Could not ask assistant.");
+    } finally {
+      setLoadingAssistant(false);
+    }
   }
 
   useEffect(() => {
@@ -490,6 +543,7 @@ function App() {
     fetchRecommendations();
     fetchOrders();
     fetchForecasts();
+    refreshAssistantSummary();
   }, [currentUser?.id]);
 
   useEffect(() => {
@@ -698,6 +752,18 @@ function App() {
               lowStockProductsCount={lowStockProductsCount}
             />
           </section>
+
+          <AssistantSection
+            sectionId="assistant-section"
+            assistantQuestion={assistantQuestion}
+            assistantAnswer={assistantAnswer}
+            assistantActions={assistantActions}
+            assistantError={assistantError}
+            loadingAssistant={loadingAssistant}
+            onQuestionChange={handleAssistantQuestionChange}
+            onAskAssistant={submitAssistantQuestion}
+            onRefreshSummary={refreshAssistantSummary}
+          />
 
           <ProductsSection
             sectionId="products-section"

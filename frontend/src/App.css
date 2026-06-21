@@ -1344,3 +1344,58 @@ button:disabled {
   background: #eff6ff;
   border-color: transparent;
 }
+
+/* -----------------------------
+   13. Assistant Section
+----------------------------- */
+
+.assistant-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.assistant-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: end;
+  margin: 1rem 0;
+}
+
+.assistant-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1rem;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.assistant-card h3 {
+  margin-top: 0;
+}
+
+.assistant-actions {
+  margin-top: 1rem;
+}
+
+.assistant-actions ul,
+.assistant-examples ul {
+  margin-bottom: 0;
+  padding-left: 1.25rem;
+}
+
+.assistant-examples {
+  margin-top: 1rem;
+  color: #64748b;
+}
+
+@media (max-width: 760px) {
+  .assistant-header,
+  .assistant-form {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+}
