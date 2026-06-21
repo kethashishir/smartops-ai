@@ -18,11 +18,11 @@ import {
   updateInventoryForProduct,
 } from "./api/inventoryApi.js";
 import { getHealthStatus } from "./api/healthApi.js";
-import { getOrders, createOrder as createOrderApi } from "./api/ordersApi.js";
 import { getForecasts, generateForecasts } from "./api/forecastsApi.js";
 import useAssistant from "./hooks/useAssistant.js";
 import useRecommendations from "./hooks/useRecommendations.js";
 import useAuth from "./hooks/useAuth.js";
+import useOrders from "./hooks/useOrders.js";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -45,16 +45,6 @@ function App() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [stockUpdates, setStockUpdates] = useState({});
   const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
-  const [orders, setOrders] = useState([]);
-  const [loadingOrders, setLoadingOrders] = useState(false);
-  const [ordersError, setOrdersError] = useState("");
-  const [orderSuccess, setOrderSuccess] = useState("");
-  const [creatingOrder, setCreatingOrder] = useState(false);
-  const [newOrder, setNewOrder] = useState({
-    product_id: "",
-    quantity: "",
-    source: "dashboard",
-  });
   const [forecasts, setForecasts] = useState([]);
   const [loadingForecasts, setLoadingForecasts] = useState(false);
   const [forecastsError, setForecastsError] = useState("");
@@ -68,31 +58,41 @@ function App() {
     onSessionReset: resetDashboardState,
   });
   const currentUser = auth.currentUser;
+  const orderState = useOrders({
+    products,
+    fetchProducts,
+    clearRecommendationFeedback: recommendationState.clearFeedback,
+    markAssistantStale: assistant.markStale,
+    clearForecastSuccess: () => setForecastSuccess(""),
+    onOrderCreated: () => {
+      setActiveSection("orders");
+
+      setTimeout(() => {
+        document.getElementById("orders-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    },
+  });
 
   function resetDashboardState() {
     setProducts([]);
     setInventoryByProductId({});
-    setOrders([]);
     setForecasts([]);
 
     setProductSuccess("");
-    setOrderSuccess("");
     setForecastSuccess("");
 
     setProductsError("");
-    setOrdersError("");
     setForecastsError("");
 
     setProductSearch("");
     setProductFilter("all");
     setSortOption("default");
     setStockUpdates({});
-    setNewOrder({
-      product_id: "",
-      quantity: "",
-      source: "dashboard",
-    });
 
+    orderState.reset();
     recommendationState.reset();
     assistant.reset();
   }
@@ -124,88 +124,6 @@ function App() {
         behavior: "smooth",
         block: "start",
       });
-    }
-  }
-
-  function handleOrderInputChange(event) {
-    setOrderSuccess("");
-    setOrdersError("");
-
-    const { name, value } = event.target;
-
-    setNewOrder({
-      ...newOrder,
-      [name]: value,
-    });
-  }
-
-  async function fetchOrders() {
-    try {
-      setLoadingOrders(true);
-      setOrdersError("");
-
-      const data = await getOrders();
-
-      const sortedOrders = [...data].sort(
-        (a, b) => new Date(b.order_time) - new Date(a.order_time),
-      );
-
-      setOrders(sortedOrders);
-    } catch (error) {
-      console.error("Error fetching orders:", error.message);
-      setOrdersError("Could not load orders. Please check the backend.");
-    } finally {
-      setLoadingOrders(false);
-    }
-  }
-
-  async function createOrder(event) {
-    event.preventDefault();
-
-    try {
-      setCreatingOrder(true);
-      setOrdersError("");
-      setOrderSuccess("");
-      setProductsError("");
-      recommendationState.clearFeedback();
-
-      await createOrderApi(newOrder);
-
-      await fetchOrders();
-      await fetchProducts();
-
-      setForecastSuccess("");
-      recommendationState.clearFeedback();
-
-      const product = products.find(
-        (product) => product.id === Number(newOrder.product_id),
-      );
-
-      setOrderSuccess(
-        `Order created for ${product?.name || "selected product"}. Inventory updated. Generate forecasts next to refresh demand planning and recommendations.`,
-      );
-
-      assistant.markStale();
-
-      setActiveSection("orders");
-
-      setTimeout(() => {
-        document.getElementById("orders-section")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-
-      setNewOrder({
-        product_id: "",
-        quantity: "",
-        source: "dashboard",
-      });
-    } catch (error) {
-      console.error("Error creating order:", error.message);
-      setOrdersError(error.message || "Could not create order.");
-    } finally {
-      setCreatingOrder(false);
     }
   }
 
@@ -395,7 +313,7 @@ function App() {
     resetDashboardState();
     fetchProducts();
     recommendationState.fetchRecommendations();
-    fetchOrders();
+    orderState.fetchOrders();
     fetchForecasts();
   }, [currentUser?.id]);
 
@@ -506,7 +424,7 @@ function App() {
           <section>
             <SummaryCards
               productsCount={products.length}
-              ordersCount={orders.length}
+              ordersCount={orderState.orders.length}
               forecastsCount={forecasts.length}
               lowStockProductsCount={lowStockProductsCount}
             />
@@ -564,22 +482,22 @@ function App() {
             sectionId="orders-section"
             products={products}
             inventoryByProductId={inventoryByProductId}
-            orders={orders}
-            newOrder={newOrder}
-            ordersError={ordersError}
-            orderSuccess={orderSuccess}
-            loadingOrders={loadingOrders}
-            creatingOrder={creatingOrder}
-            onOrderInputChange={handleOrderInputChange}
-            onCreateOrder={createOrder}
-            onRefreshOrders={fetchOrders}
+            orders={orderState.orders}
+            newOrder={orderState.newOrder}
+            ordersError={orderState.ordersError}
+            orderSuccess={orderState.orderSuccess}
+            loadingOrders={orderState.loadingOrders}
+            creatingOrder={orderState.creatingOrder}
+            onOrderInputChange={orderState.handleOrderInputChange}
+            onCreateOrder={orderState.createOrder}
+            onRefreshOrders={orderState.fetchOrders}
             getProductName={getProductName}
           />
 
           <ForecastsSection
             sectionId="forecasts-section"
             productsCount={products.length}
-            ordersCount={orders.length}
+            ordersCount={orderState.orders.length}
             forecasts={forecasts}
             forecastsError={forecastsError}
             forecastSuccess={forecastSuccess}
@@ -591,7 +509,7 @@ function App() {
           <RecommendationsSection
             sectionId="recommendations-section"
             productsCount={products.length}
-            ordersCount={orders.length}
+            ordersCount={orderState.orders.length}
             forecastsCount={forecasts.length}
             loadingRecommendations={recommendationState.loadingRecommendations}
             recommendationsError={recommendationState.recommendationsError}
