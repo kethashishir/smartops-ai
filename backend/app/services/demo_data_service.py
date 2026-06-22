@@ -7,7 +7,7 @@ from app.models.inventories import Inventory
 from app.models.orders import Order
 from app.models.product import Product
 from app.models.recommendation import Recommendation
-from app.services.forecast_service import generate_baseline_forecasts
+from app.services.forecast_service import MODEL_VERSION, generate_baseline_forecasts
 
 
 DEMO_PRODUCTS = [
@@ -145,7 +145,7 @@ def seed_demo_data(db: Session, user_id: int) -> dict:
             .filter(
                 Forecast.user_id == user_id,
                 Forecast.product_id == product.id,
-                Forecast.model_version == "baseline-v1",
+                Forecast.model_version == MODEL_VERSION,
             )
             .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
             .first()

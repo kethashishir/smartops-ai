@@ -9,6 +9,7 @@ from app.models.product import Product
 from app.models.recommendation import Recommendation
 from app.models.user import User
 from app.schemas.recommendation import RecommendationCreate, RecommendationResponse
+from app.services.forecast_service import MODEL_VERSION
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
@@ -109,7 +110,7 @@ def generate_recommendation(
         .filter(
             Forecast.user_id == current_user.id,
             Forecast.product_id == product_id,
-            Forecast.model_version == "baseline-v1",
+            Forecast.model_version == MODEL_VERSION,
         )
         .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
         .first()
@@ -191,7 +192,7 @@ def generate_recommendations_for_all_products(
             .filter(
                 Forecast.user_id == current_user.id,
                 Forecast.product_id == product.id,
-                Forecast.model_version == "baseline-v1",
+                Forecast.model_version == MODEL_VERSION,
             )
             .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
             .first()

@@ -9,12 +9,40 @@ from app.models.orders import Order
 from app.models.product import Product
 
 
-MODEL_VERSION = "baseline-v1"
+MODEL_VERSION = "trend-aware-v2"
 
 
-def calculate_predicted_demand(total_order_quantity, reorder_threshold):
-    baseline = max(total_order_quantity, reorder_threshold)
-    predicted_demand = baseline * Decimal("1.15")
+def calculate_trend_multiplier(order_count: int) -> Decimal:
+    if order_count >= 8:
+        return Decimal("1.30")
+
+    if order_count >= 4:
+        return Decimal("1.20")
+
+    if order_count >= 1:
+        return Decimal("1.10")
+
+    return Decimal("1.00")
+
+
+def calculate_predicted_demand(
+    total_order_quantity: Decimal,
+    reorder_threshold: Decimal,
+    order_count: int = 0,
+) -> Decimal:
+    if order_count >= 2:
+        average_order_quantity = total_order_quantity / Decimal(order_count)
+        average_order_signal = average_order_quantity * Decimal("3")
+    else:
+        average_order_signal = Decimal("0")
+
+    demand_signal = max(
+        total_order_quantity,
+        reorder_threshold,
+        average_order_signal,
+    )
+
+    predicted_demand = demand_signal * calculate_trend_multiplier(order_count)
 
     return predicted_demand.quantize(Decimal("0.01"))
 
@@ -32,18 +60,22 @@ def generate_baseline_forecasts(db: Session, user_id: int | None = None):
     products = products_query.all()
 
     for product in products:
-        orders_query = db.query(func.coalesce(func.sum(Order.quantity), 0)).filter(
+        order_stats_query = db.query(
+            func.coalesce(func.sum(Order.quantity), 0),
+            func.count(Order.id),
+        ).filter(
             Order.product_id == product.id,
         )
 
         if user_id is not None:
-            orders_query = orders_query.filter(Order.user_id == user_id)
+            order_stats_query = order_stats_query.filter(Order.user_id == user_id)
 
-        total_order_quantity = orders_query.scalar()
+        total_order_quantity, order_count = order_stats_query.first()
 
         predicted_demand = calculate_predicted_demand(
             Decimal(total_order_quantity),
             Decimal(product.reorder_threshold),
+            int(order_count),
         )
 
         existing_forecast_query = db.query(Forecast).filter(

@@ -54,7 +54,7 @@ def test_generate_forecasts_returns_generation_summary():
 
     result = response.json()
 
-    assert result["model_version"] == "baseline-v1"
+    assert result["model_version"] == "trend-aware-v2"
     assert "forecast_date" in result
     assert "created_count" in result
     assert "updated_count" in result
