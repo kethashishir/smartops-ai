@@ -15,7 +15,7 @@ function AssistantSection({
   onRefreshSummary,
   onClearAssistant,
 }) {
-  const messagesEndRef = useRef(null);
+  const chatWindowRef = useRef(null);
 
   const exampleQuestions = [
     "Which products are low stock?",
@@ -37,9 +37,15 @@ function AssistantSection({
   const hasMessages = assistantHistory.length > 0;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
+    const chatWindow = chatWindowRef.current;
+
+    if (!chatWindow) {
+      return;
+    }
+
+    chatWindow.scrollTo({
+      top: chatWindow.scrollHeight,
       behavior: "smooth",
-      block: "end",
     });
   }, [assistantHistory, assistantAnswer, loadingAssistant]);
 
@@ -91,7 +97,7 @@ function AssistantSection({
             </p>
           )}
 
-          <div className="assistant-chat-window">
+          <div className="assistant-chat-window" ref={chatWindowRef}>
             <div className="assistant-message assistant-message-system">
               <div className="assistant-avatar">S</div>
               <div className="assistant-bubble">
@@ -184,8 +190,6 @@ function AssistantSection({
                 </div>
               </div>
             )}
-
-            <div ref={messagesEndRef} />
           </div>
 
           <div className="assistant-chat-footer">

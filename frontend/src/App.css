@@ -2155,3 +2155,29 @@ button:disabled {
     max-height: none;
   }
 }
+
+/* Assistant chat containment fixes */
+
+.assistant-chat-panel {
+  height: min(720px, calc(100vh - 15rem));
+  min-height: 560px;
+  max-height: 760px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.assistant-chat-window {
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.assistant-chat-footer {
+  flex-shrink: 0;
+}
+
+.assistant-chat-input {
+  position: static;
+}
