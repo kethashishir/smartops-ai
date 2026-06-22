@@ -176,6 +176,7 @@ function App() {
         productsCount={productState.products.length}
         ordersCount={orderState.orders.length}
         forecastsCount={forecastState.forecasts.length}
+        recommendationsCount={recommendationState.recommendations.length}
         lowStockProductsCount={productState.lowStockProductsCount}
         assistant={assistant}
       />

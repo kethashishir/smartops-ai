@@ -496,6 +496,79 @@ button:disabled {
   line-height: 1.45;
 }
 
+.dashboard-overview {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.analytics-panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 1.25rem;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.analytics-label {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.analytics-panel h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.25rem;
+}
+
+.analytics-panel p {
+  margin: 0.45rem 0 0;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.analytics-bars,
+.readiness-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.analytics-bars div,
+.readiness-list div {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.analytics-bars span,
+.readiness-list span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.analytics-bars strong,
+.readiness-list strong {
+  color: #111827;
+  font-size: 1rem;
+}
+
 /* -----------------------------
    7. Product Section
 ----------------------------- */
@@ -1305,6 +1378,12 @@ button:disabled {
   }
 
   .product-card .stock-update {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
     grid-template-columns: 1fr;
   }
 }
