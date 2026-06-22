@@ -92,6 +92,12 @@ function ForecastsSection({
                   </h3>
                   <p>Forecast Date: {forecast.forecast_date}</p>
                   <p>Model: {forecast.model_version}</p>
+
+                  {forecast.explanation && (
+                    <p className="forecast-explanation">
+                      {forecast.explanation}
+                    </p>
+                  )}
                 </div>
 
                 <div className="forecast-demand">

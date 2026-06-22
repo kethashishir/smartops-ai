@@ -1,28 +1,64 @@
+from decimal import Decimal
+
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.auth.security import get_current_user
 from app.database import get_db
 from app.models.forecast import Forecast
+from app.models.orders import Order
 from app.models.product import Product
 from app.models.user import User
 from app.schemas.forecast import ForecastCreate, ForecastResponse
-from app.services.forecast_service import generate_baseline_forecasts
+from app.services.forecast_service import (
+    build_forecast_explanation,
+    generate_baseline_forecasts,
+)
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
 
-BASELINE_MODEL_VERSION = "baseline-v1"
+
+def get_forecast_explanation(
+    db: Session,
+    forecast: Forecast,
+    product: Product,
+    user_id: int,
+) -> str:
+    total_order_quantity, order_count = (
+        db.query(
+            func.coalesce(func.sum(Order.quantity), 0),
+            func.count(Order.id),
+        )
+        .filter(
+            Order.user_id == user_id,
+            Order.product_id == product.id,
+        )
+        .first()
+    )
+
+    return build_forecast_explanation(
+        Decimal(total_order_quantity),
+        Decimal(product.reorder_threshold),
+        int(order_count),
+        Decimal(forecast.predicted_demand),
+    )
 
 
-def build_forecast_response(forecast: Forecast, product_name: str) -> dict:
+def build_forecast_response(
+    forecast: Forecast,
+    product: Product,
+    explanation: str | None = None,
+) -> dict:
     return {
         "id": forecast.id,
         "user_id": forecast.user_id,
         "product_id": forecast.product_id,
-        "product_name": product_name,
+        "product_name": product.name,
         "forecast_date": forecast.forecast_date,
         "predicted_demand": forecast.predicted_demand,
         "model_version": forecast.model_version,
+        "explanation": explanation,
     }
 
 
@@ -32,7 +68,7 @@ def get_forecast(
     current_user: User = Depends(get_current_user),
 ):
     forecast_rows = (
-        db.query(Forecast, Product.name)
+        db.query(Forecast, Product)
         .join(Product, Product.id == Forecast.product_id)
         .filter(
             Forecast.user_id == current_user.id,
@@ -43,9 +79,14 @@ def get_forecast(
     )
 
     return [
-        build_forecast_response(forecast, product_name)
-        for forecast, product_name in forecast_rows
+        build_forecast_response(
+            forecast,
+            product,
+            get_forecast_explanation(db, forecast, product, current_user.id),
+        )
+        for forecast, product in forecast_rows
     ]
+
 
 @router.get("/latest", response_model=list[ForecastResponse])
 def get_latest_forecasts(
@@ -53,7 +94,7 @@ def get_latest_forecasts(
     current_user: User = Depends(get_current_user),
 ):
     forecast_rows = (
-        db.query(Forecast, Product.name)
+        db.query(Forecast, Product)
         .join(Product, Product.id == Forecast.product_id)
         .filter(
             Forecast.user_id == current_user.id,
@@ -69,52 +110,44 @@ def get_latest_forecasts(
 
     latest_by_product_id = {}
 
-    for forecast, product_name in forecast_rows:
+    for forecast, product in forecast_rows:
         existing_row = latest_by_product_id.get(forecast.product_id)
 
         if not existing_row:
             latest_by_product_id[forecast.product_id] = (
                 forecast,
-                product_name,
+                product,
             )
             continue
 
         existing_forecast, _ = existing_row
 
-        forecast_is_baseline = forecast.model_version == BASELINE_MODEL_VERSION
-        existing_is_baseline = (
-            existing_forecast.model_version == BASELINE_MODEL_VERSION
-        )
-
-        if forecast_is_baseline and not existing_is_baseline:
+        if (
+            forecast.forecast_date > existing_forecast.forecast_date
+            or (
+                forecast.forecast_date == existing_forecast.forecast_date
+                and forecast.id > existing_forecast.id
+            )
+        ):
             latest_by_product_id[forecast.product_id] = (
                 forecast,
-                product_name,
+                product,
             )
-            continue
-
-        if forecast_is_baseline == existing_is_baseline:
-            if (
-                forecast.forecast_date > existing_forecast.forecast_date
-                or (
-                    forecast.forecast_date == existing_forecast.forecast_date
-                    and forecast.id > existing_forecast.id
-                )
-            ):
-                latest_by_product_id[forecast.product_id] = (
-                    forecast,
-                    product_name,
-                )
 
     latest_rows = sorted(
         latest_by_product_id.values(),
-        key=lambda row: row[1].lower(),
+        key=lambda row: row[1].name.lower(),
     )
 
     return [
-        build_forecast_response(forecast, product_name)
-        for forecast, product_name in latest_rows
+        build_forecast_response(
+            forecast,
+            product,
+            get_forecast_explanation(db, forecast, product, current_user.id),
+        )
+        for forecast, product in latest_rows
     ]
+
 
 @router.post("/generate")
 def generate_forecasts(
@@ -155,4 +188,8 @@ def create_forecast(
     db.commit()
     db.refresh(db_forecast)
 
-    return build_forecast_response(db_forecast, product.name)
+    return build_forecast_response(
+        db_forecast,
+        product,
+        "Manually created forecast record. Generate forecasts to use the trend-aware model explanation.",
+    )

@@ -11,6 +11,7 @@ class ForecastResponse(BaseModel):
     forecast_date: date
     predicted_demand: float
     model_version: str
+    explanation: str | None = None
 
 
 class ForecastCreate(BaseModel):
