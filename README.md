@@ -1,6 +1,6 @@
 # SmartOps AI
 
-[![SmartOps AI CI](https://github.com/kethashishir/smartops-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/kethashishir/smartops-ai/actions/workflows/ci.yml)
+[![SmartOps AI CI](https://github.com/kethashishir/smartops-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kethashishir/smartops-ai/actions/workflows/ci.yml)
 
 SmartOps AI is a full-stack operations management platform that simulates a real retail, warehouse, or inventory-driven business workflow. It lets authenticated users manage products, track inventory, create orders, generate demand forecasts, receive reorder recommendations, and ask an operations assistant questions about their workspace data.
 
