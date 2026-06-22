@@ -59,35 +59,39 @@ function AssistantSection({
 
   return (
     <section id={sectionId} className="section assistant-section">
-      <div className="assistant-chat-shell">
-        <aside className="assistant-sidebar-card">
-          <p className="eyebrow">SmartOps Copilot</p>
-          <h2>Operations chat</h2>
-          <p>
-            Ask questions about inventory health, restock priorities, forecast
-            freshness, recent orders, and demand planning.
-          </p>
+      <div className="assistant-chat-centered">
+        <div className="assistant-chat-header-card">
+          <div>
+            <p className="eyebrow">SmartOps Copilot</p>
+            <h2>Operations chat</h2>
+            <p>
+              Ask questions about inventory health, restock priorities, forecast
+              freshness, recent orders, risk scores, and demand planning.
+            </p>
+          </div>
 
-          <button
-            className="secondary-action"
-            onClick={onRefreshSummary}
-            disabled={loadingAssistant}
-          >
-            {loadingAssistant ? "Loading..." : "Generate Summary"}
-          </button>
-
-          {hasAssistantResponse && (
+          <div className="assistant-chat-header-actions">
             <button
-              className="assistant-clear-button"
-              type="button"
-              onClick={onClearAssistant}
+              className="secondary-action"
+              onClick={onRefreshSummary}
+              disabled={loadingAssistant}
             >
-              Clear Chat
+              {loadingAssistant ? "Loading..." : "Generate Summary"}
             </button>
-          )}
-        </aside>
 
-        <div className="assistant-chat-panel">
+            {hasAssistantResponse && (
+              <button
+                className="assistant-clear-button"
+                type="button"
+                onClick={onClearAssistant}
+              >
+                Clear Chat
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="assistant-chat-card">
           {assistantError && <p className="error">{assistantError}</p>}
 
           {assistantStale && (
