@@ -72,7 +72,7 @@ function useAssistant() {
       const cleanedQuestion = question.trim();
       const data = await askAssistant(cleanedQuestion);
 
-      setQuestion(cleanedQuestion);
+      setQuestion("");
       setAnswer(data.answer);
       setActions(data.suggested_actions || []);
       setHighlights(data.highlights || []);

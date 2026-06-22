@@ -86,7 +86,7 @@ function AssistantSection({
               </div>
             </div>
 
-            {assistantHistory.slice(1).map((item) => (
+            {assistantHistory.map((item, index) => (
               <div className="assistant-thread" key={item.id}>
                 <div className="assistant-message assistant-message-user">
                   <div className="assistant-avatar assistant-avatar-user">
@@ -108,14 +108,20 @@ function AssistantSection({
               </div>
             ))}
 
-            {hasAssistantResponse ? (
+            {hasAssistantResponse && assistantHistory.length === 0 ? (
               <div className="assistant-message assistant-message-system">
                 <div className="assistant-avatar">S</div>
-                <div className="assistant-bubble assistant-bubble-active">
+                <div
+                  className={
+                    index === 0
+                      ? "assistant-bubble assistant-bubble-active"
+                      : "assistant-bubble"
+                  }
+                >
                   <span>SmartOps Copilot</span>
-                  <p className="assistant-answer-text">{assistantAnswer}</p>
+                  <p>{item.answer}</p>
 
-                  {assistantHighlights.length > 0 && (
+                  {index === 0 && assistantHighlights.length > 0 && (
                     <div className="assistant-highlights">
                       <h4>Key details</h4>
 
@@ -132,7 +138,7 @@ function AssistantSection({
                     </div>
                   )}
 
-                  {assistantActions.length > 0 && (
+                  {index === 0 && assistantActions.length > 0 && (
                     <div className="assistant-actions">
                       <h4>Suggested next steps</h4>
 
