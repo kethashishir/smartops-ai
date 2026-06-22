@@ -34,7 +34,9 @@ Current verification:
 
 ```text
 Frontend production build: passed
-Backend tests: 28 passed
+Backend tests: 30 passed
+Production smoke test: passed
+Demo data loading: working
 ```
 
 ---
@@ -65,6 +67,30 @@ Do I need to generate forecasts?
 Which product has the highest forecasted demand?
 Give me an operations summary.
 ```
+
+## Demo Walkthrough
+
+A reviewer can test SmartOps AI using the live deployment:
+
+1. Open the frontend deployment.
+2. Register a new account or log in.
+3. Go to the Products page.
+4. Click **Load Demo Data** to populate the workspace with sample products, inventory, orders, forecasts, and recommendations.
+5. Review the Products page to see stock levels, low-stock products, and recommendation labels.
+6. Visit the Orders page to review generated order history.
+7. Visit the Forecasts page to inspect forecasted demand by product.
+8. Visit the Recommendations page to review suggested reorder quantities.
+9. Open the Assistant page and ask operational questions such as:
+
+```text
+Give me an operations summary.
+Which products are low stock?
+What should I restock?
+Which product has the highest forecasted demand?
+Do I need to generate forecasts?
+```
+
+The demo data is scoped to the logged-in user, so each account receives its own isolated demo workspace.
 
 ---
 
@@ -253,7 +279,7 @@ The Forecasts page supports:
 
 The current forecasting approach is a baseline forecasting service rather than a trained ML model. It uses backend business logic to estimate demand from product/order data and supports the restock recommendation workflow.
 
-Future work may replace or extend this with a trained ML forecasting model.
+Planned Phase 4 work will extend this baseline with zero-cost advanced forecasting and AI/ML features, such as trend-aware demand scoring, moving-average forecasting, demand volatility analysis, and smarter assistant explanations.
 
 ---
 
