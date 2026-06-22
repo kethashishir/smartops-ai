@@ -34,10 +34,11 @@ Current verification:
 
 ```text
 Frontend production build: passed
-Backend tests: 44 passed
+Backend tests: 51 passed
 Production smoke test: passed
 Demo data loading: working
-Phase 4 risk scoring: in progress
+Phase 4 risk scoring: implemented
+Phase 4 volatility analysis: implemented
 ```
 
 ---
@@ -276,9 +277,13 @@ The Forecasts page supports:
 - Forecasted demand by product
 - Forecast model version display
 - Forecast date display
+- Human-readable forecast explanations
+- Demand volatility labels and scores
 - Automatic recommendation refresh after forecast generation
 
 The forecasting approach now uses a zero-cost trend-aware forecasting service. It estimates demand from product/order history, reorder thresholds, order activity, and average order size. Forecast responses include human-readable explanations so users can understand why the predicted demand was produced.
+
+The forecast layer also includes demand volatility analysis. Volatility scoring compares order quantities to classify product demand as stable, moderate, high, or limited-history demand.
 
 Phase 4 work is focused on zero-cost advanced AI/ML-style features, including trend-aware forecasting, demand risk scoring, demand volatility analysis, and smarter assistant explanations.
 
