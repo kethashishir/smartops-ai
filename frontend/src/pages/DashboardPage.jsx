@@ -6,6 +6,7 @@ function DashboardPage({
   ordersCount,
   forecastsCount,
   recommendationsCount,
+  latestRecommendations,
   lowStockProductsCount,
   assistant,
 }) {
@@ -19,6 +20,30 @@ function DashboardPage({
     productsCount > 0
       ? Math.round((recommendationsCount / productsCount) * 100)
       : 0;
+
+  const riskCounts = latestRecommendations.reduce(
+    (counts, recommendation) => {
+      const riskLevel = recommendation.risk_level || "unknown";
+      counts[riskLevel] = (counts[riskLevel] || 0) + 1;
+      return counts;
+    },
+    {
+      critical: 0,
+      high: 0,
+      medium: 0,
+      low: 0,
+      unknown: 0,
+    },
+  );
+
+  const highestRiskLabel =
+    riskCounts.critical > 0
+      ? "Critical risk detected"
+      : riskCounts.high > 0
+        ? "High risk items need review"
+        : riskCounts.medium > 0
+          ? "Medium risk items present"
+          : "Risk levels are stable";
 
   return (
     <>
@@ -76,6 +101,35 @@ function DashboardPage({
               <div>
                 <span>Orders available</span>
                 <strong>{ordersCount}</strong>
+              </div>
+            </div>
+          </article>
+          <article className="analytics-panel">
+            <div>
+              <span className="analytics-label">Demand Risk</span>
+              <h2>{highestRiskLabel}</h2>
+              <p>
+                Risk scoring combines stock pressure, forecasted demand, reorder
+                threshold, and recommended reorder quantity.
+              </p>
+            </div>
+
+            <div className="readiness-list">
+              <div>
+                <span>Critical</span>
+                <strong>{riskCounts.critical}</strong>
+              </div>
+              <div>
+                <span>High</span>
+                <strong>{riskCounts.high}</strong>
+              </div>
+              <div>
+                <span>Medium</span>
+                <strong>{riskCounts.medium}</strong>
+              </div>
+              <div>
+                <span>Low</span>
+                <strong>{riskCounts.low}</strong>
               </div>
             </div>
           </article>
