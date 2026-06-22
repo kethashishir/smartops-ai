@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useRef } from "react";
+
 function AssistantSection({
   sectionId,
   assistantQuestion,
@@ -13,6 +15,8 @@ function AssistantSection({
   onRefreshSummary,
   onClearAssistant,
 }) {
+  const messagesEndRef = useRef(null);
+
   const exampleQuestions = [
     "Which products are low stock?",
     "Which products are healthy?",
@@ -23,6 +27,22 @@ function AssistantSection({
     "Give me an operations summary.",
   ];
 
+  const orderedHistory = useMemo(
+    () => [...assistantHistory].reverse(),
+    [assistantHistory],
+  );
+
+  const latestMessageId = assistantHistory[0]?.id;
+  const hasAssistantResponse = Boolean(assistantAnswer);
+  const hasMessages = assistantHistory.length > 0;
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [assistantHistory, assistantAnswer, loadingAssistant]);
+
   function handleExampleClick(question) {
     onQuestionChange({
       target: {
@@ -30,9 +50,6 @@ function AssistantSection({
       },
     });
   }
-
-  const hasAssistantResponse = Boolean(assistantAnswer);
-  const hasMessages = assistantHistory.length > 0;
 
   return (
     <section id={sectionId} className="section assistant-section">
@@ -87,63 +104,6 @@ function AssistantSection({
               </div>
             </div>
 
-            {assistantHistory.map((item, index) => (
-              <div className="assistant-thread" key={item.id}>
-                <div className="assistant-message assistant-message-user">
-                  <div className="assistant-avatar assistant-avatar-user">
-                    U
-                  </div>
-                  <div className="assistant-bubble">
-                    <span>You</span>
-                    <p>{item.question}</p>
-                  </div>
-                </div>
-
-                <div className="assistant-message assistant-message-system">
-                  <div className="assistant-avatar">S</div>
-                  <div
-                    className={
-                      index === 0
-                        ? "assistant-bubble assistant-bubble-active"
-                        : "assistant-bubble"
-                    }
-                  >
-                    <span>SmartOps Copilot</span>
-                    <p>{item.answer}</p>
-
-                    {index === 0 && assistantHighlights.length > 0 && (
-                      <div className="assistant-highlights">
-                        <h4>Key details</h4>
-
-                        <div className="assistant-highlight-grid">
-                          {assistantHighlights.map((highlight) => (
-                            <div
-                              className="assistant-highlight-card"
-                              key={highlight}
-                            >
-                              {highlight}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {index === 0 && assistantActions.length > 0 && (
-                      <div className="assistant-actions">
-                        <h4>Suggested next steps</h4>
-
-                        <ul>
-                          {assistantActions.map((action) => (
-                            <li key={action}>{action}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-
             {!hasMessages && (
               <div className="assistant-empty-chat">
                 <h3>Ready when you are.</h3>
@@ -153,38 +113,113 @@ function AssistantSection({
                 </p>
               </div>
             )}
+
+            {orderedHistory.map((item) => {
+              const isLatestMessage = item.id === latestMessageId;
+
+              return (
+                <div className="assistant-thread" key={item.id}>
+                  <div className="assistant-message assistant-message-user">
+                    <div className="assistant-avatar assistant-avatar-user">
+                      U
+                    </div>
+                    <div className="assistant-bubble">
+                      <span>You</span>
+                      <p>{item.question}</p>
+                    </div>
+                  </div>
+
+                  <div className="assistant-message assistant-message-system">
+                    <div className="assistant-avatar">S</div>
+                    <div
+                      className={
+                        isLatestMessage
+                          ? "assistant-bubble assistant-bubble-active"
+                          : "assistant-bubble"
+                      }
+                    >
+                      <span>SmartOps Copilot</span>
+                      <p>{item.answer}</p>
+
+                      {isLatestMessage && assistantHighlights.length > 0 && (
+                        <div className="assistant-highlights">
+                          <h4>Key details</h4>
+
+                          <div className="assistant-highlight-grid">
+                            {assistantHighlights.map((highlight) => (
+                              <div
+                                className="assistant-highlight-card"
+                                key={highlight}
+                              >
+                                {highlight}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {isLatestMessage && assistantActions.length > 0 && (
+                        <div className="assistant-actions">
+                          <h4>Suggested next steps</h4>
+
+                          <ul>
+                            {assistantActions.map((action) => (
+                              <li key={action}>{action}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {loadingAssistant && (
+              <div className="assistant-message assistant-message-system">
+                <div className="assistant-avatar">S</div>
+                <div className="assistant-bubble">
+                  <span>SmartOps Copilot</span>
+                  <p>Thinking...</p>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="assistant-examples">
-            {exampleQuestions.map((question) => (
-              <button
-                key={question}
-                type="button"
-                onClick={() => handleExampleClick(question)}
-              >
-                {question}
-              </button>
-            ))}
-          </div>
+          <div className="assistant-chat-footer">
+            <div className="assistant-examples">
+              {exampleQuestions.map((question) => (
+                <button
+                  key={question}
+                  type="button"
+                  onClick={() => handleExampleClick(question)}
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
 
-          <form
-            className="assistant-prompt assistant-chat-input"
-            onSubmit={onAskAssistant}
-          >
-            <input
-              type="text"
-              placeholder="Ask SmartOps Copilot about inventory, forecasts, or recommendations..."
-              value={assistantQuestion}
-              onChange={onQuestionChange}
-            />
-
-            <button
-              type="submit"
-              disabled={loadingAssistant || !assistantQuestion.trim()}
+            <form
+              className="assistant-prompt assistant-chat-input"
+              onSubmit={onAskAssistant}
             >
-              {loadingAssistant ? "Thinking..." : "Send"}
-            </button>
-          </form>
+              <input
+                type="text"
+                placeholder="Ask SmartOps Copilot about inventory, forecasts, or recommendations..."
+                value={assistantQuestion}
+                onChange={onQuestionChange}
+              />
+
+              <button
+                type="submit"
+                disabled={loadingAssistant || !assistantQuestion.trim()}
+              >
+                {loadingAssistant ? "Thinking..." : "Send"}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </section>
