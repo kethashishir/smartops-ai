@@ -34,9 +34,10 @@ Current verification:
 
 ```text
 Frontend production build: passed
-Backend tests: 30 passed
+Backend tests: 44 passed
 Production smoke test: passed
 Demo data loading: working
+Phase 4 risk scoring: in progress
 ```
 
 ---
@@ -277,9 +278,9 @@ The Forecasts page supports:
 - Forecast date display
 - Automatic recommendation refresh after forecast generation
 
-The current forecasting approach is a baseline forecasting service rather than a trained ML model. It uses backend business logic to estimate demand from product/order data and supports the restock recommendation workflow.
+The forecasting approach now uses a zero-cost trend-aware forecasting service. It estimates demand from product/order history, reorder thresholds, order activity, and average order size. Forecast responses include human-readable explanations so users can understand why the predicted demand was produced.
 
-Planned Phase 4 work will extend this baseline with zero-cost advanced forecasting and AI/ML features, such as trend-aware demand scoring, moving-average forecasting, demand volatility analysis, and smarter assistant explanations.
+Phase 4 work is focused on zero-cost advanced AI/ML-style features, including trend-aware forecasting, demand risk scoring, demand volatility analysis, and smarter assistant explanations.
 
 ---
 
@@ -293,10 +294,13 @@ The Recommendations page supports:
 - Viewing recommendation reasons
 - Priority-sorted recommendations
 - Recommendation summary metrics
+- Demand risk scoring for recommendation decisions
+- Risk labels such as low, medium, high, and critical
+- Risk score display based on stock pressure and forecasted demand
 - No-restock and restock-needed states
 - Automatic refresh after inventory updates and forecast generation
 
-Recommendations are based on current inventory levels, reorder thresholds, and forecasted demand.
+Recommendations are based on current inventory levels, reorder thresholds, forecasted demand, and demand risk scoring. The risk scoring layer classifies each recommendation as low, medium, high, or critical risk using stock pressure, predicted demand, and recommended reorder quantity.
 
 ---
 
