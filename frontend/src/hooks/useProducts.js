@@ -8,6 +8,7 @@ import {
   updateInventoryForProduct,
 } from "../api/inventoryApi.js";
 import { generateRecommendation } from "../api/recommendationsApi.js";
+import { seedDemoData } from "../api/demoApi.js";
 
 const emptyProductForm = {
   name: "",
@@ -34,6 +35,7 @@ function useProducts({
   const [productSearch, setProductSearch] = useState("");
   const [stockUpdates, setStockUpdates] = useState({});
   const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
+  const [loadingDemoData, setLoadingDemoData] = useState(false);
 
   function reset() {
     setProducts([]);
@@ -274,6 +276,39 @@ function useProducts({
     }
   }
 
+  async function loadDemoData() {
+    try {
+      setProductsError("");
+      setProductSuccess("");
+      setLoadingDemoData(true);
+
+      if (clearRecommendationFeedback) {
+        clearRecommendationFeedback();
+      }
+
+      const result = await seedDemoData();
+
+      await fetchProducts();
+
+      if (refreshRecommendations) {
+        await refreshRecommendations();
+      }
+
+      setProductSuccess(
+        `${result.products_created} demo products created with inventory, orders, forecasts, and recommendations.`,
+      );
+
+      if (markAssistantStale) {
+        markAssistantStale();
+      }
+    } catch (error) {
+      console.error("Error loading demo data:", error.message);
+      setProductsError("Could not load demo data. Please check the backend.");
+    } finally {
+      setLoadingDemoData(false);
+    }
+  }
+
   return {
     products,
     productsError,
@@ -301,6 +336,8 @@ function useProducts({
     fetchProducts,
     createProduct,
     updateProductStock,
+    loadingDemoData,
+    loadDemoData,
   };
 }
 
