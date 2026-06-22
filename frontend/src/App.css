@@ -1961,12 +1961,13 @@ button:disabled {
   padding: 1.25rem;
   display: grid;
   gap: 1rem;
+  align-self: start;
 }
 
 .assistant-chat-window {
-  min-height: 420px;
-  max-height: 620px;
-  overflow-y: auto;
+  min-height: 520px;
+  max-height: none;
+  overflow-y: visible;
   border-radius: 18px;
   background: #f8fafc;
   border: 1px solid #e5e7eb;
@@ -2062,6 +2063,22 @@ button:disabled {
 
 .assistant-chat-input {
   margin-top: 0;
+}
+
+.assistant-message-user .assistant-bubble {
+  max-width: 520px;
+}
+
+.assistant-message-system .assistant-bubble {
+  max-width: 760px;
+}
+
+.assistant-chat-input {
+  position: sticky;
+  bottom: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 @media (max-width: 980px) {
