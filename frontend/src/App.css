@@ -2377,3 +2377,33 @@ button:disabled {
     justify-content: flex-start;
   }
 }
+
+/* Assistant prompt spacing fix */
+
+.assistant-chat-card {
+  gap: 1.25rem;
+}
+
+.assistant-chat-window {
+  margin-bottom: 0;
+}
+
+.assistant-chat-footer {
+  padding-top: 0.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.assistant-examples {
+  margin-top: 0 !important;
+  padding-top: 0.25rem;
+}
+
+.assistant-examples button {
+  position: relative;
+  z-index: 2;
+}
+
+.assistant-chat-window + .assistant-chat-footer {
+  margin-top: 0.35rem;
+}
