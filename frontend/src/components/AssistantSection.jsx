@@ -60,38 +60,34 @@ function AssistantSection({
   return (
     <section id={sectionId} className="section assistant-section">
       <div className="assistant-chat-centered">
-        <div className="assistant-chat-header-card">
-          <div>
-            <p className="eyebrow">SmartOps Copilot</p>
-            <h2>Operations chat</h2>
-            <p>
-              Ask questions about inventory health, restock priorities, forecast
-              freshness, recent orders, risk scores, and demand planning.
-            </p>
-          </div>
-
-          <div className="assistant-chat-header-actions">
-            <button
-              className="secondary-action"
-              onClick={onRefreshSummary}
-              disabled={loadingAssistant}
-            >
-              {loadingAssistant ? "Loading..." : "Generate Summary"}
-            </button>
-
-            {hasAssistantResponse && (
-              <button
-                className="assistant-clear-button"
-                type="button"
-                onClick={onClearAssistant}
-              >
-                Clear Chat
-              </button>
-            )}
-          </div>
-        </div>
-
         <div className="assistant-chat-card">
+          <div className="assistant-chat-toolbar">
+            <div>
+              <p className="eyebrow">SmartOps Copilot</p>
+              <h2>Operations chat</h2>
+            </div>
+
+            <div className="assistant-chat-toolbar-actions">
+              <button
+                className="secondary-action"
+                onClick={onRefreshSummary}
+                disabled={loadingAssistant}
+              >
+                {loadingAssistant ? "Loading..." : "Generate Summary"}
+              </button>
+
+              {hasAssistantResponse && (
+                <button
+                  className="assistant-clear-button"
+                  type="button"
+                  onClick={onClearAssistant}
+                >
+                  Clear Chat
+                </button>
+              )}
+            </div>
+          </div>
+
           {assistantError && <p className="error">{assistantError}</p>}
 
           {assistantStale && (
@@ -107,9 +103,8 @@ function AssistantSection({
               <div className="assistant-bubble">
                 <span>SmartOps Copilot</span>
                 <p>
-                  I can help interpret your products, inventory, orders,
-                  forecasts, recommendations, risk scores, and volatility
-                  signals.
+                  Ask me about low stock, restock priorities, forecast
+                  freshness, recent orders, demand risk, and volatility.
                 </p>
               </div>
             </div>
@@ -215,7 +210,7 @@ function AssistantSection({
             >
               <input
                 type="text"
-                placeholder="Ask SmartOps Copilot about inventory, forecasts, or recommendations..."
+                placeholder="Ask SmartOps Copilot..."
                 value={assistantQuestion}
                 onChange={onQuestionChange}
               />
