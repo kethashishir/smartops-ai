@@ -84,7 +84,7 @@ function App() {
     forecastState.reset();
     orderState.reset();
     recommendationState.reset();
-    assistant.reset();
+    assistant.clearRuntimeState();
   }
 
   useEffect(() => {
@@ -132,8 +132,13 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (auth.checkingAuth) {
+      return;
+    }
+
     if (!currentUser) {
       resetDashboardState();
+      assistant.reset();
       return;
     }
 
@@ -142,7 +147,7 @@ function App() {
     recommendationState.fetchRecommendations();
     orderState.fetchOrders();
     forecastState.fetchForecasts();
-  }, [currentUser?.id]);
+  }, [auth.checkingAuth, currentUser?.id]);
 
   if (auth.checkingAuth) {
     return (
