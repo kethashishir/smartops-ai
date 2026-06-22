@@ -32,6 +32,7 @@ function AssistantSection({
   }
 
   const hasAssistantResponse = Boolean(assistantAnswer);
+  const hasMessages = assistantHistory.length > 0;
 
   return (
     <section id={sectionId} className="section assistant-section">
@@ -100,58 +101,50 @@ function AssistantSection({
 
                 <div className="assistant-message assistant-message-system">
                   <div className="assistant-avatar">S</div>
-                  <div className="assistant-bubble">
+                  <div
+                    className={
+                      index === 0
+                        ? "assistant-bubble assistant-bubble-active"
+                        : "assistant-bubble"
+                    }
+                  >
                     <span>SmartOps Copilot</span>
                     <p>{item.answer}</p>
+
+                    {index === 0 && assistantHighlights.length > 0 && (
+                      <div className="assistant-highlights">
+                        <h4>Key details</h4>
+
+                        <div className="assistant-highlight-grid">
+                          {assistantHighlights.map((highlight) => (
+                            <div
+                              className="assistant-highlight-card"
+                              key={highlight}
+                            >
+                              {highlight}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {index === 0 && assistantActions.length > 0 && (
+                      <div className="assistant-actions">
+                        <h4>Suggested next steps</h4>
+
+                        <ul>
+                          {assistantActions.map((action) => (
+                            <li key={action}>{action}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
 
-            {hasAssistantResponse && assistantHistory.length === 0 ? (
-              <div className="assistant-message assistant-message-system">
-                <div className="assistant-avatar">S</div>
-                <div
-                  className={
-                    index === 0
-                      ? "assistant-bubble assistant-bubble-active"
-                      : "assistant-bubble"
-                  }
-                >
-                  <span>SmartOps Copilot</span>
-                  <p>{item.answer}</p>
-
-                  {index === 0 && assistantHighlights.length > 0 && (
-                    <div className="assistant-highlights">
-                      <h4>Key details</h4>
-
-                      <div className="assistant-highlight-grid">
-                        {assistantHighlights.map((highlight) => (
-                          <div
-                            className="assistant-highlight-card"
-                            key={highlight}
-                          >
-                            {highlight}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {index === 0 && assistantActions.length > 0 && (
-                    <div className="assistant-actions">
-                      <h4>Suggested next steps</h4>
-
-                      <ul>
-                        {assistantActions.map((action) => (
-                          <li key={action}>{action}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
+            {!hasMessages && (
               <div className="assistant-empty-chat">
                 <h3>Ready when you are.</h3>
                 <p>
