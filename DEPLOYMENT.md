@@ -2,6 +2,12 @@
 
 This document describes the deployment-ready configuration for SmartOps AI.
 
+## Current Live URLs
+
+- Frontend: https://smartops-ai-tau.vercel.app
+- Backend API: https://smartops-ai-api.onrender.com
+- Backend Health Check: https://smartops-ai-api.onrender.com/health
+
 SmartOps AI has two deployable services:
 
 ```text
