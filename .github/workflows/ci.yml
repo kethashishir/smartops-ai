@@ -35,6 +35,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run Alembic migrations
+        run: |
+          rm -f ci_migration_test.db
+          DATABASE_URL=sqlite:///./ci_migration_test.db alembic upgrade head
+          rm -f ci_migration_test.db
+
       - name: Run backend tests
         run: pytest
 
