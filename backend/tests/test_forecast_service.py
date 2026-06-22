@@ -3,6 +3,7 @@ from decimal import Decimal
 from app.services.forecast_service import (
     calculate_predicted_demand,
     calculate_trend_multiplier,
+    build_forecast_explanation,
 )
 
 
@@ -70,3 +71,16 @@ def test_calculate_predicted_demand_uses_average_order_signal():
     )
 
     assert result == Decimal("19.80")
+
+def test_build_forecast_explanation_describes_model_inputs():
+    explanation = build_forecast_explanation(
+        Decimal("20"),
+        Decimal("10"),
+        4,
+        Decimal("24.00"),
+    )
+
+    assert "20 total ordered units" in explanation
+    assert "4 order(s)" in explanation
+    assert "medium order activity" in explanation
+    assert "Final predicted demand is 24.00" in explanation

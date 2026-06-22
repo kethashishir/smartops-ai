@@ -24,6 +24,38 @@ def calculate_trend_multiplier(order_count: int) -> Decimal:
 
     return Decimal("1.00")
 
+def build_forecast_explanation(
+    total_order_quantity: Decimal,
+    reorder_threshold: Decimal,
+    order_count: int,
+    predicted_demand: Decimal,
+) -> str:
+    if order_count >= 8:
+        activity_level = "high order activity"
+    elif order_count >= 4:
+        activity_level = "medium order activity"
+    elif order_count >= 1:
+        activity_level = "light order activity"
+    else:
+        activity_level = "no order history"
+
+    if order_count > 0:
+        average_order_quantity = total_order_quantity / Decimal(order_count)
+    else:
+        average_order_quantity = Decimal("0")
+
+    if total_order_quantity >= reorder_threshold:
+        demand_basis = "historical demand is above the reorder threshold"
+    else:
+        demand_basis = "the reorder threshold is the strongest demand signal"
+
+    return (
+        f"Trend-aware forecast used {total_order_quantity} total ordered units "
+        f"across {order_count} order(s), with an average order size of "
+        f"{average_order_quantity.quantize(Decimal('0.01'))}. "
+        f"The model detected {activity_level}; {demand_basis}. "
+        f"Final predicted demand is {predicted_demand}."
+    )
 
 def calculate_predicted_demand(
     total_order_quantity: Decimal,
