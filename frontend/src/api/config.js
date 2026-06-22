@@ -54,6 +54,10 @@ export async function apiFetch(path, options = {}) {
     headers,
   });
 
+  if (response.ok) {
+    window.dispatchEvent(new CustomEvent("smartops:api-connected"));
+  }
+
   if (response.status === 401 && !hasDispatchedSessionExpired) {
     hasDispatchedSessionExpired = true;
     localStorage.removeItem("smartops_token");

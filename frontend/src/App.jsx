@@ -116,6 +116,18 @@ function App() {
   }
 
   useEffect(() => {
+    function handleApiConnected() {
+      setBackendStatus("connected");
+    }
+
+    window.addEventListener("smartops:api-connected", handleApiConnected);
+
+    return () => {
+      window.removeEventListener("smartops:api-connected", handleApiConnected);
+    };
+  }, []);
+
+  useEffect(() => {
     checkBackendHealth();
   }, []);
 
