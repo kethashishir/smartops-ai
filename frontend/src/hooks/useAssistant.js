@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { askAssistant, getAssistantSummary } from "../api/assistantApi.js";
+
+const ASSISTANT_STORAGE_KEY = "smartops-assistant-session";
 
 function createAssistantHistoryItem(question, data) {
   return {
@@ -11,15 +13,44 @@ function createAssistantHistoryItem(question, data) {
   };
 }
 
+function loadStoredAssistantSession() {
+  try {
+    const storedSession = localStorage.getItem(ASSISTANT_STORAGE_KEY);
+
+    if (!storedSession) {
+      return null;
+    }
+
+    return JSON.parse(storedSession);
+  } catch (error) {
+    console.error("Could not load assistant session:", error.message);
+    return null;
+  }
+}
+
 function useAssistant() {
+  const storedSession = loadStoredAssistantSession();
+
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [actions, setActions] = useState([]);
+  const [answer, setAnswer] = useState(storedSession?.answer || "");
+  const [actions, setActions] = useState(storedSession?.actions || []);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [highlights, setHighlights] = useState([]);
-  const [stale, setStale] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [highlights, setHighlights] = useState(storedSession?.highlights || []);
+  const [stale, setStale] = useState(storedSession?.stale || false);
+  const [history, setHistory] = useState(storedSession?.history || []);
+
+  useEffect(() => {
+    const session = {
+      answer,
+      actions,
+      highlights,
+      stale,
+      history,
+    };
+
+    localStorage.setItem(ASSISTANT_STORAGE_KEY, JSON.stringify(session));
+  }, [answer, actions, highlights, stale, history]);
 
   function reset() {
     setQuestion("");
@@ -29,6 +60,13 @@ function useAssistant() {
     setHighlights([]);
     setStale(false);
     setHistory([]);
+    localStorage.removeItem(ASSISTANT_STORAGE_KEY);
+  }
+
+  function clearRuntimeState() {
+    setQuestion("");
+    setError("");
+    setLoading(false);
   }
 
   function handleQuestionChange(event) {
@@ -52,7 +90,7 @@ function useAssistant() {
         [
           createAssistantHistoryItem("Generate Summary", data),
           ...currentHistory,
-        ].slice(0, 5),
+        ].slice(0, 8),
       );
     } catch (caughtError) {
       console.error("Error loading assistant summary:", caughtError.message);
@@ -65,14 +103,19 @@ function useAssistant() {
   async function submitQuestion(event) {
     event.preventDefault();
 
+    const cleanedQuestion = question.trim();
+
+    if (!cleanedQuestion) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
 
-      const cleanedQuestion = question.trim();
       const data = await askAssistant(cleanedQuestion);
 
-      setQuestion(cleanedQuestion);
+      setQuestion("");
       setAnswer(data.answer);
       setActions(data.suggested_actions || []);
       setHighlights(data.highlights || []);
@@ -82,7 +125,7 @@ function useAssistant() {
         [
           createAssistantHistoryItem(cleanedQuestion, data),
           ...currentHistory,
-        ].slice(0, 5),
+        ].slice(0, 8),
       );
     } catch (caughtError) {
       console.error("Error asking assistant:", caughtError.message);
@@ -108,6 +151,7 @@ function useAssistant() {
     stale,
     history,
     reset,
+    clearRuntimeState,
     handleQuestionChange,
     refreshSummary,
     submitQuestion,
