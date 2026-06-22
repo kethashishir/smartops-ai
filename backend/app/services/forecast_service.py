@@ -24,11 +24,43 @@ def calculate_trend_multiplier(order_count: int) -> Decimal:
 
     return Decimal("1.00")
 
+def calculate_demand_volatility_score(order_quantities: list[int]) -> int:
+    if len(order_quantities) < 2:
+        return 0
+
+    average_quantity = sum(order_quantities) / len(order_quantities)
+
+    if average_quantity == 0:
+        return 0
+
+    average_deviation = sum(
+        abs(quantity - average_quantity) for quantity in order_quantities
+    ) / len(order_quantities)
+
+    volatility_ratio = average_deviation / average_quantity
+
+    return min(round(volatility_ratio * 100), 100)
+
+
+def get_volatility_level(volatility_score: int, order_count: int) -> str:
+    if order_count < 2:
+        return "insufficient history"
+
+    if volatility_score >= 60:
+        return "high"
+
+    if volatility_score >= 25:
+        return "moderate"
+
+    return "stable"
+
 def build_forecast_explanation(
     total_order_quantity: Decimal,
     reorder_threshold: Decimal,
     order_count: int,
     predicted_demand: Decimal,
+    volatility_level: str | None = None,
+    volatility_score: int | None = None,
 ) -> str:
     if order_count >= 8:
         activity_level = "high order activity"
@@ -49,12 +81,21 @@ def build_forecast_explanation(
     else:
         demand_basis = "the reorder threshold is the strongest demand signal"
 
+    volatility_sentence = ""
+
+    if volatility_level:
+        volatility_sentence = (
+            f" Demand volatility is {volatility_level}"
+            f" with a score of {volatility_score}."
+        )
+
     return (
         f"Trend-aware forecast used {total_order_quantity} total ordered units "
         f"across {order_count} order(s), with an average order size of "
         f"{average_order_quantity.quantize(Decimal('0.01'))}. "
         f"The model detected {activity_level}; {demand_basis}. "
         f"Final predicted demand is {predicted_demand}."
+        f"{volatility_sentence}"
     )
 
 def calculate_predicted_demand(

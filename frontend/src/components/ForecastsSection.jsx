@@ -93,6 +93,19 @@ function ForecastsSection({
                   <p>Forecast Date: {forecast.forecast_date}</p>
                   <p>Model: {forecast.model_version}</p>
 
+                  {forecast.volatility_level && (
+                    <p
+                      className={`volatility-badge volatility-badge-${forecast.volatility_level
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}
+                    >
+                      {forecast.volatility_level} volatility
+                      {forecast.volatility_score !== null &&
+                        forecast.volatility_score !== undefined &&
+                        ` · ${forecast.volatility_score}`}
+                    </p>
+                  )}
+
                   {forecast.explanation && (
                     <p className="forecast-explanation">
                       {forecast.explanation}

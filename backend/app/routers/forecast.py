@@ -13,18 +13,38 @@ from app.models.user import User
 from app.schemas.forecast import ForecastCreate, ForecastResponse
 from app.services.forecast_service import (
     build_forecast_explanation,
+    calculate_demand_volatility_score,
     generate_baseline_forecasts,
+    get_volatility_level,
 )
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
 
 
-def get_forecast_explanation(
+def get_order_quantities(
+    db: Session,
+    product_id: int,
+    user_id: int,
+) -> list[int]:
+    rows = (
+        db.query(Order.quantity)
+        .filter(
+            Order.user_id == user_id,
+            Order.product_id == product_id,
+        )
+        .order_by(Order.order_time.asc(), Order.id.asc())
+        .all()
+    )
+
+    return [quantity for (quantity,) in rows]
+
+
+def get_forecast_context(
     db: Session,
     forecast: Forecast,
     product: Product,
     user_id: int,
-) -> str:
+) -> dict:
     total_order_quantity, order_count = (
         db.query(
             func.coalesce(func.sum(Order.quantity), 0),
@@ -37,19 +57,33 @@ def get_forecast_explanation(
         .first()
     )
 
-    return build_forecast_explanation(
+    order_quantities = get_order_quantities(db, product.id, user_id)
+    volatility_score = calculate_demand_volatility_score(order_quantities)
+    volatility_level = get_volatility_level(volatility_score, int(order_count))
+
+    explanation = build_forecast_explanation(
         Decimal(total_order_quantity),
         Decimal(product.reorder_threshold),
         int(order_count),
         Decimal(forecast.predicted_demand),
+        volatility_level,
+        volatility_score,
     )
+
+    return {
+        "explanation": explanation,
+        "volatility_level": volatility_level,
+        "volatility_score": volatility_score,
+    }
 
 
 def build_forecast_response(
     forecast: Forecast,
     product: Product,
-    explanation: str | None = None,
+    context: dict | None = None,
 ) -> dict:
+    context = context or {}
+
     return {
         "id": forecast.id,
         "user_id": forecast.user_id,
@@ -58,7 +92,9 @@ def build_forecast_response(
         "forecast_date": forecast.forecast_date,
         "predicted_demand": forecast.predicted_demand,
         "model_version": forecast.model_version,
-        "explanation": explanation,
+        "explanation": context.get("explanation"),
+        "volatility_level": context.get("volatility_level"),
+        "volatility_score": context.get("volatility_score"),
     }
 
 
@@ -82,7 +118,7 @@ def get_forecast(
         build_forecast_response(
             forecast,
             product,
-            get_forecast_explanation(db, forecast, product, current_user.id),
+            get_forecast_context(db, forecast, product, current_user.id),
         )
         for forecast, product in forecast_rows
     ]
@@ -143,7 +179,7 @@ def get_latest_forecasts(
         build_forecast_response(
             forecast,
             product,
-            get_forecast_explanation(db, forecast, product, current_user.id),
+            get_forecast_context(db, forecast, product, current_user.id),
         )
         for forecast, product in latest_rows
     ]
@@ -191,5 +227,9 @@ def create_forecast(
     return build_forecast_response(
         db_forecast,
         product,
-        "Manually created forecast record. Generate forecasts to use the trend-aware model explanation.",
+        {
+            "explanation": "Manually created forecast record. Generate forecasts to use the trend-aware model explanation.",
+            "volatility_level": "insufficient history",
+            "volatility_score": 0,
+        },
     )

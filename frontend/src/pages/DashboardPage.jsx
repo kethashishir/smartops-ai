@@ -5,6 +5,7 @@ function DashboardPage({
   productsCount,
   ordersCount,
   forecastsCount,
+  forecasts,
   recommendationsCount,
   latestRecommendations,
   lowStockProductsCount,
@@ -44,6 +45,30 @@ function DashboardPage({
         : riskCounts.medium > 0
           ? "Medium risk items present"
           : "Risk levels are stable";
+
+  const volatilityCounts = forecasts.reduce(
+    (counts, forecast) => {
+      const volatilityLevel = forecast.volatility_level || "unknown";
+      counts[volatilityLevel] = (counts[volatilityLevel] || 0) + 1;
+      return counts;
+    },
+    {
+      high: 0,
+      moderate: 0,
+      stable: 0,
+      "insufficient history": 0,
+      unknown: 0,
+    },
+  );
+
+  const volatilityLabel =
+    volatilityCounts.high > 0
+      ? "High demand volatility detected"
+      : volatilityCounts.moderate > 0
+        ? "Moderate demand volatility detected"
+        : volatilityCounts.stable > 0
+          ? "Demand is mostly stable"
+          : "More order history needed";
 
   return (
     <>
@@ -130,6 +155,35 @@ function DashboardPage({
               <div>
                 <span>Low</span>
                 <strong>{riskCounts.low}</strong>
+              </div>
+            </div>
+          </article>
+          <article className="analytics-panel">
+            <div>
+              <span className="analytics-label">Demand Volatility</span>
+              <h2>{volatilityLabel}</h2>
+              <p>
+                Volatility analysis compares order quantities to show whether
+                product demand is stable, moderate, or highly variable.
+              </p>
+            </div>
+
+            <div className="readiness-list">
+              <div>
+                <span>High</span>
+                <strong>{volatilityCounts.high}</strong>
+              </div>
+              <div>
+                <span>Moderate</span>
+                <strong>{volatilityCounts.moderate}</strong>
+              </div>
+              <div>
+                <span>Stable</span>
+                <strong>{volatilityCounts.stable}</strong>
+              </div>
+              <div>
+                <span>Limited history</span>
+                <strong>{volatilityCounts["insufficient history"]}</strong>
               </div>
             </div>
           </article>

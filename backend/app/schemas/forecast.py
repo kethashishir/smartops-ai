@@ -12,6 +12,8 @@ class ForecastResponse(BaseModel):
     predicted_demand: float
     model_version: str
     explanation: str | None = None
+    volatility_level: str | None = None
+    volatility_score: int | None = None
 
 
 class ForecastCreate(BaseModel):
