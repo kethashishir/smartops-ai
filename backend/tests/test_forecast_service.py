@@ -4,6 +4,8 @@ from app.services.forecast_service import (
     calculate_predicted_demand,
     calculate_trend_multiplier,
     build_forecast_explanation,
+    calculate_demand_volatility_score,
+    get_volatility_level,
 )
 
 
@@ -84,3 +86,30 @@ def test_build_forecast_explanation_describes_model_inputs():
     assert "4 order(s)" in explanation
     assert "medium order activity" in explanation
     assert "Final predicted demand is 24.00" in explanation
+
+def test_calculate_demand_volatility_score_requires_multiple_orders():
+    assert calculate_demand_volatility_score([10]) == 0
+
+
+def test_calculate_demand_volatility_score_detects_stable_demand():
+    assert calculate_demand_volatility_score([10, 10, 10]) == 0
+
+
+def test_calculate_demand_volatility_score_detects_high_variation():
+    assert calculate_demand_volatility_score([1, 10, 19]) == 60
+
+
+def test_get_volatility_level_for_insufficient_history():
+    assert get_volatility_level(0, 1) == "insufficient history"
+
+
+def test_get_volatility_level_for_stable_demand():
+    assert get_volatility_level(0, 3) == "stable"
+
+
+def test_get_volatility_level_for_moderate_demand():
+    assert get_volatility_level(25, 3) == "moderate"
+
+
+def test_get_volatility_level_for_high_demand():
+    assert get_volatility_level(60, 3) == "high"

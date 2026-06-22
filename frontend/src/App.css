@@ -1160,6 +1160,37 @@ button:disabled {
   padding: 0.75rem;
 }
 
+.volatility-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0.65rem 0 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.volatility-badge-stable {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.volatility-badge-moderate {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.volatility-badge-high {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.volatility-badge-insufficient-history {
+  color: #475569;
+  background: #e2e8f0;
+}
+
 /* -----------------------------
    11. Recommendations Section
 ----------------------------- */
