@@ -11,6 +11,8 @@ class RecommendationResponse(BaseModel):
     recommended_quantity: int
     reason: str
     created_at: datetime
+    risk_level: str | None = None
+    risk_score: int | None = None
 
 
 class RecommendationCreate(BaseModel):

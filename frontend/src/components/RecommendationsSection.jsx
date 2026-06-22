@@ -142,17 +142,30 @@ function RecommendationsSection({
                       {recommendation.product_name ||
                         getProductName(recommendation.product_id)}
                     </h3>
-                    <p
-                      className={
-                        recommendation.recommended_quantity > 0
-                          ? "recommendation-label"
-                          : "no-restock-label"
-                      }
-                    >
-                      {recommendation.recommended_quantity > 0
-                        ? "Restock Recommended"
-                        : "No Restock Needed"}
-                    </p>
+                    <div className="recommendation-badges">
+                      <p
+                        className={
+                          recommendation.recommended_quantity > 0
+                            ? "recommendation-label"
+                            : "no-restock-label"
+                        }
+                      >
+                        {recommendation.recommended_quantity > 0
+                          ? "Restock Recommended"
+                          : "No Restock Needed"}
+                      </p>
+
+                      {recommendation.risk_level && (
+                        <p
+                          className={`risk-badge risk-badge-${recommendation.risk_level}`}
+                        >
+                          {recommendation.risk_level} risk
+                          {recommendation.risk_score !== null &&
+                            recommendation.risk_score !== undefined &&
+                            ` · ${recommendation.risk_score}`}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="recommendation-quantity">
