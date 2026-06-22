@@ -180,7 +180,6 @@ function App() {
         recommendationsCount={recommendationState.recommendations.length}
         latestRecommendations={recommendationState.latestRecommendations}
         lowStockProductsCount={productState.lowStockProductsCount}
-        assistant={assistant}
       />
     );
   }
