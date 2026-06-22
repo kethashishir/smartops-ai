@@ -12,6 +12,8 @@ function ProductsPage({ productState, recommendationState }) {
       onCreateProduct={productState.createProduct}
       creatingProduct={productState.creatingProduct}
       onRefreshProducts={productState.fetchProducts}
+      loadingDemoData={productState.loadingDemoData}
+      onLoadDemoData={productState.loadDemoData}
       productSearch={productState.productSearch}
       setProductSearch={productState.setProductSearch}
       productFilter={productState.productFilter}

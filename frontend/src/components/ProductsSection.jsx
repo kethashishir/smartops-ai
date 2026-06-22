@@ -12,6 +12,8 @@ function ProductsSection({
   onCreateProduct,
   creatingProduct,
   onRefreshProducts,
+  loadingDemoData,
+  onLoadDemoData,
   productSearch,
   setProductSearch,
   productFilter,
@@ -60,9 +62,23 @@ function ProductsSection({
               </p>
             </div>
 
-            <button onClick={onRefreshProducts} disabled={loadingProducts}>
-              {loadingProducts ? "Refreshing..." : "Refresh Products"}
-            </button>
+            <div className="section-actions">
+              <button
+                type="button"
+                onClick={onLoadDemoData}
+                disabled={loadingDemoData}
+              >
+                {loadingDemoData ? "Loading Demo..." : "Load Demo Data"}
+              </button>
+
+              <button
+                type="button"
+                onClick={onRefreshProducts}
+                disabled={loadingProducts}
+              >
+                {loadingProducts ? "Refreshing..." : "Refresh Products"}
+              </button>
+            </div>
           </div>
 
           <ProductControls

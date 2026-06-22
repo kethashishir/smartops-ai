@@ -115,6 +115,13 @@ button:disabled {
   font-size: 0.95rem;
 }
 
+.section-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 /* -----------------------------
    3. Sidebar
 ----------------------------- */

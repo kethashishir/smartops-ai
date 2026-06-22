@@ -12,11 +12,11 @@ from app.services.forecast_service import generate_baseline_forecasts
 
 DEMO_PRODUCTS = [
     {
-        "sku": "DEMO-AIRPODS-3",
-        "name": "Air Pods 3",
+        "sku": "DEMO-NOTHING-EAR",
+        "name": "Nothing Ear",
         "category": "Electronics",
         "reorder_threshold": 50,
-        "unit_price": Decimal("129.99"),
+        "unit_price": Decimal("79.99"),
         "stock": 30,
         "orders": [8, 6, 12],
     },
