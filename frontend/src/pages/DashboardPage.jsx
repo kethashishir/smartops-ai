@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
+
 import SummaryCards from "../components/SummaryCards.jsx";
-import AssistantSection from "../components/AssistantSection.jsx";
 
 function DashboardPage({
   productsCount,
@@ -9,7 +10,6 @@ function DashboardPage({
   recommendationsCount,
   latestRecommendations,
   lowStockProductsCount,
-  assistant,
 }) {
   const healthyProductsCount = Math.max(
     productsCount - lowStockProductsCount,
@@ -71,141 +71,140 @@ function DashboardPage({
           : "More order history needed";
 
   return (
-    <>
-      <section id="dashboard-section" className="dashboard-overview">
-        <SummaryCards
-          productsCount={productsCount}
-          ordersCount={ordersCount}
-          forecastsCount={forecastsCount}
-          lowStockProductsCount={lowStockProductsCount}
-        />
+    <section id="dashboard-section" className="dashboard-overview">
+      <SummaryCards
+        productsCount={productsCount}
+        ordersCount={ordersCount}
+        forecastsCount={forecastsCount}
+        lowStockProductsCount={lowStockProductsCount}
+      />
 
-        <section className="analytics-grid" aria-label="Operations analytics">
-          <article className="analytics-panel">
+      <section className="analytics-grid" aria-label="Operations analytics">
+        <article className="analytics-panel">
+          <div>
+            <span className="analytics-label">Inventory Health</span>
+            <h2>{healthyProductsCount} healthy products</h2>
+            <p>
+              {lowStockProductsCount > 0
+                ? `${lowStockProductsCount} products are below reorder threshold and need review.`
+                : "All tracked products are currently above their reorder thresholds."}
+            </p>
+          </div>
+
+          <div className="analytics-bars">
             <div>
-              <span className="analytics-label">Inventory Health</span>
-              <h2>{healthyProductsCount} healthy products</h2>
-              <p>
-                {lowStockProductsCount > 0
-                  ? `${lowStockProductsCount} products are below reorder threshold and need review.`
-                  : "All tracked products are currently above their reorder thresholds."}
-              </p>
+              <span>Healthy</span>
+              <strong>{healthyProductsCount}</strong>
             </div>
-
-            <div className="analytics-bars">
-              <div>
-                <span>Healthy</span>
-                <strong>{healthyProductsCount}</strong>
-              </div>
-              <div>
-                <span>Low Stock</span>
-                <strong>{lowStockProductsCount}</strong>
-              </div>
-            </div>
-          </article>
-
-          <article className="analytics-panel">
             <div>
-              <span className="analytics-label">AI Readiness</span>
-              <h2>{recommendationCoverage}% recommendation coverage</h2>
-              <p>
-                Forecast and recommendation coverage show how much of the
-                workspace is ready for AI-assisted restock decisions.
-              </p>
+              <span>Low Stock</span>
+              <strong>{lowStockProductsCount}</strong>
             </div>
+          </div>
+        </article>
 
-            <div className="readiness-list">
-              <div>
-                <span>Forecast coverage</span>
-                <strong>{forecastCoverage}%</strong>
-              </div>
-              <div>
-                <span>Recommendation coverage</span>
-                <strong>{recommendationCoverage}%</strong>
-              </div>
-              <div>
-                <span>Orders available</span>
-                <strong>{ordersCount}</strong>
-              </div>
-            </div>
-          </article>
-          <article className="analytics-panel">
+        <article className="analytics-panel">
+          <div>
+            <span className="analytics-label">AI Readiness</span>
+            <h2>{recommendationCoverage}% recommendation coverage</h2>
+            <p>
+              Forecast and recommendation coverage show how much of the
+              workspace is ready for AI-assisted restock decisions.
+            </p>
+          </div>
+
+          <div className="readiness-list">
             <div>
-              <span className="analytics-label">Demand Risk</span>
-              <h2>{highestRiskLabel}</h2>
-              <p>
-                Risk scoring combines stock pressure, forecasted demand, reorder
-                threshold, and recommended reorder quantity.
-              </p>
+              <span>Forecast coverage</span>
+              <strong>{forecastCoverage}%</strong>
             </div>
-
-            <div className="readiness-list">
-              <div>
-                <span>Critical</span>
-                <strong>{riskCounts.critical}</strong>
-              </div>
-              <div>
-                <span>High</span>
-                <strong>{riskCounts.high}</strong>
-              </div>
-              <div>
-                <span>Medium</span>
-                <strong>{riskCounts.medium}</strong>
-              </div>
-              <div>
-                <span>Low</span>
-                <strong>{riskCounts.low}</strong>
-              </div>
-            </div>
-          </article>
-          <article className="analytics-panel">
             <div>
-              <span className="analytics-label">Demand Volatility</span>
-              <h2>{volatilityLabel}</h2>
-              <p>
-                Volatility analysis compares order quantities to show whether
-                product demand is stable, moderate, or highly variable.
-              </p>
+              <span>Recommendation coverage</span>
+              <strong>{recommendationCoverage}%</strong>
             </div>
+            <div>
+              <span>Orders available</span>
+              <strong>{ordersCount}</strong>
+            </div>
+          </div>
+        </article>
 
-            <div className="readiness-list">
-              <div>
-                <span>High</span>
-                <strong>{volatilityCounts.high}</strong>
-              </div>
-              <div>
-                <span>Moderate</span>
-                <strong>{volatilityCounts.moderate}</strong>
-              </div>
-              <div>
-                <span>Stable</span>
-                <strong>{volatilityCounts.stable}</strong>
-              </div>
-              <div>
-                <span>Limited history</span>
-                <strong>{volatilityCounts["insufficient history"]}</strong>
-              </div>
+        <article className="analytics-panel">
+          <div>
+            <span className="analytics-label">Demand Risk</span>
+            <h2>{highestRiskLabel}</h2>
+            <p>
+              Risk scoring combines stock pressure, forecasted demand, reorder
+              threshold, and recommended reorder quantity.
+            </p>
+          </div>
+
+          <div className="readiness-list">
+            <div>
+              <span>Critical</span>
+              <strong>{riskCounts.critical}</strong>
             </div>
-          </article>
-        </section>
+            <div>
+              <span>High</span>
+              <strong>{riskCounts.high}</strong>
+            </div>
+            <div>
+              <span>Medium</span>
+              <strong>{riskCounts.medium}</strong>
+            </div>
+            <div>
+              <span>Low</span>
+              <strong>{riskCounts.low}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article className="analytics-panel">
+          <div>
+            <span className="analytics-label">Demand Volatility</span>
+            <h2>{volatilityLabel}</h2>
+            <p>
+              Volatility analysis compares order quantities to show whether
+              product demand is stable, moderate, or highly variable.
+            </p>
+          </div>
+
+          <div className="readiness-list">
+            <div>
+              <span>High</span>
+              <strong>{volatilityCounts.high}</strong>
+            </div>
+            <div>
+              <span>Moderate</span>
+              <strong>{volatilityCounts.moderate}</strong>
+            </div>
+            <div>
+              <span>Stable</span>
+              <strong>{volatilityCounts.stable}</strong>
+            </div>
+            <div>
+              <span>Limited history</span>
+              <strong>{volatilityCounts["insufficient history"]}</strong>
+            </div>
+          </div>
+        </article>
       </section>
 
-      <AssistantSection
-        sectionId="assistant-section"
-        assistantQuestion={assistant.question}
-        assistantAnswer={assistant.answer}
-        assistantHighlights={assistant.highlights}
-        assistantActions={assistant.actions}
-        assistantHistory={assistant.history}
-        assistantStale={assistant.stale}
-        assistantError={assistant.error}
-        loadingAssistant={assistant.loading}
-        onQuestionChange={assistant.handleQuestionChange}
-        onAskAssistant={assistant.submitQuestion}
-        onRefreshSummary={assistant.refreshSummary}
-        onClearAssistant={assistant.clear}
-      />
-    </>
+      <section className="assistant-preview-card">
+        <div>
+          <span className="analytics-label">SmartOps Copilot</span>
+          <h2>Need a deeper operational explanation?</h2>
+          <p>
+            Open the assistant to ask questions about low stock, restock needs,
+            forecast freshness, recent order activity, and demand planning.
+          </p>
+        </div>
+
+        <Link to="/assistant" className="assistant-preview-link">
+          Open Assistant
+        </Link>
+      </section>
+    </section>
   );
 }
 
