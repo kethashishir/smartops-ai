@@ -37,15 +37,20 @@ function AssistantSection({
   const hasMessages = assistantHistory.length > 0;
 
   useEffect(() => {
-    const chatWindow = chatWindowRef.current;
-
-    if (!chatWindow) {
+    if (!assistantHistory.length && !loadingAssistant) {
       return;
     }
 
-    chatWindow.scrollTo({
-      top: chatWindow.scrollHeight,
-      behavior: "smooth",
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+
+      document.querySelector(".main-shell")?.scrollTo({
+        top: document.querySelector(".main-shell")?.scrollHeight || 0,
+        behavior: "smooth",
+      });
     });
   }, [assistantHistory, assistantAnswer, loadingAssistant]);
 
