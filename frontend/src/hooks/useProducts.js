@@ -229,19 +229,34 @@ function useProducts({
         [productId]: updatedInventory.current_stock,
       }));
 
-      await generateRecommendation(productId);
+      const product = products.find((item) => item.id === productId);
+      const productName = product?.name || "selected product";
 
-      if (refreshRecommendations) {
-        await refreshRecommendations();
+      let recommendationRefreshed = false;
+
+      try {
+        await generateRecommendation(productId);
+        recommendationRefreshed = true;
+
+        if (refreshRecommendations) {
+          await refreshRecommendations();
+        }
+      } catch (recommendationError) {
+        console.warn(
+          "Inventory updated, but recommendation refresh was skipped:",
+          recommendationError.message,
+        );
       }
 
-      const product = products.find((item) => item.id === productId);
-
-      setProductSuccess(
-        `Inventory updated and recommendation refreshed for ${
-          product?.name || "selected product"
-        }.`,
-      );
+      if (recommendationRefreshed) {
+        setProductSuccess(
+          `Inventory updated and recommendation refreshed for ${productName}.`,
+        );
+      } else {
+        setProductSuccess(
+          `Inventory updated for ${productName}. Generate forecasts before refreshing recommendations.`,
+        );
+      }
 
       if (markAssistantStale) {
         markAssistantStale();
@@ -253,9 +268,7 @@ function useProducts({
       }));
     } catch (error) {
       console.error("Error updating inventory:", error.message);
-      setProductsError(
-        "Could not update inventory or refresh recommendation. Please check the backend.",
-      );
+      setProductsError("Could not update inventory. Please check the backend.");
     } finally {
       setUpdatingStockProductId(null);
     }
