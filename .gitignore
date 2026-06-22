@@ -1,25 +1,11 @@
-# OS specific files
+# OS-specific files
 .DS_Store
 
 # IDE settings
 .vscode/
+.idea/
 
-# Python / FastAPI / Virtual Env
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-ENV/
-*.log
-
-# Node / Frontend / Build
-node_modules/
-dist/
-dist-ssr/
-*.local
-
-# Secrets and local environment files
+# Local environment and secrets
 .env
 .env.*
 !.env.example
@@ -27,16 +13,39 @@ dist-ssr/
 *.pem
 *.key
 
-logo.png
-
-# Test / cache
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
 .pytest_cache/
 .coverage
 htmlcov/
+.coverage.*
+.mypy_cache/
+.ruff_cache/
 
-# Frontend build output
+# Python virtual environments
+.venv/
+venv/
+ENV/
+.venv-*/
+backend/.venv/
+backend/.venv-*/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
 
-# IDE settings
-.idea/
+# Project-local assets not meant for repo
+logo.png
