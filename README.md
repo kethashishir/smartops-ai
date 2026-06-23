@@ -284,7 +284,11 @@ The Forecasts page supports:
 - Demand volatility labels and scores
 - Automatic recommendation refresh after forecast generation
 
-The forecasting approach now uses a zero-cost trend-aware forecasting service. It estimates demand from product/order history, reorder thresholds, order activity, and average order size. Forecast responses include human-readable explanations so users can understand why the predicted demand was produced.
+The forecasting approach now uses a zero-cost ML-assisted forecasting pipeline. The production forecast service uses `ml-regression-v1`, an explainable weighted-regression model that predicts demand from product and order-history features such as reorder threshold, total ordered units, order count, average order size, recent order quantity, demand volatility, and trend multiplier.
+
+The ML code lives in `backend/app/ml/`. The training script `backend/app/ml/train_forecast_model.py` builds feature rows from the database and saves a model artifact at `backend/app/ml/forecast_model.json`. The current artifact was generated with 969 training rows and reports a mean absolute error of 2.56.
+
+The forecast service integrates the ML prediction layer while keeping the earlier trend-aware formula as a fallback. Forecast responses include human-readable explanations so users can understand why the predicted demand was produced.
 
 The forecast layer also includes demand volatility analysis. Volatility scoring compares order quantities to classify product demand as stable, moderate, high, or limited-history demand.
 
