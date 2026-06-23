@@ -32,6 +32,15 @@ function ProductsSection({
   updatingStockProductId,
   onStockInputChange,
   onUpdateStock,
+  editingProductId,
+  productEditForms,
+  savingProductId,
+  deletingProductId,
+  onStartEditProduct,
+  onCancelEditProduct,
+  onProductEditInputChange,
+  onSaveProductChanges,
+  onDeleteProduct,
 }) {
   const hasProducts = products.length > 0;
   const hasFilteredProducts = filteredProducts.length > 0;
@@ -129,6 +138,15 @@ function ProductsSection({
                     updatingStockProductId={updatingStockProductId}
                     onStockInputChange={onStockInputChange}
                     onUpdateStock={onUpdateStock}
+                    isEditing={editingProductId === product.id}
+                    editForm={productEditForms[product.id]}
+                    savingProductId={savingProductId}
+                    deletingProductId={deletingProductId}
+                    onStartEdit={onStartEditProduct}
+                    onCancelEdit={onCancelEditProduct}
+                    onEditInputChange={onProductEditInputChange}
+                    onSaveEdit={onSaveProductChanges}
+                    onDeleteProduct={onDeleteProduct}
                   />
                 );
               })}

@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import {
-  getProducts,
   createProduct as createProductApi,
+  deleteProduct as deleteProductApi,
+  getProducts,
+  updateProduct as updateProductApi,
 } from "../api/productsApi.js";
 import {
   getInventoryForProduct,
@@ -17,6 +19,15 @@ const emptyProductForm = {
   unit_price: "",
   reorder_threshold: "",
 };
+
+function buildEditForm(product) {
+  return {
+    name: product.name,
+    category: product.category,
+    unit_price: String(product.unit_price),
+    reorder_threshold: String(product.reorder_threshold),
+  };
+}
 
 function useProducts({
   clearRecommendationFeedback,
@@ -36,6 +47,10 @@ function useProducts({
   const [stockUpdates, setStockUpdates] = useState({});
   const [updatingStockProductId, setUpdatingStockProductId] = useState(null);
   const [loadingDemoData, setLoadingDemoData] = useState(false);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [productEditForms, setProductEditForms] = useState({});
+  const [savingProductId, setSavingProductId] = useState(null);
+  const [deletingProductId, setDeletingProductId] = useState(null);
 
   function reset() {
     setProducts([]);
@@ -50,6 +65,11 @@ function useProducts({
     setProductSearch("");
     setStockUpdates({});
     setUpdatingStockProductId(null);
+    setLoadingDemoData(false);
+    setEditingProductId(null);
+    setProductEditForms({});
+    setSavingProductId(null);
+    setDeletingProductId(null);
   }
 
   function getProductName(productId) {
@@ -140,6 +160,32 @@ function useProducts({
     }));
   }
 
+  function startEditingProduct(product) {
+    setProductsError("");
+    setProductSuccess("");
+    setEditingProductId(product.id);
+    setProductEditForms((currentForms) => ({
+      ...currentForms,
+      [product.id]: buildEditForm(product),
+    }));
+  }
+
+  function cancelEditingProduct() {
+    setEditingProductId(null);
+  }
+
+  function handleProductEditInputChange(productId, fieldName, value) {
+    setProductSuccess("");
+
+    setProductEditForms((currentForms) => ({
+      ...currentForms,
+      [productId]: {
+        ...currentForms[productId],
+        [fieldName]: value,
+      },
+    }));
+  }
+
   async function fetchInventoryForProducts(productsList) {
     const inventoryMap = {};
 
@@ -208,6 +254,86 @@ function useProducts({
       );
     } finally {
       setCreatingProduct(false);
+    }
+  }
+
+  async function saveProductChanges(productId) {
+    const editForm = productEditForms[productId];
+
+    if (!editForm) {
+      return;
+    }
+
+    try {
+      setSavingProductId(productId);
+      setProductsError("");
+      setProductSuccess("");
+
+      await updateProductApi(productId, {
+        name: editForm.name,
+        category: editForm.category,
+        unit_price: Number(editForm.unit_price),
+        reorder_threshold: Number(editForm.reorder_threshold),
+      });
+
+      await fetchProducts();
+
+      if (refreshRecommendations) {
+        await refreshRecommendations();
+      }
+
+      setEditingProductId(null);
+      setProductSuccess("Product updated successfully.");
+
+      if (markAssistantStale) {
+        markAssistantStale();
+      }
+    } catch (error) {
+      console.error("Error updating product:", error.message);
+      setProductsError(error.message || "Could not update product.");
+    } finally {
+      setSavingProductId(null);
+    }
+  }
+
+  async function removeProduct(productId) {
+    const product = products.find((item) => item.id === productId);
+    const productName = product?.name || "this product";
+
+    const confirmed = window.confirm(
+      `Delete ${productName}? Products with order history cannot be deleted.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingProductId(productId);
+      setProductsError("");
+      setProductSuccess("");
+
+      await deleteProductApi(productId);
+
+      await fetchProducts();
+
+      if (refreshRecommendations) {
+        await refreshRecommendations();
+      }
+
+      setProductSuccess(`${productName} deleted successfully.`);
+
+      if (markAssistantStale) {
+        markAssistantStale();
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error.message);
+      setProductsError(
+        error.message ||
+          "Could not delete product. Products with order history cannot be deleted.",
+      );
+    } finally {
+      setDeletingProductId(null);
     }
   }
 
@@ -328,11 +454,20 @@ function useProducts({
     lowStockProductsCount,
     filteredProducts,
     sortedProducts,
+    editingProductId,
+    productEditForms,
+    savingProductId,
+    deletingProductId,
     reset,
     getProductName,
     isLowStock,
     handleProductInputChange,
     handleStockInputChange,
+    handleProductEditInputChange,
+    startEditingProduct,
+    cancelEditingProduct,
+    saveProductChanges,
+    removeProduct,
     fetchProducts,
     createProduct,
     updateProductStock,

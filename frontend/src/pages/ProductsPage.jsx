@@ -34,6 +34,15 @@ function ProductsPage({ productState, recommendationState }) {
       updatingStockProductId={productState.updatingStockProductId}
       onStockInputChange={productState.handleStockInputChange}
       onUpdateStock={productState.updateProductStock}
+      editingProductId={productState.editingProductId}
+      productEditForms={productState.productEditForms}
+      savingProductId={productState.savingProductId}
+      deletingProductId={productState.deletingProductId}
+      onStartEditProduct={productState.startEditingProduct}
+      onCancelEditProduct={productState.cancelEditingProduct}
+      onProductEditInputChange={productState.handleProductEditInputChange}
+      onSaveProductChanges={productState.saveProductChanges}
+      onDeleteProduct={productState.removeProduct}
     />
   );
 }

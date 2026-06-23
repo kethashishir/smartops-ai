@@ -2133,3 +2133,64 @@ button:disabled {
   border-color: #38bdf8;
   color: #075985;
 }
+
+/* Product edit and delete controls */
+
+.product-edit-stack {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.product-edit-stack input,
+.product-edit-grid input {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+}
+
+.product-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+
+.product-edit-grid label {
+  display: grid;
+  gap: 0.35rem;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.product-edit-grid span {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.product-edit-grid p {
+  margin: 0.25rem 0 0;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.product-edit-actions,
+.product-manage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.danger-button {
+  border-color: #fecaca !important;
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.danger-button:hover:not(:disabled) {
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+}
