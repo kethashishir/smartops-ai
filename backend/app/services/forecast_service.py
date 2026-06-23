@@ -4,12 +4,13 @@ from decimal import Decimal
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.ml.forecasting_model import ML_MODEL_VERSION, predict_demand_with_ml
 from app.models.forecast import Forecast
 from app.models.orders import Order
 from app.models.product import Product
 
 
-MODEL_VERSION = "trend-aware-v2"
+MODEL_VERSION = ML_MODEL_VERSION
 
 
 def calculate_trend_multiplier(order_count: int) -> Decimal:
@@ -23,6 +24,7 @@ def calculate_trend_multiplier(order_count: int) -> Decimal:
         return Decimal("1.10")
 
     return Decimal("1.00")
+
 
 def calculate_demand_volatility_score(order_quantities: list[int]) -> int:
     if len(order_quantities) < 2:
@@ -53,6 +55,7 @@ def get_volatility_level(volatility_score: int, order_count: int) -> str:
         return "moderate"
 
     return "stable"
+
 
 def build_forecast_explanation(
     total_order_quantity: Decimal,
@@ -90,13 +93,14 @@ def build_forecast_explanation(
         )
 
     return (
-        f"Trend-aware forecast used {total_order_quantity} total ordered units "
+        f"ML-assisted forecast used {total_order_quantity} total ordered units "
         f"across {order_count} order(s), with an average order size of "
         f"{average_order_quantity.quantize(Decimal('0.01'))}. "
         f"The model detected {activity_level}; {demand_basis}. "
         f"Final predicted demand is {predicted_demand}."
         f"{volatility_sentence}"
     )
+
 
 def calculate_predicted_demand(
     total_order_quantity: Decimal,
@@ -118,6 +122,59 @@ def calculate_predicted_demand(
     predicted_demand = demand_signal * calculate_trend_multiplier(order_count)
 
     return predicted_demand.quantize(Decimal("0.01"))
+
+
+def calculate_ml_predicted_demand(
+    reorder_threshold: Decimal,
+    order_quantities: list[int],
+) -> Decimal:
+    volatility_score = calculate_demand_volatility_score(order_quantities)
+    trend_multiplier = calculate_trend_multiplier(len(order_quantities))
+
+    return predict_demand_with_ml(
+        reorder_threshold=reorder_threshold,
+        order_quantities=order_quantities,
+        volatility_score=volatility_score,
+        trend_multiplier=trend_multiplier,
+    )
+
+
+def calculate_forecast_demand(
+    total_order_quantity: Decimal,
+    reorder_threshold: Decimal,
+    order_count: int,
+    order_quantities: list[int],
+) -> Decimal:
+    try:
+        return calculate_ml_predicted_demand(
+            reorder_threshold=reorder_threshold,
+            order_quantities=order_quantities,
+        )
+    except Exception:
+        return calculate_predicted_demand(
+            total_order_quantity=total_order_quantity,
+            reorder_threshold=reorder_threshold,
+            order_count=order_count,
+        )
+
+
+def get_order_quantities_for_product(
+    db: Session,
+    product_id: int,
+    user_id: int | None = None,
+) -> list[int]:
+    order_query = (
+        db.query(Order.quantity)
+        .filter(Order.product_id == product_id)
+        .order_by(Order.order_time.asc(), Order.id.asc())
+    )
+
+    if user_id is not None:
+        order_query = order_query.filter(Order.user_id == user_id)
+
+    rows = order_query.all()
+
+    return [quantity for (quantity,) in rows]
 
 
 def generate_baseline_forecasts(db: Session, user_id: int | None = None):
@@ -145,10 +202,17 @@ def generate_baseline_forecasts(db: Session, user_id: int | None = None):
 
         total_order_quantity, order_count = order_stats_query.first()
 
-        predicted_demand = calculate_predicted_demand(
-            Decimal(total_order_quantity),
-            Decimal(product.reorder_threshold),
-            int(order_count),
+        order_quantities = get_order_quantities_for_product(
+            db=db,
+            product_id=product.id,
+            user_id=user_id,
+        )
+
+        predicted_demand = calculate_forecast_demand(
+            total_order_quantity=Decimal(total_order_quantity),
+            reorder_threshold=Decimal(product.reorder_threshold),
+            order_count=int(order_count),
+            order_quantities=order_quantities,
         )
 
         existing_forecast_query = db.query(Forecast).filter(

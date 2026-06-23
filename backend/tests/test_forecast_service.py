@@ -1,13 +1,16 @@
 from decimal import Decimal
 
+from app.ml.forecasting_model import ML_MODEL_VERSION
 from app.services.forecast_service import (
+    MODEL_VERSION,
     calculate_predicted_demand,
     calculate_trend_multiplier,
     build_forecast_explanation,
     calculate_demand_volatility_score,
+    calculate_forecast_demand,
+    calculate_ml_predicted_demand,
     get_volatility_level,
 )
-
 
 def test_calculate_trend_multiplier_for_no_orders():
     assert calculate_trend_multiplier(0) == Decimal("1.00")
@@ -113,3 +116,37 @@ def test_get_volatility_level_for_moderate_demand():
 
 def test_get_volatility_level_for_high_demand():
     assert get_volatility_level(60, 3) == "high"
+
+def test_forecast_service_uses_ml_model_version():
+    assert MODEL_VERSION == ML_MODEL_VERSION
+
+
+def test_calculate_ml_predicted_demand_returns_forecast():
+    result = calculate_ml_predicted_demand(
+        reorder_threshold=Decimal("10"),
+        order_quantities=[4, 8, 12],
+    )
+
+    assert result >= Decimal("10.00")
+
+
+def test_calculate_forecast_demand_uses_ml_prediction():
+    result = calculate_forecast_demand(
+        total_order_quantity=Decimal("24"),
+        reorder_threshold=Decimal("10"),
+        order_count=3,
+        order_quantities=[4, 8, 12],
+    )
+
+    assert result >= Decimal("10.00")
+
+
+def test_build_forecast_explanation_describes_ml_assisted_model():
+    explanation = build_forecast_explanation(
+        Decimal("20"),
+        Decimal("10"),
+        4,
+        Decimal("24.00"),
+    )
+
+    assert "ML-assisted forecast" in explanation
