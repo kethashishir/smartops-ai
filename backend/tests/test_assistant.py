@@ -193,3 +193,74 @@ def test_assistant_can_answer_forecast_freshness_question():
     assert isinstance(data["answer"], str)
     assert isinstance(data["highlights"], list)
     assert isinstance(data["suggested_actions"], list)
+
+def test_assistant_can_explain_demand_risk():
+    headers = get_auth_headers(client)
+
+    response = client.post(
+        "/assistant/ask",
+        json={"question": "Explain demand risk scoring."},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "Demand risk" in data["answer"]
+    assert len(data["highlights"]) > 0
+    assert len(data["suggested_actions"]) > 0
+
+
+def test_assistant_can_answer_demand_risk_question():
+    headers = get_auth_headers(client)
+
+    response = client.post(
+        "/assistant/ask",
+        json={"question": "Which products are critical risk?"},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "risk" in data["answer"].lower()
+    assert "highlights" in data
+    assert "suggested_actions" in data
+
+
+def test_assistant_can_explain_demand_volatility():
+    headers = get_auth_headers(client)
+
+    response = client.post(
+        "/assistant/ask",
+        json={"question": "Explain volatility."},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "volatility" in data["answer"].lower()
+    assert len(data["highlights"]) > 0
+    assert len(data["suggested_actions"]) > 0
+
+
+def test_assistant_can_answer_volatility_question():
+    headers = get_auth_headers(client)
+
+    response = client.post(
+        "/assistant/ask",
+        json={"question": "Which products have high demand volatility?"},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "volatility" in data["answer"].lower()
+    assert "highlights" in data
+    assert "suggested_actions" in data
