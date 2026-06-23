@@ -8,6 +8,8 @@
 - Backend API: https://smartops-ai-api.onrender.com
 - Backend Health Check: https://smartops-ai-api.onrender.com/health
 
+Deployment note: the frontend includes `frontend/vercel.json` so Vercel serves `index.html` for React Router routes such as `/assistant`, `/products`, `/orders`, `/forecasts`, and `/recommendations`. This prevents 404 errors when users refresh or directly open nested frontend routes.
+
 SmartOps AI is a full-stack operations management platform that simulates a real retail, warehouse, or inventory-driven business workflow. It lets authenticated users manage products, track inventory, create orders, generate demand forecasts, receive reorder recommendations, and ask an operations assistant questions about their workspace data.
 
 The project is built as a realistic software engineering portfolio project using a FastAPI backend, PostgreSQL database, React + Vite frontend, JWT authentication, user-scoped data isolation, and a routed SaaS-style dashboard.
