@@ -288,7 +288,7 @@ The forecasting approach now uses a zero-cost trend-aware forecasting service. I
 
 The forecast layer also includes demand volatility analysis. Volatility scoring compares order quantities to classify product demand as stable, moderate, high, or limited-history demand.
 
-Phase 4 work is focused on zero-cost advanced AI/ML-style features, including trend-aware forecasting, demand risk scoring, demand volatility analysis, and smarter assistant explanations.
+Phase 4 work focuses on zero-cost advanced AI/ML features, including ML-assisted forecasting, demand risk scoring, demand volatility analysis, and smarter assistant explanations without requiring a paid LLM dependency.
 
 ---
 
