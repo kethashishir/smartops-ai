@@ -16,6 +16,8 @@ function OrdersPage({ productState, orderState }) {
       onCreateOrder={orderState.createOrder}
       onRefreshOrders={orderState.fetchOrders}
       getProductName={productState.getProductName}
+      deletingOrderId={orderState.deletingOrderId}
+      onDeleteOrder={orderState.removeOrder}
     />
   );
 }
