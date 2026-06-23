@@ -10,6 +10,14 @@ from app.models.product import Product
 from app.models.recommendation import Recommendation
 from app.models.user import User
 from app.schemas.assistant import AssistantQuestion, AssistantResponse
+from decimal import Decimal
+
+from app.services.forecast_service import (
+    MODEL_VERSION,
+    calculate_demand_volatility_score,
+    get_volatility_level,
+)
+from app.services.risk_service import calculate_demand_risk_score, get_risk_level
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
 
@@ -53,6 +61,153 @@ def get_latest_recommendations(db: Session, user_id: int):
 
     return list(latest_by_product_id.values())
 
+def get_latest_forecast_for_product(
+    db: Session,
+    user_id: int,
+    product_id: int,
+):
+    return (
+        db.query(Forecast)
+        .filter(
+            Forecast.user_id == user_id,
+            Forecast.product_id == product_id,
+            Forecast.model_version == MODEL_VERSION,
+        )
+        .order_by(Forecast.forecast_date.desc(), Forecast.id.desc())
+        .first()
+    )
+
+
+def get_order_quantities_for_product(
+    db: Session,
+    user_id: int,
+    product_id: int,
+) -> list[int]:
+    rows = (
+        db.query(Order.quantity)
+        .filter(
+            Order.user_id == user_id,
+            Order.product_id == product_id,
+        )
+        .order_by(Order.order_time.asc(), Order.id.asc())
+        .all()
+    )
+
+    return [quantity for (quantity,) in rows]
+
+
+def get_recommendation_risk_rows(db: Session, user_id: int):
+    latest_recommendations = get_latest_recommendations(db, user_id)
+    risk_rows = []
+
+    for recommendation, product_name in latest_recommendations:
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == recommendation.product_id,
+                Product.user_id == user_id,
+            )
+            .first()
+        )
+
+        inventory = (
+            db.query(Inventory)
+            .filter(Inventory.product_id == recommendation.product_id)
+            .first()
+        )
+
+        forecast = get_latest_forecast_for_product(
+            db,
+            user_id,
+            recommendation.product_id,
+        )
+
+        if not product or not inventory or not forecast:
+            continue
+
+        risk_score = calculate_demand_risk_score(
+            current_stock=inventory.current_stock,
+            reorder_threshold=product.reorder_threshold,
+            predicted_demand=Decimal(forecast.predicted_demand),
+            recommended_quantity=Decimal(recommendation.recommended_quantity),
+        )
+        risk_level = get_risk_level(risk_score)
+
+        risk_rows.append(
+            {
+                "product_name": product_name,
+                "recommended_quantity": recommendation.recommended_quantity,
+                "current_stock": inventory.current_stock,
+                "reorder_threshold": product.reorder_threshold,
+                "predicted_demand": forecast.predicted_demand,
+                "risk_score": risk_score,
+                "risk_level": risk_level,
+            }
+        )
+
+    return sorted(
+        risk_rows,
+        key=lambda row: (
+            -row["risk_score"],
+            row["product_name"].lower(),
+        ),
+    )
+
+
+def get_forecast_volatility_rows(db: Session, user_id: int):
+    forecast_rows = (
+        db.query(Forecast, Product)
+        .join(Product, Product.id == Forecast.product_id)
+        .filter(
+            Forecast.user_id == user_id,
+            Product.user_id == user_id,
+            Forecast.model_version == MODEL_VERSION,
+        )
+        .order_by(
+            Product.name.asc(),
+            Forecast.forecast_date.desc(),
+            Forecast.id.desc(),
+        )
+        .all()
+    )
+
+    latest_by_product_id = {}
+
+    for forecast, product in forecast_rows:
+        if product.id not in latest_by_product_id:
+            latest_by_product_id[product.id] = (forecast, product)
+
+    volatility_rows = []
+
+    for forecast, product in latest_by_product_id.values():
+        order_quantities = get_order_quantities_for_product(
+            db,
+            user_id,
+            product.id,
+        )
+        volatility_score = calculate_demand_volatility_score(order_quantities)
+        volatility_level = get_volatility_level(
+            volatility_score,
+            len(order_quantities),
+        )
+
+        volatility_rows.append(
+            {
+                "product_name": product.name,
+                "predicted_demand": forecast.predicted_demand,
+                "volatility_score": volatility_score,
+                "volatility_level": volatility_level,
+                "order_count": len(order_quantities),
+            }
+        )
+
+    return sorted(
+        volatility_rows,
+        key=lambda row: (
+            -row["volatility_score"],
+            row["product_name"].lower(),
+        ),
+    )
 
 def build_operations_summary(db: Session, user_id: int) -> AssistantResponse:
     product_rows = get_user_products_with_inventory(db, user_id)
@@ -204,6 +359,149 @@ def answer_restock_question(db: Session, user_id: int) -> AssistantResponse:
         suggested_actions=["Restock the highest-priority products first."],
     )
 
+def answer_demand_risk_question(db: Session, user_id: int) -> AssistantResponse:
+    risk_rows = get_recommendation_risk_rows(db, user_id)
+
+    if not risk_rows:
+        return AssistantResponse(
+            answer="No demand risk scores are available yet.",
+            highlights=[],
+            suggested_actions=[
+                "Generate forecasts.",
+                "Generate recommendations.",
+                "Refresh recommendations to calculate risk scores.",
+            ],
+        )
+
+    high_priority_rows = [
+        row
+        for row in risk_rows
+        if row["risk_level"] in ("critical", "high")
+    ]
+
+    if not high_priority_rows:
+        return AssistantResponse(
+            answer="No products are currently classified as high or critical demand risk.",
+            highlights=[
+                f"{row['product_name']}: {row['risk_level']} risk, score {row['risk_score']}"
+                for row in risk_rows[:5]
+            ],
+            suggested_actions=[
+                "Continue monitoring low-stock products and demand changes.",
+            ],
+        )
+
+    return AssistantResponse(
+        answer=f"{len(high_priority_rows)} products are currently high or critical demand risk.",
+        highlights=[
+            (
+                f"{row['product_name']}: {row['risk_level']} risk, "
+                f"score {row['risk_score']}, "
+                f"stock {format_quantity(row['current_stock'])}, "
+                f"forecast {format_quantity(row['predicted_demand'])}, "
+                f"recommended reorder {format_quantity(row['recommended_quantity'])}"
+            )
+            for row in high_priority_rows[:8]
+        ],
+        suggested_actions=[
+            "Prioritize critical-risk products first.",
+            "Review high-risk products with low stock and strong forecasted demand.",
+            "Refresh forecasts and recommendations after new orders.",
+        ],
+    )
+
+
+def answer_demand_risk_explanation() -> AssistantResponse:
+    return AssistantResponse(
+        answer=(
+            "Demand risk measures how urgent a restock decision is. "
+            "SmartOps AI scores risk using stock pressure, forecasted demand, "
+            "reorder threshold, and recommended reorder quantity."
+        ),
+        highlights=[
+            "Critical risk: severe stock pressure and strong forecasted demand",
+            "High risk: product likely needs restock attention soon",
+            "Medium risk: some warning signs exist",
+            "Low risk: current stock and demand look manageable",
+        ],
+        suggested_actions=[
+            "Use critical and high risk labels to prioritize restocking.",
+            "Review risk scores together with forecast and recommendation details.",
+        ],
+    )
+
+
+def answer_volatility_question(db: Session, user_id: int) -> AssistantResponse:
+    volatility_rows = get_forecast_volatility_rows(db, user_id)
+
+    if not volatility_rows:
+        return AssistantResponse(
+            answer="No demand volatility data is available yet.",
+            highlights=[],
+            suggested_actions=[
+                "Create orders.",
+                "Generate forecasts.",
+                "Review volatility after more order history exists.",
+            ],
+        )
+
+    high_volatility_rows = [
+        row
+        for row in volatility_rows
+        if row["volatility_level"] == "high"
+    ]
+
+    if not high_volatility_rows:
+        return AssistantResponse(
+            answer="No products currently show high demand volatility.",
+            highlights=[
+                (
+                    f"{row['product_name']}: {row['volatility_level']} volatility, "
+                    f"score {row['volatility_score']}, "
+                    f"{row['order_count']} order(s)"
+                )
+                for row in volatility_rows[:6]
+            ],
+            suggested_actions=[
+                "Continue monitoring products as more orders are created.",
+            ],
+        )
+
+    return AssistantResponse(
+        answer=f"{len(high_volatility_rows)} products show high demand volatility.",
+        highlights=[
+            (
+                f"{row['product_name']}: high volatility, "
+                f"score {row['volatility_score']}, "
+                f"{row['order_count']} order(s), "
+                f"forecast {format_quantity(row['predicted_demand'])}"
+            )
+            for row in high_volatility_rows[:8]
+        ],
+        suggested_actions=[
+            "Review volatile products before placing large purchase orders.",
+            "Use more order history before trusting aggressive reorder decisions.",
+        ],
+    )
+
+def answer_volatility_explanation() -> AssistantResponse:
+    return AssistantResponse(
+        answer=(
+            "Demand volatility measures how much order quantities vary over time. "
+            "Stable demand has similar order sizes. High volatility means order sizes "
+            "change sharply, so forecasts and restock decisions should be reviewed more carefully."
+        ),
+        highlights=[
+            "Stable: order quantities are consistent",
+            "Moderate: some demand variation exists",
+            "High: order quantities vary significantly",
+            "Limited history: not enough order data to judge demand stability",
+        ],
+        suggested_actions=[
+            "Use volatility labels to decide how much confidence to place in a forecast.",
+            "Collect more order history for limited-history products.",
+        ],
+    )
 
 def answer_forecast_question(db: Session, user_id: int) -> AssistantResponse:
     latest_forecast = (
@@ -341,6 +639,54 @@ def ask_assistant(
     current_user: User = Depends(get_current_user),
 ):
     normalized_question = question.question.lower().strip()
+    
+    if any(
+        keyword in normalized_question
+        for keyword in [
+            "explain risk",
+            "what is risk",
+            "risk score mean",
+            "risk scoring",
+            "demand risk mean",
+        ]
+    ):
+        return answer_demand_risk_explanation()
+
+    if any(
+        keyword in normalized_question
+        for keyword in [
+            "critical risk",
+            "high risk",
+            "demand risk",
+            "riskiest",
+            "risky",
+            "risk products",
+        ]
+    ):
+        return answer_demand_risk_question(db, current_user.id)
+
+    if any(
+        keyword in normalized_question
+        for keyword in [
+            "explain volatility",
+            "what is volatility",
+            "volatility mean",
+            "volatility score",
+        ]
+    ):
+        return answer_volatility_explanation()
+
+    if any(
+        keyword in normalized_question
+        for keyword in [
+            "high volatility",
+            "demand volatility",
+            "volatile",
+            "unstable demand",
+            "stable demand",
+        ]
+    ):
+        return answer_volatility_question(db, current_user.id)
     
     if any(
         keyword in normalized_question
