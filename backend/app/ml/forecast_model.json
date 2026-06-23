@@ -1,0 +1,28 @@
+{
+  "model_version": "ml-regression-v1",
+  "model_type": "explainable_weighted_regression",
+  "features": [
+    "bias",
+    "reorder_threshold",
+    "total_order_quantity",
+    "order_count",
+    "average_order_quantity",
+    "recent_order_quantity",
+    "volatility_score",
+    "trend_multiplier"
+  ],
+  "weights": {
+    "bias": 0.0,
+    "reorder_threshold": 0.35,
+    "total_order_quantity": 0.25,
+    "order_count": 0.75,
+    "average_order_quantity": 1.1,
+    "recent_order_quantity": 0.8,
+    "volatility_score": 0.05,
+    "trend_multiplier": 4.0
+  },
+  "metrics": {
+    "training_rows": 969,
+    "mean_absolute_error": 2.56
+  }
+}
