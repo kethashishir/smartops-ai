@@ -12,6 +12,7 @@ from app.models.product import Product
 from app.models.user import User
 from app.schemas.forecast import ForecastCreate, ForecastResponse
 from app.services.forecast_service import (
+    MODEL_VERSION,
     build_forecast_explanation,
     calculate_demand_volatility_score,
     generate_baseline_forecasts,
@@ -109,6 +110,7 @@ def get_forecast(
         .filter(
             Forecast.user_id == current_user.id,
             Product.user_id == current_user.id,
+            Forecast.model_version == MODEL_VERSION,
         )
         .order_by(Product.name.asc(), Forecast.forecast_date.desc(), Forecast.id.desc())
         .all()
@@ -135,6 +137,7 @@ def get_latest_forecasts(
         .filter(
             Forecast.user_id == current_user.id,
             Product.user_id == current_user.id,
+            Forecast.model_version == MODEL_VERSION,
         )
         .order_by(
             Product.name.asc(),
