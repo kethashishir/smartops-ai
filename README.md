@@ -14,6 +14,8 @@ SmartOps AI is a full-stack operations management platform that simulates a real
 
 The project is built as a realistic software engineering portfolio project using a FastAPI backend, PostgreSQL database, React + Vite frontend, JWT authentication, user-scoped data isolation, and a routed SaaS-style dashboard.
 
+Production AI/ML code is located inside `backend/app/ml/` so it can be imported directly by the deployed FastAPI backend. Older top-level prototype AI/ML folders were removed after the production ML forecasting pipeline was added.
+
 ---
 
 ## Project Status
