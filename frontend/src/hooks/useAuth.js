@@ -2,14 +2,19 @@ import { useEffect, useState } from "react";
 import { getCurrentUser, loginUser, registerUser } from "../api/authApi.js";
 import { resetSessionExpiredDispatch } from "../api/config.js";
 
-function useAuth({ onSessionReset }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authMode, setAuthMode] = useState("login");
-  const [authForm, setAuthForm] = useState({
+function getInitialAuthForm() {
+  return {
     name: "",
     email: "",
     password: "",
-  });
+    confirmPassword: "",
+  };
+}
+
+function useAuth({ onSessionReset }) {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authMode, setAuthMode] = useState("login");
+  const [authForm, setAuthForm] = useState(getInitialAuthForm());
   const [authError, setAuthError] = useState("");
   const [authSuccess, setAuthSuccess] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(false);
@@ -36,14 +41,22 @@ function useAuth({ onSessionReset }) {
       setAuthSuccess("");
 
       if (authMode === "register") {
-        await registerUser(authForm);
+        if (authForm.password !== authForm.confirmPassword) {
+          setAuthError("Passwords do not match.");
+          return;
+        }
+
+        await registerUser({
+          name: authForm.name,
+          email: authForm.email,
+          password: authForm.password,
+        });
 
         setAuthSuccess("Account created successfully. You can now log in.");
         setAuthMode("login");
         setAuthForm({
-          name: "",
+          ...getInitialAuthForm(),
           email: authForm.email,
-          password: "",
         });
 
         return;
@@ -64,12 +77,7 @@ function useAuth({ onSessionReset }) {
       setAuthError("");
       setAuthSuccess("");
       setCurrentUser(data.user);
-
-      setAuthForm({
-        name: "",
-        email: "",
-        password: "",
-      });
+      setAuthForm(getInitialAuthForm());
     } catch (error) {
       setAuthError(error.message || "Authentication failed.");
     } finally {

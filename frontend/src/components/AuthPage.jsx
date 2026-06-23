@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function AuthPage({
   authMode,
   setAuthMode,
@@ -8,7 +10,18 @@ function AuthPage({
   onAuthInputChange,
   onSubmitAuth,
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const isRegisterMode = authMode === "register";
+  const passwordInputType = showPassword ? "text" : "password";
+  const confirmPasswordInputType = showConfirmPassword ? "text" : "password";
+
+  function handleModeToggle() {
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setAuthMode(isRegisterMode ? "login" : "register");
+  }
 
   return (
     <div className="auth-page">
@@ -60,15 +73,55 @@ function AuthPage({
 
           <label>
             Password
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={authForm.password}
-              onChange={onAuthInputChange}
-              required
-            />
+            <div className="password-input-wrapper">
+              <input
+                type={passwordInputType}
+                name="password"
+                placeholder="Enter password"
+                value={authForm.password}
+                onChange={onAuthInputChange}
+                required
+              />
+              <button
+                className="password-toggle"
+                type="button"
+                onClick={() => setShowPassword((currentValue) => !currentValue)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </label>
+
+          {isRegisterMode && (
+            <label>
+              Confirm Password
+              <div className="password-input-wrapper">
+                <input
+                  type={confirmPasswordInputType}
+                  name="confirmPassword"
+                  placeholder="Retype password"
+                  value={authForm.confirmPassword}
+                  onChange={onAuthInputChange}
+                  required
+                />
+                <button
+                  className="password-toggle"
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword((currentValue) => !currentValue)
+                  }
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"
+                  }
+                >
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </label>
+          )}
 
           <button type="submit" disabled={loadingAuth}>
             {loadingAuth
@@ -79,11 +132,7 @@ function AuthPage({
           </button>
         </form>
 
-        <button
-          className="auth-toggle"
-          type="button"
-          onClick={() => setAuthMode(isRegisterMode ? "login" : "register")}
-        >
+        <button className="auth-toggle" type="button" onClick={handleModeToggle}>
           {isRegisterMode
             ? "Already have an account? Log in"
             : "Need an account? Register"}

@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { getOrders, createOrder as createOrderApi } from "../api/ordersApi.js";
+import {
+  createOrder as createOrderApi,
+  deleteOrder as deleteOrderApi,
+  getOrders,
+} from "../api/ordersApi.js";
 
 function useOrders({
   products,
@@ -14,6 +18,7 @@ function useOrders({
   const [ordersError, setOrdersError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState("");
   const [creatingOrder, setCreatingOrder] = useState(false);
+  const [deletingOrderId, setDeletingOrderId] = useState(null);
   const [newOrder, setNewOrder] = useState({
     product_id: "",
     quantity: "",
@@ -26,6 +31,7 @@ function useOrders({
     setOrdersError("");
     setOrderSuccess("");
     setCreatingOrder(false);
+    setDeletingOrderId(null);
     setNewOrder({
       product_id: "",
       quantity: "",
@@ -126,18 +132,72 @@ function useOrders({
     }
   }
 
+  async function removeOrder(orderId) {
+    const order = orders.find((item) => item.id === orderId);
+    const productName = order?.product_name || "this product";
+
+    const confirmed = window.confirm(
+      `Delete this order for ${productName}? Inventory will be restored.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingOrderId(orderId);
+      setOrdersError("");
+      setOrderSuccess("");
+
+      const result = await deleteOrderApi(orderId);
+
+      await fetchOrders();
+
+      if (fetchProducts) {
+        await fetchProducts();
+      }
+
+      if (clearForecastSuccess) {
+        clearForecastSuccess();
+      }
+
+      if (clearRecommendationFeedback) {
+        clearRecommendationFeedback();
+      }
+
+      setOrderSuccess(
+        `Order deleted. Restored ${result.restored_quantity} unit(s) to inventory.`,
+      );
+
+      if (markAssistantStale) {
+        markAssistantStale();
+      }
+
+      if (onOrderCreated) {
+        onOrderCreated();
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error.message);
+      setOrdersError(error.message || "Could not delete order.");
+    } finally {
+      setDeletingOrderId(null);
+    }
+  }
+
   return {
     orders,
     loadingOrders,
     ordersError,
     orderSuccess,
     creatingOrder,
+    deletingOrderId,
     newOrder,
     reset,
     clearFeedback,
     handleOrderInputChange,
     fetchOrders,
     createOrder,
+    removeOrder,
   };
 }
 

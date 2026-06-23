@@ -94,3 +94,60 @@ def get_orders(
         build_order_response(order, product_name)
         for order, product_name in order_rows
     ]
+
+
+@router.delete("/{order_id}")
+def delete_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    order = (
+        db.query(Order)
+        .filter(
+            Order.id == order_id,
+            Order.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    product = (
+        db.query(Product)
+        .filter(
+            Product.id == order.product_id,
+            Product.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    inventory = (
+        db.query(Inventory)
+        .filter(Inventory.product_id == order.product_id)
+        .first()
+    )
+
+    if not inventory:
+        raise HTTPException(
+            status_code=404,
+            detail="Inventory record not found for the product",
+        )
+
+    restored_quantity = order.quantity
+    inventory.current_stock += restored_quantity
+
+    db.delete(order)
+    db.commit()
+
+    return {
+        "message": "Order deleted and inventory restored.",
+        "order_id": order_id,
+        "product_id": product.id,
+        "restored_quantity": restored_quantity,
+        "current_stock": inventory.current_stock,
+    }

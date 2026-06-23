@@ -3,8 +3,11 @@ from sqlalchemy.orm import Session
 
 from app.auth.security import get_current_user
 from app.database import get_db
+from app.models.forecast import Forecast
 from app.models.inventories import Inventory
+from app.models.orders import Order
 from app.models.product import Product
+from app.models.recommendation import Recommendation
 from app.models.user import User
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 
@@ -86,3 +89,59 @@ def update_product(
     db.refresh(db_product)
 
     return db_product
+
+
+@router.delete("/{product_id}")
+def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    db_product = (
+        db.query(Product)
+        .filter(
+            Product.id == product_id,
+            Product.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    order_count = (
+        db.query(Order)
+        .filter(
+            Order.product_id == product_id,
+            Order.user_id == current_user.id,
+        )
+        .count()
+    )
+
+    if order_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete product with order history.",
+        )
+
+    db.query(Recommendation).filter(
+        Recommendation.product_id == product_id,
+        Recommendation.user_id == current_user.id,
+    ).delete(synchronize_session=False)
+
+    db.query(Forecast).filter(
+        Forecast.product_id == product_id,
+        Forecast.user_id == current_user.id,
+    ).delete(synchronize_session=False)
+
+    db.query(Inventory).filter(
+        Inventory.product_id == product_id,
+    ).delete(synchronize_session=False)
+
+    db.delete(db_product)
+    db.commit()
+
+    return {
+        "message": "Product deleted successfully.",
+        "product_id": product_id,
+    }

@@ -25,3 +25,13 @@ export async function createOrder(order) {
 
   return response.json();
 }
+
+export async function deleteOrder(orderId) {
+  const response = await apiFetch(`/orders/${orderId}`, {
+    method: "DELETE",
+  });
+
+  await ensureOk(response, "Failed to delete order");
+
+  return response.json();
+}

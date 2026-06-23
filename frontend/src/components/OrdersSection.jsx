@@ -12,6 +12,8 @@ function OrdersSection({
   onCreateOrder,
   onRefreshOrders,
   getProductName,
+  deletingOrderId,
+  onDeleteOrder,
 }) {
   const recentOrders = orders.slice(0, 5);
   const totalOrderQuantity = orders.reduce(
@@ -190,7 +192,17 @@ function OrdersSection({
                       </p>
                     </div>
 
-                    <span className="order-quantity">Qty {order.quantity}</span>
+                    <div className="order-card-actions">
+                      <span className="order-quantity">Qty {order.quantity}</span>
+                      <button
+                        type="button"
+                        className="danger-button"
+                        onClick={() => onDeleteOrder(order.id)}
+                        disabled={deletingOrderId === order.id}
+                      >
+                        {deletingOrderId === order.id ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                   </div>
                 </li>
               ))}

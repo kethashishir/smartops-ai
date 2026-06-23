@@ -21,3 +21,27 @@ export async function createProduct(product) {
 
   return response.json();
 }
+
+export async function updateProduct(productId, product) {
+  const response = await apiFetch(`/products/${productId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(product),
+  });
+
+  await ensureOk(response, "Failed to update product");
+
+  return response.json();
+}
+
+export async function deleteProduct(productId) {
+  const response = await apiFetch(`/products/${productId}`, {
+    method: "DELETE",
+  });
+
+  await ensureOk(response, "Failed to delete product");
+
+  return response.json();
+}
