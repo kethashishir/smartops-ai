@@ -36,11 +36,12 @@ Current verification:
 
 ```text
 Frontend production build: passed
-Backend tests: 51 passed
+Backend tests: 64 passed
 Production smoke test: passed
 Demo data loading: working
 Phase 4 risk scoring: implemented
 Phase 4 volatility analysis: implemented
+Phase 4 ML forecasting pipeline: implemented
 ```
 
 ---
