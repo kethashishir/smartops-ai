@@ -16,10 +16,12 @@ function DashboardPage({
     0,
   );
   const forecastCoverage =
-    productsCount > 0 ? Math.round((forecastsCount / productsCount) * 100) : 0;
+    productsCount > 0
+      ? Math.min(100, Math.round((forecastsCount / productsCount) * 100))
+      : 0;
   const recommendationCoverage =
     productsCount > 0
-      ? Math.round((recommendationsCount / productsCount) * 100)
+      ? Math.min(100, Math.round((recommendationsCount / productsCount) * 100))
       : 0;
 
   const riskCounts = latestRecommendations.reduce(
