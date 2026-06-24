@@ -38,7 +38,7 @@ Current verification:
 
 ```text
 Frontend production build: passed
-Backend tests: 64 passed
+Backend pytest suite: passed
 Production smoke test: passed
 Demo data loading: working
 Phase 4 risk scoring: implemented
@@ -99,6 +99,22 @@ Do I need to generate forecasts?
 
 The demo data is scoped to the logged-in user, so each account receives its own isolated demo workspace.
 
+## Interview Demo Script
+
+A concise demo flow for reviewers or interviewers:
+
+1. Register or log in to show authentication and session handling.
+2. Load demo data from the Products page to create a complete isolated workspace.
+3. Review product inventory, low-stock labels, and recommendation status.
+4. Create an order and show inventory decreasing automatically.
+5. Generate forecasts and show the ml-regression-v1 model version.
+6. Review forecast explanations, volatility labels, and predicted demand.
+7. Generate or refresh recommendations and review risk levels.
+8. Ask the assistant questions about low stock, restock decisions, risk, volatility, and forecast freshness.
+9. Refresh nested routes such as /assistant or /forecasts to show production SPA routing works.
+
+This demo highlights full-stack development, authentication, production deployment, user-scoped data isolation, workflow automation, and explainable AI/ML decision support.
+
 ---
 
 ## Tech Stack
@@ -134,6 +150,50 @@ The demo data is scoped to the logged-in user, so each account receives its own 
 
 ---
 
+## Architecture Overview
+
+SmartOps AI is organized as a production-style full-stack application:
+
+React + Vite frontend -> Authenticated API requests -> FastAPI backend -> PostgreSQL database -> forecasting, recommendations, risk scoring, volatility analysis, and assistant services
+
+Key architecture decisions:
+
+- The frontend is a routed SaaS-style dashboard with separate pages for Dashboard, Assistant, Products, Orders, Forecasts, and Recommendations.
+- The backend uses FastAPI routers, Pydantic schemas, SQLAlchemy models, and Alembic migrations.
+- JWT authentication protects all user workspace data.
+- Products, inventory, orders, forecasts, recommendations, and assistant responses are scoped to the authenticated user.
+- Forecasting and AI/ML logic run inside the backend so production responses are data-grounded and testable.
+- The frontend is deployed on Vercel and the backend/PostgreSQL stack is deployed on Render.
+- GitHub Actions runs backend tests, frontend production build checks, and migration checks.
+
+## AI/ML and Decision Intelligence
+
+SmartOps AI does not depend on a paid LLM API. Instead, it uses a zero-cost, explainable AI/ML decision-support approach:
+
+- ml-regression-v1 predicts demand from product and order-history features.
+- Forecast explanations describe the model inputs behind predicted demand.
+- Demand volatility scoring classifies product demand as stable, moderate, high, or insufficient-history.
+- Recommendation risk scoring classifies restock decisions as low, medium, high, or critical.
+- The assistant answers operational questions using authenticated workspace data, forecasts, recommendations, risk scores, and volatility analysis.
+
+This makes the AI/ML layer reliable for demos because answers are grounded in the database rather than generated from an external chatbot.
+
+## Resume-Ready Summary
+
+SmartOps AI can be summarized on a resume as:
+
+Built and deployed a full-stack AI-powered operations dashboard using React, FastAPI, PostgreSQL, SQLAlchemy, Alembic, and JWT authentication. Implemented user-scoped inventory, order, forecasting, recommendation, and assistant workflows with an explainable ML forecasting pipeline, demand risk scoring, volatility analysis, CI testing, and production deployment on Vercel and Render.
+
+Example resume bullets:
+
+- Built a production-style full-stack operations platform with React, FastAPI, PostgreSQL, SQLAlchemy, Alembic, and JWT authentication.
+- Implemented user-scoped product, inventory, order, forecast, recommendation, and assistant workflows with protected API routes.
+- Developed an explainable ML forecasting pipeline using product/order-history features, saved model artifacts, and backend prediction integration.
+- Added demand risk scoring, volatility analysis, and a data-grounded operations assistant for AI-assisted restock decisions.
+- Deployed the frontend to Vercel and backend/PostgreSQL services to Render with GitHub Actions CI for tests, builds, and migration checks.
+
+---
+
 ## Project Structure
 
 ```text
@@ -165,9 +225,6 @@ smartops-ai/
 │   └── package-lock.json
 │
 ├── docs/
-├── ml/
-├── ai/
-├── simulator/
 ├── .env.example
 └── README.md
 ```
@@ -184,6 +241,8 @@ Current authentication features include:
 
 - User registration
 - User login
+- Confirm-password validation during registration
+- Password visibility controls on login and registration forms
 - Password hashing
 - JWT access token generation
 - Session restore from browser local storage
@@ -242,6 +301,9 @@ The Products page supports:
 
 - Product creation
 - Product listing
+- Product editing
+- Safe product deletion when no order history exists
+- Product deletion protection when order history exists
 - Product search
 - Product filtering
 - Product sorting
@@ -262,13 +324,14 @@ The Orders page supports:
 
 - Creating customer orders
 - Viewing recent order history
+- Deleting orders with inventory restoration
 - Product-aware order creation
 - Stock validation before order creation
 - Automatic inventory reduction after an order
 - Order success and error feedback
 - Product names displayed with order records
 
-Order creation connects to the broader workflow by reducing inventory and signaling that forecasts should be regenerated.
+Order creation connects to the broader workflow by reducing inventory and signaling that forecasts should be regenerated. Order deletion restores inventory so users can correct mistakes without leaving stock counts inconsistent.
 
 ---
 
@@ -331,6 +394,9 @@ The assistant currently supports:
 - Recent order activity questions
 - Highest forecasted demand questions
 - Forecast freshness questions
+- Demand risk questions
+- Demand volatility questions
+- Risk and volatility explanations
 - Fallback guidance for unsupported questions
 
 Assistant response features include:
@@ -356,7 +422,7 @@ Which product has the highest forecasted demand?
 Give me an operations summary.
 ```
 
-The assistant is currently rule-based. Future work may add a true LLM/RAG assistant using LangChain or another AI orchestration layer.
+The assistant is currently rule-based and data-grounded. It uses authenticated workspace data, forecast outputs, recommendation data, risk scores, and volatility analysis instead of relying on a paid LLM dependency. Optional LLM/RAG support may be added later as an enhancement.
 
 ---
 
@@ -596,7 +662,7 @@ pytest
 Expected current result:
 
 ```text
-28 passed
+Backend pytest suite passed
 ```
 
 ### Frontend production build
@@ -630,9 +696,11 @@ Backend tests currently cover:
 
 - Health route
 - Product routes
+- Product update and safe-delete behavior
 - Authentication
 - Protected routes
 - Order logic
+- Order deletion and inventory restoration
 - Forecast service logic
 - Assistant routes
 - Cross-user data isolation
@@ -671,6 +739,10 @@ Recent completed milestones include:
 - Converted the dashboard from one long page into routed pages
 - Added route-specific dashboard headers
 - Added reusable page components
+- Added confirm-password validation and password visibility controls
+- Added product edit and safe-delete workflows
+- Added order deletion with inventory restoration
+- Added ML-assisted forecasting, demand risk scoring, and volatility analysis
 
 ---
 
@@ -678,16 +750,14 @@ Recent completed milestones include:
 
 Potential future improvements include:
 
-- True LLM-powered assistant
-- LangChain or RAG integration
-- ML-based demand forecasting model
+- Optional LLM-powered assistant
+- Optional LangChain or RAG integration
+- Advanced ML model tuning and richer evaluation metrics
 - Charts and analytics visualizations
 - More advanced dashboard redesign
 - Separate admin/settings pages
 - Better role-based access control
 - Dockerized local development
-- Cloud deployment
-- CI/CD pipeline
 - More frontend tests
 - More advanced recommendation logic
 - Multi-warehouse support
