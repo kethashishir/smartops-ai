@@ -131,7 +131,7 @@ npm run build
 Expected current result:
 
 ```text
-Backend tests: 28 passed
+Backend tests: 70 passed
 Frontend build: passed
 ```
 
