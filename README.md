@@ -225,7 +225,6 @@ smartops-ai/
 │   └── package-lock.json
 │
 ├── docs/
-├── simulator/
 ├── .env.example
 └── README.md
 ```
