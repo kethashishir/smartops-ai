@@ -99,6 +99,22 @@ Do I need to generate forecasts?
 
 The demo data is scoped to the logged-in user, so each account receives its own isolated demo workspace.
 
+## Interview Demo Script
+
+A concise demo flow for reviewers or interviewers:
+
+1. Register or log in to show authentication and session handling.
+2. Load demo data from the Products page to create a complete isolated workspace.
+3. Review product inventory, low-stock labels, and recommendation status.
+4. Create an order and show inventory decreasing automatically.
+5. Generate forecasts and show the ml-regression-v1 model version.
+6. Review forecast explanations, volatility labels, and predicted demand.
+7. Generate or refresh recommendations and review risk levels.
+8. Ask the assistant questions about low stock, restock decisions, risk, volatility, and forecast freshness.
+9. Refresh nested routes such as /assistant or /forecasts to show production SPA routing works.
+
+This demo highlights full-stack development, authentication, production deployment, user-scoped data isolation, workflow automation, and explainable AI/ML decision support.
+
 ---
 
 ## Tech Stack
@@ -131,6 +147,50 @@ The demo data is scoped to the logged-in user, so each account receives its own 
 - Alembic migrations
 - Frontend production build checks
 - Backend regression tests
+
+---
+
+## Architecture Overview
+
+SmartOps AI is organized as a production-style full-stack application:
+
+React + Vite frontend -> Authenticated API requests -> FastAPI backend -> PostgreSQL database -> forecasting, recommendations, risk scoring, volatility analysis, and assistant services
+
+Key architecture decisions:
+
+- The frontend is a routed SaaS-style dashboard with separate pages for Dashboard, Assistant, Products, Orders, Forecasts, and Recommendations.
+- The backend uses FastAPI routers, Pydantic schemas, SQLAlchemy models, and Alembic migrations.
+- JWT authentication protects all user workspace data.
+- Products, inventory, orders, forecasts, recommendations, and assistant responses are scoped to the authenticated user.
+- Forecasting and AI/ML logic run inside the backend so production responses are data-grounded and testable.
+- The frontend is deployed on Vercel and the backend/PostgreSQL stack is deployed on Render.
+- GitHub Actions runs backend tests, frontend production build checks, and migration checks.
+
+## AI/ML and Decision Intelligence
+
+SmartOps AI does not depend on a paid LLM API. Instead, it uses a zero-cost, explainable AI/ML decision-support approach:
+
+- ml-regression-v1 predicts demand from product and order-history features.
+- Forecast explanations describe the model inputs behind predicted demand.
+- Demand volatility scoring classifies product demand as stable, moderate, high, or insufficient-history.
+- Recommendation risk scoring classifies restock decisions as low, medium, high, or critical.
+- The assistant answers operational questions using authenticated workspace data, forecasts, recommendations, risk scores, and volatility analysis.
+
+This makes the AI/ML layer reliable for demos because answers are grounded in the database rather than generated from an external chatbot.
+
+## Resume-Ready Summary
+
+SmartOps AI can be summarized on a resume as:
+
+Built and deployed a full-stack AI-powered operations dashboard using React, FastAPI, PostgreSQL, SQLAlchemy, Alembic, and JWT authentication. Implemented user-scoped inventory, order, forecasting, recommendation, and assistant workflows with an explainable ML forecasting pipeline, demand risk scoring, volatility analysis, CI testing, and production deployment on Vercel and Render.
+
+Example resume bullets:
+
+- Built a production-style full-stack operations platform with React, FastAPI, PostgreSQL, SQLAlchemy, Alembic, and JWT authentication.
+- Implemented user-scoped product, inventory, order, forecast, recommendation, and assistant workflows with protected API routes.
+- Developed an explainable ML forecasting pipeline using product/order-history features, saved model artifacts, and backend prediction integration.
+- Added demand risk scoring, volatility analysis, and a data-grounded operations assistant for AI-assisted restock decisions.
+- Deployed the frontend to Vercel and backend/PostgreSQL services to Render with GitHub Actions CI for tests, builds, and migration checks.
 
 ---
 
