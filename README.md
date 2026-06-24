@@ -38,7 +38,7 @@ Current verification:
 
 ```text
 Frontend production build: passed
-Backend tests: 64 passed
+Backend pytest suite: passed
 Production smoke test: passed
 Demo data loading: working
 Phase 4 risk scoring: implemented
@@ -225,8 +225,6 @@ smartops-ai/
 │   └── package-lock.json
 │
 ├── docs/
-├── ml/
-├── ai/
 ├── simulator/
 ├── .env.example
 └── README.md
@@ -244,6 +242,8 @@ Current authentication features include:
 
 - User registration
 - User login
+- Confirm-password validation during registration
+- Password visibility controls on login and registration forms
 - Password hashing
 - JWT access token generation
 - Session restore from browser local storage
@@ -302,6 +302,9 @@ The Products page supports:
 
 - Product creation
 - Product listing
+- Product editing
+- Safe product deletion when no order history exists
+- Product deletion protection when order history exists
 - Product search
 - Product filtering
 - Product sorting
@@ -322,13 +325,14 @@ The Orders page supports:
 
 - Creating customer orders
 - Viewing recent order history
+- Deleting orders with inventory restoration
 - Product-aware order creation
 - Stock validation before order creation
 - Automatic inventory reduction after an order
 - Order success and error feedback
 - Product names displayed with order records
 
-Order creation connects to the broader workflow by reducing inventory and signaling that forecasts should be regenerated.
+Order creation connects to the broader workflow by reducing inventory and signaling that forecasts should be regenerated. Order deletion restores inventory so users can correct mistakes without leaving stock counts inconsistent.
 
 ---
 
@@ -693,9 +697,11 @@ Backend tests currently cover:
 
 - Health route
 - Product routes
+- Product update and safe-delete behavior
 - Authentication
 - Protected routes
 - Order logic
+- Order deletion and inventory restoration
 - Forecast service logic
 - Assistant routes
 - Cross-user data isolation
@@ -734,6 +740,10 @@ Recent completed milestones include:
 - Converted the dashboard from one long page into routed pages
 - Added route-specific dashboard headers
 - Added reusable page components
+- Added confirm-password validation and password visibility controls
+- Added product edit and safe-delete workflows
+- Added order deletion with inventory restoration
+- Added ML-assisted forecasting, demand risk scoring, and volatility analysis
 
 ---
 
