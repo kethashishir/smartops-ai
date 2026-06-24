@@ -331,6 +331,9 @@ The assistant currently supports:
 - Recent order activity questions
 - Highest forecasted demand questions
 - Forecast freshness questions
+- Demand risk questions
+- Demand volatility questions
+- Risk and volatility explanations
 - Fallback guidance for unsupported questions
 
 Assistant response features include:
@@ -356,7 +359,7 @@ Which product has the highest forecasted demand?
 Give me an operations summary.
 ```
 
-The assistant is currently rule-based. Future work may add a true LLM/RAG assistant using LangChain or another AI orchestration layer.
+The assistant is currently rule-based and data-grounded. It uses authenticated workspace data, forecast outputs, recommendation data, risk scores, and volatility analysis instead of relying on a paid LLM dependency. Optional LLM/RAG support may be added later as an enhancement.
 
 ---
 
@@ -596,7 +599,7 @@ pytest
 Expected current result:
 
 ```text
-28 passed
+Backend pytest suite passed
 ```
 
 ### Frontend production build
@@ -678,16 +681,14 @@ Recent completed milestones include:
 
 Potential future improvements include:
 
-- True LLM-powered assistant
-- LangChain or RAG integration
-- ML-based demand forecasting model
+- Optional LLM-powered assistant
+- Optional LangChain or RAG integration
+- Advanced ML model tuning and richer evaluation metrics
 - Charts and analytics visualizations
 - More advanced dashboard redesign
 - Separate admin/settings pages
 - Better role-based access control
 - Dockerized local development
-- Cloud deployment
-- CI/CD pipeline
 - More frontend tests
 - More advanced recommendation logic
 - Multi-warehouse support
